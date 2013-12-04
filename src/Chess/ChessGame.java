@@ -34,7 +34,7 @@ public class ChessGame {
 		//imexLog.Import("wccc1974.PGN");
 		//Header = new ChessData("Toto", "Tata", "TestEvent");
 		System.out.println(elem.size());
-		catchEvent(null, null);
+		//catchEvent(null, null);
 	}
 
 	private void add(eColor c, Position p, eClass t) {
