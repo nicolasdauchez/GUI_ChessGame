@@ -2,8 +2,6 @@
  * 
  */
 package Chess;
-import java.util.List;
-import java.util.ArrayList;
 import org.apache.commons.lang3.ArrayUtils;
 /**
  * @author Lumy-
