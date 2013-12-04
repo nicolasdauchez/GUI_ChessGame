@@ -4,7 +4,6 @@
 package Chess;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -12,20 +11,23 @@ import java.util.List;
  *
  */
 public class BoardGame {
-	private List<Pion>	elem;
+	private List<Pawn>	elem;
 
 	public BoardGame()
 	{
-		elem = new ArrayList<Pion>();
+		elem = new ArrayList<Pawn>();
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public int size() {
 		return elem.size();
 	}
-
 	public int indexOf(Position s) {
 		int c = 0;
-		for (Pion p : elem)
+		for (Pawn p : elem)
 		{
 			if (p.equals(s))
 				return c;
@@ -33,126 +35,118 @@ public class BoardGame {
 		}
 		return -1;
 	}
-	public int indexOf(Pion p) {
+	public int indexOf(Pawn p) {
 		return indexOf(p.GetPosition());
 	}
-
-	public Pion get(int c) {
+	public Pawn get(int c) {
 		return elem.get(c);
 	}
-
 	public boolean contains(Position e) {
-		for (Pion p : elem)
+		for (Pawn p : elem)
 			if (p.equals(e))
 				return true;
 		return false;
 	}
-
-	public void add(Pion pion) {
+	public void add(Pawn pion) {
 		// TODO Auto-generated method stub
 		elem.add(pion);
 	}
-
-	public void remove(Pion eaten) {
-		System.out.println(elem.size());
-		System.out.println(elem.remove(indexOf(eaten)));
-			System.out.println(elem.size());
+	public void remove(Pawn eaten) {
+		elem.remove(indexOf(eaten));
 	}
- 
-	public void print() {
+ 	public void print() {
 		int i = 0;
-		for (Pion p : elem) {
+		for (Pawn p : elem) {
 			System.out.print(i+": ");
 			p.print();
 			i++;
 		}
 	}
 
-	/*
-	 * return true if the next row is Adversery Pion
+	/**
+	 * return eColor.None if no Pawn on the current Case.
+	 * @param p
+	 * @return
 	 */
-	public boolean isObstacleRowFirst(Pion p) {
+	public eColor getObstacleCase(Position p) {
 		int i = -1;
-		Position tmp = new Position();
-		tmp.SetPosition(p.GetPosition());
-		tmp.row += 1;
-		i = indexOf(tmp);
+		i = indexOf(p);
 		if (i != -1)
-			return get(i).GetColor() != p.GetColor();
-		return false;
+			return get(i).GetColor();
+		return eColor.None;
 	}
-	/*
-	 * return true if the next column is Adversery Pion
+	/**
+	 * return eColor.None if Nothing is find on the way Row.
+	 * Don't Check the Last Case Neither the First (always True position First Pawn
+	 * @param p
+	 * @param range
+	 * @return
 	 */
-	public boolean isObstacleColumnFirst(Pion p) {
-		int i = -1;
-		Position tmp = new Position();
-		tmp.SetPosition(p.GetPosition());
-		tmp.column += 1;
-		i = indexOf(tmp);
-		if (i != -1)
-			return get(i).GetColor() != p.GetColor();
-		return false;
-	}
-
-	/*
-	 * return true if the first obstacle is Adversery Pion
-	 */
-	public boolean isObstacleRow(Pion p) {
+	public eColor getObstacleRowRange(Pawn p, Position range) {
 		Position t = new Position();
 		t.SetPosition(p.GetPosition());
-		t.row = 9;
-		return isObstacleRowRange(p, t);
-	}
-	public boolean isObstacleRowRange(Pion p, Position range) {
-		Position t = new Position();
-		t.SetPosition(p.GetPosition());
-		while (t.row < range.row)
+		t.row += (t.row < range.row ? 1 : - 1);
+		while (t.row != range.row)
 		{
-			if (isObstacleRowFirst(p))
-				return true;
-			t.row += 1;
+			if (eColor.None != getObstacleCase(t))
+				return getObstacleCase(t);
+			t.row += (t.row < range.row ? 1 : - 1);
 		}
-		return false;
+		return eColor.None;
 	}
-	/*
-	 * return true if the first obstacle is Adversery Pion
+	/**
+	 * return eColor.None if Nothing is find on the way Column.
+	 * Don't Check the Last Case Neither the First (always True position First Pawn
+	 * @param p
+	 * @param range
+	 * @return
 	 */
-	public boolean isObstacleColumn(Pion p) {
+	public eColor getObstacleColumnRange(Pawn p, Position max) {
 		Position t = new Position();
 		t.SetPosition(p.GetPosition());
-		t.column = 'i';
-		return isObstacleColumnRange(p, t);
-	}
-
-	public boolean isObstacleColumnRange(Pion p, Position max) {
-		Position t = new Position();
-		t.SetPosition(p.GetPosition());
+		t.column += (t.column < max.column ? 1 : -1);
 		while (t.column != max.column)
 		{
-			if (isObstacleColumnFirst(p))
-				return true;
-			t.column += 1;
+			System.out.print("Case: ");
+			t.print();
+			max.print();
+			if (eColor.None != getObstacleCase(t))
+				return getObstacleCase(t);
+			t.column += (t.column < max.column ? 1 : -1);
 		}
-		return false;
+		return eColor.None;
 	}
-
-	public boolean isNoObstacle(Pion p, Position newPos) {
+	/**
+	 * Check if it's Range Row,Column,Diagonal
+	 * and call the good method
+	 * @isObstacleColumnRange
+	 * @code isObstacleRowRange
+	 * @param p
+	 * @param newPos
+	 * @return
+	 */
+	public eColor getObstacleRange(Pawn p, Position newPos) {
 		Position oldp = p.GetPosition();
 		if (oldp.sameRow(newPos))
-			return !isObstacleRowRange(p, newPos);
+			return getObstacleColumnRange(p, newPos);
 		else if (oldp.sameColumn(newPos))
-			return !isObstacleColumnRange(p, newPos);
-		return false ;
+			return getObstacleRowRange(p, newPos);
+		else if (oldp.DiagonalMove(newPos)) {
+			return getObstacleRangeDiagonal(p, newPos);
+		}
+		return eColor.None;
 	}
-
-	public boolean isObstacle(Pion p, Position newPos) {
-		Position oldp = p.GetPosition();
-		if (oldp.sameRow(newPos))
-			return isObstacleRowRange(p, newPos);
-		else if (oldp.sameColumn(newPos))
-			return isObstacleColumnRange(p, newPos);
-		return false ;
+	/**	
+	 * return eColor.None if Nothing is find on the way Column/Row.
+	 * Don't Check the Last Case Neither the First (always True position First Pawn
+	 * @param p
+	 * @param range
+	 * @return
+	 */
+	private eColor getObstacleRangeDiagonal(Pawn p, Position newPos) {
+		
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	

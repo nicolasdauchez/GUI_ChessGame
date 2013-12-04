@@ -25,8 +25,8 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	Color brown_dark;
 	Color brown_light;
 	// Pieces images list
-	Map<eClass, BufferedImage> pieces_images_black;
-	Map<eClass, BufferedImage> pieces_images_white;
+	Map<ePawns, BufferedImage> pieces_images_black;
+	Map<ePawns, BufferedImage> pieces_images_white;
 	// Positions of clicked piece and clicked square
 	Position posFirstClick;
 	Position posSecondClick;
@@ -48,21 +48,21 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	}
 
 	private void loadPieces() {
-		this.pieces_images_white = new Hashtable<eClass, BufferedImage>();
-		this.pieces_images_black = new Hashtable<eClass, BufferedImage>();
+		this.pieces_images_white = new Hashtable<ePawns, BufferedImage>();
+		this.pieces_images_black = new Hashtable<ePawns, BufferedImage>();
 		try {
-			this.pieces_images_white.put(eClass.Pion, ImageIO.read(new File("src/Images/WhitePawn.png")));
-			this.pieces_images_white.put(eClass.Crazy, ImageIO.read(new File("src/Images/WhiteBishop.png")));
-			this.pieces_images_white.put(eClass.Tower, ImageIO.read(new File("src/Images/WhiteRook.png")));
-			this.pieces_images_white.put(eClass.Queen, ImageIO.read(new File("src/Images/WhiteQueen.png")));
-			this.pieces_images_white.put(eClass.King, ImageIO.read(new File("src/Images/WhiteKing.png")));
-			this.pieces_images_white.put(eClass.Cavalery, ImageIO.read(new File("src/Images/WhiteKnight.png")));
-			this.pieces_images_black.put(eClass.Cavalery, ImageIO.read(new File("src/Images/BlackKnight.png")));
-			this.pieces_images_black.put(eClass.King, ImageIO.read(new File("src/Images/BlackKing.png")));
-			this.pieces_images_black.put(eClass.Queen, ImageIO.read(new File("src/Images/BlackQueen.png")));
-			this.pieces_images_black.put(eClass.Tower, ImageIO.read(new File("src/Images/BlackRook.png")));
-			this.pieces_images_black.put(eClass.Crazy, ImageIO.read(new File("src/Images/BlackBishop.png")));
-			this.pieces_images_black.put(eClass.Pion, ImageIO.read(new File("src/Images/BlackPawn.png")));
+			this.pieces_images_white.put(ePawns.Pawn, ImageIO.read(new File("src/Images/WhitePawn.png")));
+			this.pieces_images_white.put(ePawns.Crazy, ImageIO.read(new File("src/Images/WhiteBishop.png")));
+			this.pieces_images_white.put(ePawns.Tower, ImageIO.read(new File("src/Images/WhiteRook.png")));
+			this.pieces_images_white.put(ePawns.Queen, ImageIO.read(new File("src/Images/WhiteQueen.png")));
+			this.pieces_images_white.put(ePawns.King, ImageIO.read(new File("src/Images/WhiteKing.png")));
+			this.pieces_images_white.put(ePawns.Cavalery, ImageIO.read(new File("src/Images/WhiteKnight.png")));
+			this.pieces_images_black.put(ePawns.Cavalery, ImageIO.read(new File("src/Images/BlackKnight.png")));
+			this.pieces_images_black.put(ePawns.King, ImageIO.read(new File("src/Images/BlackKing.png")));
+			this.pieces_images_black.put(ePawns.Queen, ImageIO.read(new File("src/Images/BlackQueen.png")));
+			this.pieces_images_black.put(ePawns.Tower, ImageIO.read(new File("src/Images/BlackRook.png")));
+			this.pieces_images_black.put(ePawns.Crazy, ImageIO.read(new File("src/Images/BlackBishop.png")));
+			this.pieces_images_black.put(ePawns.Pawn, ImageIO.read(new File("src/Images/BlackPawn.png")));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -162,9 +162,9 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 
 	private void drawPieces(Graphics2D g2d) {
 		for (int i = 0; i < this.game.elem.size(); i++) {
-			Pion piece = this.game.elem.get(i);
+			Pawn piece = this.game.elem.get(i);
 			if (piece != null) {
-				eClass piece_class = piece.GetClass();
+				ePawns piece_class = piece.GetClass();
 				eColor piece_color = piece.GetColor();
 				Position piece_pos = piece.GetPosition();
 				if (piece_color == eColor.Black)
@@ -173,8 +173,8 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 					g2d.drawImage(pieces_images_white.get(piece_class), null, (piece_pos.column- 'a')*80, (piece_pos.row - 1)*80);
 			}
 		}
-//		g2d.drawImage(pieces_images_black.get(eClass.Pion), null, 0, 0);
-//		g2d.drawImage(pieces_images_black.get(eClass.Tower), null, 80, 80);
+//		g2d.drawImage(pieces_images_black.get(ePawns.Pion), null, 0, 0);
+//		g2d.drawImage(pieces_images_black.get(ePawns.Tower), null, 80, 80);
 	}
 
 	private void drawGrid(Graphics2D g2d) {
