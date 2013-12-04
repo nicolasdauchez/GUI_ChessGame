@@ -9,5 +9,6 @@ package Chess;
  */
 public enum eColor {
 	Black,
-	White
+	White,
+	None
 }
