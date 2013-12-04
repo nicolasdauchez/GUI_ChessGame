@@ -7,8 +7,8 @@ package Chess;
  * @author Lumy-
  *
  */
-public enum eClass {
-	Pion,
+public enum ePawns {
+	Pawn,
 	Tower,
 	Crazy,
 	Cavalery,
