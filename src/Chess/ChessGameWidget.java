@@ -27,17 +27,19 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	// Pieces images list
 	Map<eClass, BufferedImage> pieces_images_black;
 	Map<eClass, BufferedImage> pieces_images_white;
+	// Positions of clicked piece and clicked square
+	Position posFirstClick;
+	Position posSecondClick;
 	
 	public ChessGameWidget() {
-		
+		// initializes game logic
 		this.game = new ChessGame();
 		this.game.Initalize();
-		
 		// initializes game colors
 		this.black = new Color(0, 0, 0);
 		this.brown_dark = new Color(184, 115, 51);
-		this.brown_light = new Color(222, 184, 135);
-		// Initializes pieces images
+		this.brown_light = new Color(222, 184, 135);		
+		// initializes pieces images
 		loadPieces();
 		// update game board
 		repaint();
@@ -67,36 +69,87 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		}
 	}
 
-	@Override
+	@Override // not used
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	@Override // not used
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	@Override // not used
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	@Override // not used
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
-	@Override
+	@Override // the mouse released event is the only one we use
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
+		int X = e.getX(); 
+		int Y = e.getY();
+		
+		// mouse was cliked within game board limits
+		if (X >= 0 && X <= 640 
+				&& Y >= 0 && Y <= 640) {
+			// nothing selected yet : first click
+			if (posFirstClick == null) {
+				this.posFirstClick = new Position();
+				this.posFirstClick.row = Y / 80;
+				this.posFirstClick.column = (char)('a' + (X / 80));
+
+				// first click doesn't count if it's on an empty square
+				if (this.game.elem.contains(this.posFirstClick))
+					this.posFirstClick = null;
+			}
+			// one piece is already selected : second click
+			else {
+				this.posSecondClick = new Position();
+				this.posSecondClick.row = Y / 80;
+				this.posSecondClick.column = (char)('a' + (X / 80));
+				
+				if (!this.posFirstClick.equals(this.posSecondClick))
+				{
+				
+					// check move validity
+					boolean moveAccepted = this.game.catchEvent(posFirstClick, posSecondClick);
+					
+					// update game board (piece moving or text explaining why not)
+					handleMove(moveAccepted);
+					
+					//reinitialize click positions
+					this.posFirstClick = null;
+				}
+				this.posSecondClick = null;
+			}
+		}
+		
+//			posFC.row = newY / 80;
+//			posFC.column = (char) ('a' + (newX / 80));
+//			posSC.row = newY / 80;
+//			posSC.column = (char) ('a' + (newX / 80));
+//			
 		
 	}
 	
+	private void handleMove(boolean moveAccepted) {
+		// TODO Auto-generated method stub
+		if (moveAccepted) {
+			repaint();
+		}
+		else {
+			
+		}
+	}
+
 	// repaints the widget when an update of any kind is made
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -122,16 +175,6 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		}
 //		g2d.drawImage(pieces_images_black.get(eClass.Pion), null, 0, 0);
 //		g2d.drawImage(pieces_images_black.get(eClass.Tower), null, 80, 80);
-//		g2d.drawImage(pieces_images_black.get(eClass.Cavalery), null, 160, 160);
-//		g2d.drawImage(pieces_images_black.get(eClass.Crazy), null, 240, 240);
-//		g2d.drawImage(pieces_images_black.get(eClass.King), null, 320, 320);
-//		g2d.drawImage(pieces_images_black.get(eClass.Queen), null, 400, 400);
-//		g2d.drawImage(pieces_images_white.get(eClass.Queen), null, 480, 480);
-//		g2d.drawImage(pieces_images_white.get(eClass.King), null, 560, 560);
-//		g2d.drawImage(pieces_images_white.get(eClass.Crazy), null, 0, 240);
-//		g2d.drawImage(pieces_images_white.get(eClass.Cavalery), null, 320, 800);
-//		g2d.drawImage(pieces_images_white.get(eClass.Tower), null, 240, 0);
-//		g2d.drawImage(pieces_images_white.get(eClass.Pion), null, 320, 0);
 	}
 
 	private void drawGrid(Graphics2D g2d) {
