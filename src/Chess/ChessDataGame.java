@@ -6,41 +6,77 @@ import java.util.List;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 /**
+ * This represent the information about one game of Chess
+ * you can say it's like the Header of a game
  * @author Lumy-
  *
  */
-public class ChessData {
-	private String 	nameWhite;
-	private String 	nameBlack;
-	private String 	Event;
-	private String 	Date;
-	private String	Round;
-	private String 	Result;
+public class ChessDataGame {
+	private String 	nameWhite; //Never Change
+	private String 	nameBlack; // Never Change
+	public 	String 	Place;
+	public	String 	Event;
+	private String 	Date; // Date of the Day or Date by import.
+	public String	Round;
+	public String 	Result;
+	private eColor	Turn;
 	
-	public ChessData(List<String> a)
+	public ChessDataGame(List<String> a)
 	{
 	}
-	public ChessData(String nw, String nb, String event)
+	public ChessDataGame(String nw, String nb)
 	{
-		this(nw, nb, event, "1");
+		this(nw, nb, "1");
 	}
-	public ChessData(String nw, String nb, String event, String round)
+	public ChessDataGame(String nw, String nb, String round)
 	{
-		this(nw, nb, event, round, "*");
+		this(nw, nb, round, "*");
 	}
-	public ChessData(String nw, String nb, String event, String round, String res)
+	public ChessDataGame(String nw, String nb, String round, String res)
 	{
-		this(nw, nb, event, round, res, new Date());
+		this(nw, nb, round, res, new Date());
 	}
-	public ChessData(String nw, String nb, String e, String round, String res, Date date)
+
+	public ChessDataGame(String nw, String nb, String round, String res, Date date)
 	{
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 		String day = sdf.format(date);
 		nameWhite = nw;
 		nameBlack = nb;
-		Event = e;
 		Date = day;
 		Round = round;
 		Result = res;
+		Turn = eColor.White;
+	}
+
+	public ChessDataGame(String nw, String nb, String round, String res, Date date, String place, String event)
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+		String day = sdf.format(date);
+		nameWhite = nw;
+		nameBlack = nb;
+		Place = place;
+		Event = event;
+		Date = day;
+		Round = round;
+		Result = res;
+		Turn = eColor.White;
+	}
+
+	public void setResult(String res)
+	{
+		Result = res;
+	}
+
+	public String	getHeader()
+	{
+		String s = "[Event \"" + Event + "\"]\n[Site \"" + Place + "\"]\n[Date \"" + Date.toString() + "\"]\n";
+		s += "[Round \"" + Round + "\"]\n[White \"" + nameWhite + "\"\n[Black \"" + nameBlack + "\"]\n[Result \"" + Result + "\"]\n";
+		System.out.print(s);
+		return s;
+	}
+	public eColor	getPlayerTurn()
+	{
+		return Turn;
 	}
 }
