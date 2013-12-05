@@ -149,5 +149,11 @@ public class BoardGame {
 		return null;
 	}
 
+	public boolean isOutside(Position p) {
+		if (p.row < 1 || p.row > 8 || Character.toLowerCase(p.column) < 'a' || Character.toLowerCase(p.column) > 'h')
+			return false;
+		return true;
+	}
+
 	
 }
