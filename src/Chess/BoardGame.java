@@ -151,8 +151,8 @@ public class BoardGame {
 
 	public boolean isOutside(Position p) {
 		if (p.row < 1 || p.row > 8 || Character.toLowerCase(p.column) < 'a' || Character.toLowerCase(p.column) > 'h')
-			return false;
-		return true;
+			return true;
+		return false;
 	}
 
 	
