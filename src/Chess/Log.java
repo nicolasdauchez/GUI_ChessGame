@@ -2,62 +2,43 @@
  * 
  */
 package Chess;
+import main.Pair;
 import java.util.ArrayList;
 /**
  * @author Lumy-
  * Log Import and Export with PGN Norme
+ * Also log each Mouvement. You can move in the game (backmove foremove)
  */
 public class Log {
 
-	public ArrayList<String> log;
+	public ArrayList<Pair<Position, Position>> log;
 
 	public Log() {
-		log = new ArrayList<String>();
+		log = new ArrayList<Pair<Position, Position>>();
 	}
 	
+	public void newGame()
+	{
+		log.clear();
+	}
+
 	public void Initialize()
 	{
 		
 	}
 
-	private String getLastLog() {
+/*	private String getLastLog() {
 		if (log.size() != 0)
 			return log.get(log.size() - 1);
 		return null;
+	}*/
+
+
+	public void add(Position oldp, Position newp) {
+		log.add(new Pair<Position, Position>(oldp, newp));
 	}
-	private void add(String e) {
-		log.add(e);
-	}
-	public void addEvent(String e) {
-		String c = "[Event \"" + e + "\"]";
-		add(c);
-	}
-	public void addSite(String e) {
-		String c = "[Site \"" + e + "\"]";
-		add(c);
-	}
-	public void addDate(String e) {
-		String c = "[Date \"" + e + "\"]";
-		add(c);
-	}
-	public void addRound(String e) {
-		String c = "[Round \"" + e + "\"]";
-		add(c);
-	}
-	public void addWhite(String e) {
-		String c = "[White \"" + e + "\"]";
-		add(c);
-	}
-	public void addBlack(String e) {
-		String c = "[Black \"" + e + "\"]";
-		add(c);
-	}
-	public void addResult(String e) {
-		String c = "[Result \"" + e + "\"]";
-		add(c);
-	}
-	//[ECO "C40/01"]
-	public Boolean Export(ChessData header) {
+
+	public Boolean Export(ChessDataGame header) {
 		Export e = new Export(header, log);
 		return false;
 	}
