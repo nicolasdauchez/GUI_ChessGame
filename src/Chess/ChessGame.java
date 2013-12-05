@@ -2,19 +2,21 @@
  * 
  */
 package Chess;
+import java.util.Date;
+
 import org.apache.commons.lang3.ArrayUtils;
 /**
  * @author Lumy-
  *
  */
 public class ChessGame {
-	public BoardGame	elem;
-	private Log imexLog;
-	private ChessData Header;
+	public BoardGame		elem;
+	private Log 			log;
+	private ChessDataGame 	Header;
 
 	public ChessGame()
 	{
-		imexLog = new Log();
+		log = new Log();
 		elem = new BoardGame();
 		addLinePion(eColor.Black);
 		addLinePion(eColor.White);
@@ -22,17 +24,18 @@ public class ChessGame {
 		addHeadLine(eColor.White);
 	}
 	
-	/**
-	 * Will Ask For Load a game or for the Name of Player
-	 */
-	public void Initalize()
+	public void	NewGame(String nameWhite, String nameBlack)
 	{
-		//imexLog.Import("wccc1974.PGN");
-		//Header = new ChessData("Toto", "Tata", "TestEvent");
-		System.out.println(elem.size());
-		catchEvent(null, null);
+		NewGame(nameWhite, nameBlack, "1");
 	}
 
+	public void	NewGame(String nameWhite, String nameBlack, String round)
+	{
+		Header = new ChessDataGame(nameWhite, nameBlack, round);
+		log.newGame();
+
+	}
+	
 	private void add(eColor c, Position p, ePawns t) {
 		elem.add(new Pawn(c, p, t));
 	}
@@ -66,6 +69,14 @@ public class ChessGame {
 
 	public boolean catchEvent(Position firstClick, Position secondClick)
 	{
-	    return false;
+		firstClick.print();
+		secondClick.print();
+		if (firstClick.equals(secondClick) || elem.isOutside(firstClick) ||
+			elem.isOutside(secondClick) || -1 == elem.indexOf(firstClick))
+			return false;
+		boolean ret = Rules.DoMovePawns(elem.get(elem.indexOf(firstClick)), secondClick, elem);
+		if (ret != false)
+			log.add(firstClick, secondClick);
+		return ret;
 	}
 }

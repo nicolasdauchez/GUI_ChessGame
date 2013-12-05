@@ -34,7 +34,6 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	public ChessGameWidget() {
 		// initializes game logic
 		this.game = new ChessGame();
-		this.game.Initalize();
 		// initializes game colors
 		this.black = new Color(0, 0, 0);
 		this.brown_dark = new Color(184, 115, 51);
