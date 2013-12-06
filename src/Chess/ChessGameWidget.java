@@ -131,8 +131,8 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 					this.posFirstClick = null;
 				}
 				this.posSecondClick = null;
-				repaint();
 			}
+			repaint();
 		}
 		
 //			posFC.row = newY / 80;
@@ -197,7 +197,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		// colors selectionned piece's square
 		if (this.posFirstClick != null) {
 			g2d.setColor(selectionned);
-			g2d.fillRect(((posFirstClick.column - 'a')*80)+1, ((posFirstClick.row)*80)+1, 79, 79);
+			g2d.fillRect(((posFirstClick.column - 'a')*80)+1, ((posFirstClick.row - 1)*80), 79, 79);
 		}
 	}
 		
