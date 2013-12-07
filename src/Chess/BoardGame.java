@@ -155,5 +155,13 @@ public class BoardGame {
 		return false;
 	}
 
+	public List<Pawn> getNewCopie(Pawn p, Position newPos) {
+		List<Pawn> ret= new ArrayList<Pawn>(elem);
+		if (-1 != ret.indexOf(newPos))
+			ret.remove(ret.indexOf(newPos));
+		ret.get(ret.indexOf(newPos)).SetPosition(newPos);
+		return ret;
+	}
+
 	
 }
