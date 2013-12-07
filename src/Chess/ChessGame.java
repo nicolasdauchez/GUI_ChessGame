@@ -2,7 +2,6 @@
  * 
  */
 package Chess;
-import java.util.Date;
 import main.Pair;
 import org.apache.commons.lang3.ArrayUtils;
 /**
@@ -14,11 +13,11 @@ public class ChessGame {
 	private Log 			log;
 	private ChessDataGame 	Header;
 	private eColor			Turn;
-	private eGameState		check;
-	
+	private eGameState		State;
+
 	public ChessGame()
 	{
-		check = eGameState.NEXT;
+		State = eGameState.NEXT;
 		Turn = eColor.White;
 		log = new Log();
 		elem = new BoardGame();
@@ -41,25 +40,35 @@ public class ChessGame {
 	 * @param GameState
 	 */
 	private void NextTurn(eGameState e) {
-		if (e == eGameState.CHECK_MATE_B || e == eGameState.CHECK_MATE_W)
-			SetCheckMat(e);
+		SetState(e);
 		Turn = (Turn == eColor.Black) ? eColor.White : eColor.Black;
 	}
 	/**
 	 * SetCheckMat by Color
 	 * @param black
 	 */
-	private void SetCheckMat(eGameState e) {
-		check = e;
+	private void SetState(eGameState e) {
+		State = e;
 	}
 	/**
 	 * Return eColor.None if no CheckMat, or the Color who is in CheckMat
 	 * @return
 	 */
 	public eColor isCheckMat() {
-		if (check == eGameState.CHECK_MATE_B)
+		if (State == eGameState.CHECK_MATE_B)
 			return eColor.Black;
-		else if (check == eGameState.CHECK_MATE_W)
+		else if (State == eGameState.CHECK_MATE_W)
+			return eColor.White;
+		return eColor.None;
+	}
+	/**
+	 * Return eColor.None if no CheckKing, or the Color who is in CheckKing
+	 * @return
+	 */
+	public eColor isCheckKing() {
+		if (State == eGameState.CHECK_KING_B)
+			return eColor.Black;
+		else if (State == eGameState.CHECK_KING_W)
 			return eColor.White;
 		return eColor.None;
 	}
@@ -72,7 +81,7 @@ public class ChessGame {
 	{
 		Header = new ChessDataGame(nameWhite, nameBlack, round);
 		log.newGame();
-		check = eGameState.NEXT;
+		State = eGameState.NEXT;
 		Turn = eColor.White;
 	}
 
