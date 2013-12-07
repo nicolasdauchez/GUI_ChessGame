@@ -46,9 +46,10 @@ public class ChessGame {
 	/**
 	 * Set current Player Loser by abandon
 	 */
-	public void Abandon()
+	public void AskDraw()
 	{
-		
+		// Set Result to Draw
+		//Log the game in the file
 	}
 	/**
 	 * SetCheckMat by Color
