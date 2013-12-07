@@ -17,14 +17,12 @@ public class Log {
 		log = new ArrayList<Pair<Position, Position>>();
 	}
 	
-	public void newGame()
-	{
+	public void newGame() {
 		log.clear();
 	}
 
 	public void Initialize()
-	{
-		
+	{		
 	}
 
 /*	private String getLastLog() {
