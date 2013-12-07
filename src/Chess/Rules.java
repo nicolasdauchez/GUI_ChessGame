@@ -72,12 +72,13 @@ public class Rules {
 							return eMoveState.FAIL_UNAUTHORIZED; //To much Move
 						}
 				if ((newPos.column - 1 == p.GetPosition().column || newPos.column + 1 == p.GetPosition().column) && // Move Diagonal
-				    elem.contains(newPos) && elem.getObstacleCase(newPos) != p.GetColor()){ // Contain Something and not Same Color (Enemy)
-					if (newPos.diffRow(p.GetPosition()) == 1) // try to make one move
-					    return eMoveState.SUCCESS;
+				    elem.contains(newPos)) { // Contain Something and not Same Color (Enemy)
+					if (newPos.diffRow(p.GetPosition()) == 1)// try to make one move
+						if (elem.getObstacleCase(newPos) != p.GetColor())
+							return eMoveState.SUCCESS;
+						else
+							return eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED;
 				}
-				else
-					return eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED;
 				return eMoveState.FAIL_UNAUTHORIZED;
 			 }
 			 
