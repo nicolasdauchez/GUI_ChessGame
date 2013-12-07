@@ -27,6 +27,7 @@ public class Rules {
 		 *
 		 */
 		static public abstract class Functor {
+			  public abstract void updateSee(Pawn p, BoardGame elem);
 			  public abstract eMoveState CanMove(Pawn p, Position newPos, BoardGame elem);
 			  public eGameState ShouldMove(Pawn p, Position newPos, BoardGame elem) {
 				  List<Pawn> tmp = elem.getNewCopie(p, newPos);
@@ -38,6 +39,7 @@ public class Rules {
 					  ret = (n == eColor.Black ? eGameState.CHECK_KING_W : eGameState.CHECK_KING_W);
 				  else if ((n = Rules.isCheckMat(tmp)) != eColor.None)
 					  ret = (n == eColor.Black ? eGameState.CHECK_MATE_W : eGameState.CHECK_MATE_B);
+				  System.out.println(ret);
 				  return ret;
 				  
 			}
@@ -47,7 +49,8 @@ public class Rules {
 						p.SetPosition(newPos);
 					else
 						MapFunctor.DoEatPawn(p, elem.get(elem.indexOf(newPos)), elem);
-				}
+				updateSee(p, elem);
+			  }
 			}
 		/**
 		 * Execute the move for a normal Pawn Class.
@@ -81,6 +84,12 @@ public class Rules {
 				}
 				return eMoveState.FAIL_UNAUTHORIZED;
 			 }
+
+			@Override
+			public void updateSee(Pawn p, BoardGame elem) {
+				// TODO Auto-generated method stub
+				
+			}
 			 
 		}
 		/**
@@ -100,6 +109,12 @@ public class Rules {
 							return eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED;
 				return eMoveState.FAIL_UNAUTHORIZED;
 			}
+
+			@Override
+			public void updateSee(Pawn p, BoardGame elem) {
+				// TODO Auto-generated method stub
+				
+			}
 		}
 		/**
 		 * Execute move for a King Pawn Class.
@@ -114,6 +129,12 @@ public class Rules {
 				if (elem.getObstacleCase(newPos) == p.GetColor())
 					return eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED;
 				return eMoveState.SUCCESS;
+			}
+
+			@Override
+			public void updateSee(Pawn p, BoardGame elem) {
+				// TODO Auto-generated method stub
+				
 			}
 
 		}
@@ -131,6 +152,12 @@ public class Rules {
 				if (elem.getObstacleCase(newPos) == p.GetColor())
 					return eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED; // can't go on your pawn
 				return eMoveState.SUCCESS;
+			}
+
+			@Override
+			public void updateSee(Pawn p, BoardGame elem) {
+				// TODO Auto-generated method stub
+				
 			}
 		}
 		/**
@@ -151,6 +178,12 @@ public class Rules {
 						return eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED;
 				return eMoveState.FAIL_UNAUTHORIZED;
 			}
+
+			@Override
+			public void updateSee(Pawn p, BoardGame elem) {
+				// TODO Auto-generated method stub
+				
+			}
 		}
 		/**
 		 * Execute move for a Queen Pawn Class.
@@ -166,6 +199,12 @@ public class Rules {
 				if (elem.getObstacleCase(newPos) == p.GetColor())
 					return eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED;
 				return eMoveState.SUCCESS;
+			}
+
+			@Override
+			public void updateSee(Pawn p, BoardGame elem) {
+				// TODO Auto-generated method stub
+				
 			}
 		}
 		static final public Map<ePawns, Functor> MapFunction = createMap();
@@ -207,7 +246,10 @@ public class Rules {
 	}
 
 	public static boolean isDraw(List<Pawn> tmp) {
-		// TODO Auto-generated method stub
+	/*	if (ImpossibilityCheckMate(tmp))
+			return true;
+		if (Stalemate(tmp))
+			return true;*/
 		return false;
 	}
 

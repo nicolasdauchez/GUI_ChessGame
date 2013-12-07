@@ -12,6 +12,7 @@ public class Pawn {
 	private Position position;
 	private ePawns type;
 	private boolean initialePosition;
+	private boolean isSeeingAdverseKing;
 
 	public Pawn(eColor c, Position p, ePawns t) {
 		color = c;

@@ -79,4 +79,15 @@ public class Position {
 			return -1;
 		return r1;
 	}
+	/**
+	 * Return White or Black
+	 * @return
+	 */
+	public eColor GetColorCase()
+	{
+		if ((row % 2 == 0 && column%2 == 0) 
+			|| (row % 2 != 0 && column%2 != 0))
+			return eColor.Black;
+		return eColor.White;
+	}
 }
