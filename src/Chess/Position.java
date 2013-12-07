@@ -30,8 +30,9 @@ public class Position {
 	@Override
 	public boolean equals(Object o)
 	{
-		if (o != null && o.getClass() == this.getClass())
+		if (o != null && o.getClass() == this.getClass()) {
 			return (row == ((Position)o).row && Character.toLowerCase(((Position)o).column) == Character.toLowerCase(column));
+		}
 		return false;
 	}
 	/**
