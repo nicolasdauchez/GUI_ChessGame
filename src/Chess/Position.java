@@ -30,8 +30,9 @@ public class Position {
 	@Override
 	public boolean equals(Object o)
 	{
-		if (o != null && o.getClass() == this.getClass())
+		if (o != null && o.getClass() == this.getClass()) {
 			return (row == ((Position)o).row && Character.toLowerCase(((Position)o).column) == Character.toLowerCase(column));
+		}
 		return false;
 	}
 	/**
@@ -50,8 +51,14 @@ public class Position {
 	public boolean sameRow(Position newPos) {
 		return (row == newPos.row); 
 	}
+	/**
+	 * Check if Is a good diagonal move
+	 * @param newPos
+	 * @return
+	 */
 	public boolean DiagonalMove(Position newPos) {
-		// TODO Auto-generated method stub
+		if (diffMultiple(newPos) != -1)
+			return true;
 		return false;
 	}
 	public int diffRow(Position p) {

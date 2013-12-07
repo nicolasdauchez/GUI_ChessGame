@@ -17,6 +17,8 @@ import javax.imageio.ImageIO;
 import javax.swing.DebugGraphics;
 import javax.swing.JComponent;
 
+import main.Pair;
+
 public class ChessGameWidget extends JComponent implements MouseListener{
 	// Inner class which calculs the game logic
 	ChessGame game;
@@ -35,7 +37,6 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	public ChessGameWidget() {
 		// initializes game logic
 		this.game = new ChessGame();
-		this.game.Initalize();
 		// initializes game colors
 		this.black = new Color(0, 0, 0);
 		this.brown_dark = new Color(184, 115, 51);
@@ -107,7 +108,6 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 				this.posFirstClick = new Position();
 				this.posFirstClick.row = (Y / 80) + 1;
 				this.posFirstClick.column = (char)('a' + (X / 80));
-
 				// first click doesn't count if it's on an empty square
 				if (!this.game.elem.contains(this.posFirstClick))
 					this.posFirstClick = null;
@@ -117,15 +117,14 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 				this.posSecondClick = new Position();
 				this.posSecondClick.row = (Y / 80) +1;
 				this.posSecondClick.column = (char)('a' + (X / 80));
-				
 				if (!this.posFirstClick.equals(this.posSecondClick))
 				{
 				
 					// check move validity
-					boolean moveAccepted = this.game.catchEvent(posFirstClick, posSecondClick);
+					Pair<eMoveState, eGameState> moveAccepted = this.game.catchEvent(posFirstClick, posSecondClick);
 					
 					// update game board (piece moving or text explaining why not)
-					handleMove(moveAccepted);
+					handleMove(true);//moveAccepted);
 					
 					//reinitialize click positions
 					this.posFirstClick = null;

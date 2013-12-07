@@ -25,15 +25,25 @@ public class BoardGame {
 	public int size() {
 		return elem.size();
 	}
-	public int indexOf(Position s) {
+	/**
+	 * Private Function Index Of
+	 * To use with different List
+	 * @param p
+	 * @param s
+	 * @return
+	 */
+	private int indexOf(List<Pawn> p, Position s) {
 		int c = 0;
-		for (Pawn p : elem)
+		for (Pawn e : p)
 		{
-			if (p.equals(s))
+			if (e.equals(s))
 				return c;
 			c++;
 		}
 		return -1;
+	}
+	public int indexOf(Position s) {
+		return indexOf(elem, s);
 	}
 	public int indexOf(Pawn p) {
 		return indexOf(p.GetPosition());
@@ -132,6 +142,7 @@ public class BoardGame {
 		else if (oldp.sameColumn(newPos))
 			return getObstacleRowRange(p, newPos);
 		else if (oldp.DiagonalMove(newPos)) {
+			System.out.println("DiagonalMove");
 			return getObstacleRangeDiagonal(p, newPos);
 		}
 		return eColor.None;
@@ -144,9 +155,42 @@ public class BoardGame {
 	 * @return
 	 */
 	private eColor getObstacleRangeDiagonal(Pawn p, Position newPos) {
-		
-		// TODO Auto-generated method stub
-		return null;
+		Position	tmp = new Position();
+		tmp.SetPosition(p.GetPosition());
+		tmp.column += (newPos.column < tmp.column ? -1 : 1);
+		tmp.row += (newPos.row < tmp.row ? -1 : 1);
+		while (!tmp.sameRow(newPos) && !tmp.sameColumn(newPos)) {
+			if (eColor.None != getObstacleCase(tmp))
+				return getObstacleCase(tmp);
+			tmp.column += (newPos.column < tmp.column ? -1 : 1);
+			tmp.row += (newPos.row < tmp.row ? -1 : 1);
+		}
+		return eColor.None;
+	}
+
+	/**
+	 * return True if isOutside of the Game
+	 * @param p
+	 * @return
+	 */
+	public boolean isOutside(Position p) {
+		if (p.row < 1 || p.row > 8 || Character.toLowerCase(p.column) < 'a' || Character.toLowerCase(p.column) > 'h')
+			return true;
+		return false;
+	}
+
+	/**
+	 * return a new copy of a List<Pawn> with new position set
+	 * @param p
+	 * @param newPos
+	 * @return
+	 */
+	public List<Pawn> getNewCopie(Pawn p, Position newPos) {
+		List<Pawn> ret= new ArrayList<Pawn>(elem);
+		if (-1 != ret.indexOf(newPos))
+			ret.remove(ret.indexOf(newPos));
+		ret.get(indexOf(ret, p.GetPosition()));
+		return ret;
 	}
 
 	

@@ -22,13 +22,13 @@ public class Import {
 		
 	}
 
-	public static Pair<ChessData, Log> ImportPathName(String path)
+	public static Pair<ChessDataGame, Log> ImportPathName(String path)
 	{
 		System.out.println(path);
 		File fd = new File(path); 
 		BufferedReader reader = null;
 		//ParseHeader p = new Import.ParseHeader();
-		Pair<ChessData, Log> ret = null;
+		Pair<ChessDataGame, Log> ret = null;
         try {
 	    reader = new BufferedReader(new FileReader(fd));
 	    if (reader != null) {
@@ -42,7 +42,7 @@ public class Import {
 		return ret;
 	}
 
-	private static Pair<ChessData, Log> ImportGame(BufferedReader reader)
+	private static Pair<ChessDataGame, Log> ImportGame(BufferedReader reader)
 	{
 		int ret = 0;
 		int line = 0;
