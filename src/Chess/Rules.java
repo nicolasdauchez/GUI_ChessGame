@@ -4,6 +4,7 @@
 package Chess;
 
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import main.Pair;
 /**
@@ -28,8 +29,17 @@ public class Rules {
 		static public abstract class Functor {
 			  public abstract eMoveState CanMove(Pawn p, Position newPos, BoardGame elem);
 			  public eGameState ShouldMove(Pawn p, Position newPos, BoardGame elem) {
-				  //List<Pawn> tmp = elem.getNewCopie(p, newPos);
-				  return eGameState.NEXT;
+				  List<Pawn> tmp = elem.getNewCopie(p, newPos);
+				  eGameState ret = eGameState.NEXT;
+				  eColor n = eColor.None;
+				  if (Rules.isDraw(tmp))
+					  ret = eGameState.DRAW;
+				  else if ((n = Rules.isCheckKing(tmp)) != eColor.None)
+					  ret = (n == eColor.Black ? eGameState.CHECK_KING_W : eGameState.CHECK_KING_W);
+				  else if ((n = Rules.isCheckMat(tmp)) != eColor.None)
+					  ret = (n == eColor.Black ? eGameState.CHECK_MATE_W : eGameState.CHECK_MATE_B);
+				  return ret;
+				  
 			}
 			  
 			  public  void execute(Pawn p, Position newPos, BoardGame elem) {
@@ -183,6 +193,21 @@ public class Rules {
 				(r2 == eGameState.CHECK_MATE_W && c == eColor.White))
 			return false;
 		return true;
+	}
+
+	public static eColor isCheckMat(List<Pawn> tmp) {
+		// TODO Auto-generated method stub
+		return eColor.None;
+	}
+
+	public static eColor isCheckKing(List<Pawn> tmp) {
+		// TODO Auto-generated method stub
+		return eColor.None;
+	}
+
+	public static boolean isDraw(List<Pawn> tmp) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	/**
