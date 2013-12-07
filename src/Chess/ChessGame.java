@@ -44,6 +44,13 @@ public class ChessGame {
 		Turn = (Turn == eColor.Black) ? eColor.White : eColor.Black;
 	}
 	/**
+	 * Set current Player Loser by abandon
+	 */
+	public void Abandon()
+	{
+		
+	}
+	/**
 	 * SetCheckMat by Color
 	 * @param black
 	 */
@@ -71,6 +78,11 @@ public class ChessGame {
 		else if (State == eGameState.CHECK_KING_W)
 			return eColor.White;
 		return eColor.None;
+	}
+	public Boolean isDraw() {
+		if (State == eGameState.DRAW)
+			return true;
+		return false;
 	}
 	public void	NewGame(String nameWhite, String nameBlack)
 	{
