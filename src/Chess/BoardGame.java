@@ -6,6 +6,10 @@ package Chess;
 import java.util.ArrayList;
 import java.util.List;
 
+import main.Pair;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * @author Lumy-
  *
@@ -263,10 +267,7 @@ public class BoardGame {
 		tmp.column += (newPos.column < tmp.column ? -1 : 1);
 		tmp.row += (newPos.row < tmp.row ? -1 : 1);
 		while (!tmp.sameRow(newPos) && !tmp.sameColumn(newPos)) {
-			System.out.print("Check Pos: ");
-			tmp.print();
 			if (eColor.None != getObstacleCase(l, tmp)) {
-				tmp.print();
 				return tmp;
 			}
 			tmp.column += (newPos.column < tmp.column ? -1 : 1);
@@ -280,10 +281,8 @@ public class BoardGame {
 		tmp.column += (newPos.column < tmp.column ? -1 : 1);
 		tmp.row += (newPos.row < tmp.row ? -1 : 1);
 		while (!tmp.sameRow(newPos) && !tmp.sameColumn(newPos)) {
-			if (eColor.None != getObstacleCase(l, tmp)) {
-				System.out.print("Check Pos:ColorFound ");get(l, indexOf(l, tmp)).print();
+			if (eColor.None != getObstacleCase(l, tmp))
 				return getObstacleCase(l, tmp);
-			}
 			tmp.column += (newPos.column < tmp.column ? -1 : 1);
 			tmp.row += (newPos.row < tmp.row ? -1 : 1);
 		}
@@ -346,5 +345,78 @@ public class BoardGame {
 	    	if (item.GetColor() == e)
 	    		ret.add(item.clone());
 		return ret;
-	}	
-}
+	}
+
+	public void newGame() {
+		elem.clear();
+		addLinePion(eColor.Black);
+		addLinePion(eColor.White);
+		addHeadLine(eColor.Black);
+		addHeadLine(eColor.White);
+	}
+	private void add(eColor c, Position p, ePawns t) {
+			elem.add(new Pawn(c, p, t));
+	}
+	private void addLinePion(eColor c) {
+		Position p = new Position();
+		p.row = 7;
+		if (c == eColor.White)
+			p.row = 2;
+		p.column = 'a';
+		while (p.column != 'i') {
+			add(c, new Position(p), ePawns.Pawn);
+			p.column += 1;
+		}
+	}
+	private void addHeadLine(eColor c) {
+		Position p = new Position();
+		p.row = 8;
+		if (c == eColor.White)
+			p.row = 1;
+		p.column = 'a';
+		ePawns e[] = { ePawns.Tower, ePawns.Cavalery, ePawns.Crazy, ePawns.King, ePawns.Queen, ePawns.Crazy, ePawns.Cavalery, ePawns.Tower };
+		if (c == eColor.White)
+			ArrayUtils.reverse(e);
+		for (int i = 0; i < e.length; i++) {
+			add(c, new Position(p), e[i]);
+			p.column += 1;
+		}
+	}
+
+	private void getListPositionPossibleProtectKing(eColor e, List<Pair<Position, Position>> r) {
+		//add Position To Eat if Help
+		//add Position Obstacle if Help
+	}
+	private void getListPositionPossibleMoveKing(eColor e, List<Pair<Position, Position>> r) {
+		//Position k = getKingPosition(e);
+		List<Pair<Integer, Integer>> allPos = new ArrayList<Pair<Integer, Integer>>() {{
+			add(new Pair<Integer, Integer>(0,1));
+			add(new Pair<Integer, Integer>(1,1));
+			add(new Pair<Integer, Integer>(1,0));
+			add(new Pair<Integer, Integer>(1,-1));
+			add(new Pair<Integer, Integer>(0,-1));
+			add(new Pair<Integer, Integer>(-1,-1));
+			add(new Pair<Integer, Integer>(-1,0));
+			add(new Pair<Integer, Integer>(-1,1));
+		}};
+		Position k = new Position();
+		for (Pair<Integer, Integer> pos : allPos)
+		{
+			k.SetPosition(getKingPosition(e));
+			k.column += pos.GetLeft();
+			k.row += pos.GetRight();
+			if (!isOutside(k) && this.getObstacleCase(k) != e) {
+				List<Pawn> cp = getNewCopie(get(indexOf(getKingPosition(e))), k);
+				if (!Rules.CheckKing.isCheckKing(cp, this, e))
+					r.add(new Pair<Position, Position>(getKingPosition(e), new Position(k)));
+			}
+		}
+	}
+	public List<Pair<Position, Position>> getListPositionPossibleProtectKing(eColor e) {
+		List<Pair<Position, Position>> ret = new ArrayList<Pair<Position, Position>>();
+		getListPositionPossibleMoveKing(e, ret);
+		getListPositionPossibleProtectKing(e, ret);
+		return ret;
+	}
+}	
+

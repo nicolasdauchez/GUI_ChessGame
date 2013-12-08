@@ -2,8 +2,9 @@
  * 
  */
 package Chess;
+import java.util.List;
+
 import main.Pair;
-import org.apache.commons.lang3.ArrayUtils;
 /**
  * @author Lumy-
  *
@@ -22,10 +23,7 @@ public class ChessGame {
 		log = new Log();
 		elem = new BoardGame();
 		log.Initialize();
-		addLinePion(eColor.Black);
-		addLinePion(eColor.White);
-		addHeadLine(eColor.Black);
-		addHeadLine(eColor.White);
+		elem.newGame();
 	}
 	/**
 	 * Return the Color of current Player
@@ -88,6 +86,7 @@ public class ChessGame {
 	public void	NewGame(String nameWhite, String nameBlack)
 	{
 		NewGame(nameWhite, nameBlack, "1");
+		elem.newGame();
 	}
 
 	public void	NewGame(String nameWhite, String nameBlack, String round)
@@ -98,40 +97,19 @@ public class ChessGame {
 		Turn = eColor.White;
 	}
 
-	private void add(eColor c, Position p, ePawns t) {
-		elem.add(new Pawn(c, p, t));
-	}
-	private void addLinePion(eColor c) {
-		Position p = new Position();
-		p.row = 7;
-		if (c == eColor.White)
-			p.row = 2;
-		p.column = 'a';
-		while (p.column != 'i') {
-			add(c, new Position(p), ePawns.Pawn);
-			p.column += 1;
-		}
-	}
-	private void addHeadLine(eColor c) {
-		Position p = new Position();
-		p.row = 8;
-		if (c == eColor.White)
-			p.row = 1;
-		p.column = 'a';
-		ePawns e[] = { ePawns.Tower, ePawns.Cavalery, ePawns.Crazy, ePawns.King, ePawns.Queen, ePawns.Crazy, ePawns.Cavalery, ePawns.Tower };
-		if (c == eColor.White)
-			ArrayUtils.reverse(e);
-		for (int i = 0; i < e.length; i++) {
-			add(c, new Position(p), e[i]);
-			p.column += 1;
-		}
-	}
 	public Pair<eMoveState, eGameState> catchEvent(Position firstClick, Position secondClick)
 	{
-		if (State == eGameState.CHECK_MATE_B || State == eGameState.CHECK_MATE_W)
+		if (State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W)
 		{
-			System.out.println("IS CheckMate");
-			return null;
+			List<Pair<Position, Position>> r;
+			if (State == eGameState.CHECK_KING_B)
+				r = elem.getListPositionPossibleProtectKing(eColor.Black);
+			else
+				r = elem.getListPositionPossibleProtectKing(eColor.White);
+			if (r.size() == 0)
+				return new Pair<eMoveState, eGameState>(eMoveState.SUCCESS, (eGameState.CHECK_KING_W == State ? eGameState.CHECK_MATE_W : eGameState.CHECK_MATE_B));
+			else
+				return Rules.DoMovePawns(r, elem.get(elem.indexOf(firstClick)), secondClick, elem);
 		}
 		Pair<eMoveState, eGameState> r1 = Rules.DoMovePawns(elem.get(elem.indexOf(firstClick)), secondClick, elem);
 		if (r1.GetRight() != eGameState.SAME)
@@ -139,7 +117,6 @@ public class ChessGame {
 			log.add(firstClick, secondClick);
 			NextTurn(r1.GetRight());
 		}
-		System.out.println("eMoveState" + r1.GetLeft() + " eGameState:" + r1.GetRight() + " TurnPlayer" + GetTurn());
 		return r1;
 	}
 }

@@ -29,31 +29,29 @@ public class Rules {
 		 *
 		 */
 		static public abstract class Functor {
-			  public abstract eMoveState CanMove(Pawn p, Position newPos, BoardGame elem);
-			  public eGameState ShouldMove(Pawn p, Position newPos, BoardGame elem) {
-				  List<Pawn> tmp = elem.getNewCopie(p, newPos);
-				  eGameState ret = eGameState.NEXT;
-				  eColor n = eColor.None;
-				  if (Rules.isDraw(tmp, p.GetEnemyColor(), elem)) {
-					  ret = eGameState.DRAW;
-					  System.out.println("DRAW DETECTED");
-				  }
-				  else if ((n = Rules.isCheckKing(tmp, elem)) != eColor.None)
-					  ret = (n == eColor.Black ? eGameState.CHECK_KING_W : eGameState.CHECK_KING_B);
-				  else if ((n = Rules.isCheckMat(tmp, elem)) != eColor.None)
-					  ret = (n == eColor.Black ? eGameState.CHECK_MATE_W : eGameState.CHECK_MATE_B);
-				  System.out.println(ret);
-				  return ret;
+			public abstract eMoveState CanMove(Pawn p, Position newPos, BoardGame elem);
+			public eGameState ShouldMove(Pawn p, Position newPos, BoardGame elem) {
+				List<Pawn> tmp = elem.getNewCopie(p, newPos);
+				eGameState ret = eGameState.NEXT;
+				eColor n = eColor.None;
+				if (Rules.isDraw(tmp, p.GetEnemyColor(), elem)) {
+					ret = eGameState.DRAW;
+					System.out.println("DRAW DETECTED");
+				}
+				else if ((n = Rules.CheckKing.isCheckKing(tmp, elem)) != eColor.None)
+					ret = (n == eColor.Black ? eGameState.CHECK_KING_B : eGameState.CHECK_KING_W);
+				else if ((n = Rules.CheckMate.isCheckMate(tmp, elem)) != eColor.None)
+					ret = (n == eColor.Black ? eGameState.CHECK_MATE_B : eGameState.CHECK_MATE_W);
+				return ret;
 				  
 			}
-			  
 			public  void execute(Pawn p, Position newPos, BoardGame elem) {
-					if (elem.getObstacleCase(newPos) == eColor.None)
-						p.SetPosition(newPos);
-					else
-						MapFunctor.DoEatPawn(p, elem.get(elem.indexOf(newPos)), elem);
-			  }
-			}
+				if (elem.getObstacleCase(newPos) == eColor.None)
+					p.SetPosition(newPos);
+				else
+					MapFunctor.DoEatPawn(p, elem.get(elem.indexOf(newPos)), elem);
+		  }
+		}
 		/**
 		 * Execute the move for a normal Pawn Class.
 		 * Check if the Pion Go in the good direction
@@ -180,7 +178,7 @@ public class Rules {
 					return eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED;
 				if (newPos.diffMultiple(p.GetPosition()) == -1 || // Check True Diagonal 
 						elem.getObstacleRange(p, newPos) != eColor.None) // Check no Obstacle
-					return eMoveState.FAIL_CHECK; // Obstacle or no True Diagonal
+					return eMoveState.FAIL_UNAUTHORIZED; // Obstacle or no True Diagonal
 				if (elem.getObstacleCase(newPos) == p.GetColor())
 					return eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED;
 				return eMoveState.SUCCESS;
@@ -215,196 +213,204 @@ public class Rules {
 		return true;
 	}
 
-	public static eColor isCheckMat(List<Pawn> tmp, BoardGame elem) {
-		
-		return eColor.None;
+	static private class CheckMate {
+		public static boolean isCheckMate(List<Pawn> tmp, BoardGame elem, eColor e) {
+			/*
+			 * Check is extremely simple actually. If any piece can currently move to the king's position, 
+			 * then the king is in check. Since you already have to implement the ability to allow players 
+			 * to move any given piece to any square (that their piece can move to), deciding if 
+			 * those pieces can be moved to the king's square should be trivial.
+			 * For checkmate, it is a little harder, but first decide whether the king can move his 
+			 * piece to a square that puts him out of check (by temporarily 'pretending' the king is at a
+			 *  different square, and seeing if he is in check still, and doing that for every square
+			 *   around him). If he can't, it still might not be checkmate. So now you have to see if 
+			 *   there is any piece that can either be moved to a square that blocks the 'check' or that
+			 *    can take the piece that is causing the checkmate.
+			 */
+			return false;
+		}
+		public static eColor isCheckMate(List<Pawn> tmp, BoardGame elem) {
+			eColor e = CheckKing.isCheckKing(tmp, elem);
+			if (e == eColor.Black)
+				isCheckMate(tmp, elem, eColor.Black);
+			else if (e == eColor.White)
+				isCheckMate(tmp, elem, eColor.White);
+			return eColor.None;
+		}
 	}
-
-	private static boolean isCheckKing_LaunchRange(List<Pawn> tmp, BoardGame elem, Position pos, Position nps, eColor e) {
-		System.out.print("From :");
-		pos.print();
-		System.out.print("To :");
-		nps.print();
-		eColor ret = elem.getObstacleRange(tmp, elem.get(tmp, elem.indexOf(tmp, pos)), nps);
-		if (ret != eColor.None && e != ret) // Something not Same Color
-		{
-			
-			Position a = elem.getPositionFirstObstacleRange(tmp, elem.get(tmp, elem.indexOf(tmp, pos)), nps);
-			ePawns p = elem.get(tmp, elem.indexOf(tmp, a)).GetClass();
-			switch (p)
+	static class CheckKing
+	{
+		private static boolean isCheckKing_LaunchRange(List<Pawn> tmp, BoardGame elem, Position pos, Position nps, eColor e) {
+			eColor ret = elem.getObstacleRange(tmp, elem.get(tmp, elem.indexOf(tmp, pos)), nps);
+			if (ret != eColor.None && e != ret) // Something not Same Color
 			{
-			case Queen:
-				return true;
-			case Tower:
-				return true;
-			case King:
-				if (a.diffMultiple(pos) == 1)
+				Position a = elem.getPositionFirstObstacleRange(tmp, elem.get(tmp, elem.indexOf(tmp, pos)), nps);
+				ePawns p = elem.get(tmp, elem.indexOf(tmp, a)).GetClass();
+				switch (p)
+				{
+				case Queen:
 					return true;
-			default:
-				return false;
+				case Tower:
+					return true;
+				case King:
+					if (a.diffMultiple(pos) == 1)
+						return true;
+				default:
+					return false;
+				}
 			}
+			return false;
 		}
-		return false;
-	}
-	private static boolean isCheckKing_LaunchRangeDiagonal(List<Pawn> tmp, BoardGame elem, Position pos, Position nps, eColor e) {
-		System.out.print("From :");
-		pos.print();
-		System.out.print("To :");
-		nps.print();
-		eColor ret = elem.getObstacleRange(tmp, elem.get(tmp, elem.indexOf(tmp, pos)), nps);
-		if (ret != eColor.None && e != ret) // Something not Same Color
-		{
-			Position a = elem.getPositionFirstObstacleRange(tmp, elem.get(tmp, elem.indexOf(tmp, pos)), nps);
-			ePawns p = elem.get(tmp, elem.indexOf(tmp, a)).GetClass();
-			switch (p)
+		private static boolean isCheckKing_LaunchRangeDiagonal(List<Pawn> tmp, BoardGame elem, Position pos, Position nps, eColor e) {
+			eColor ret = elem.getObstacleRange(tmp, elem.get(tmp, elem.indexOf(tmp, pos)), nps);
+			if (ret != eColor.None && e != ret) // Something not Same Color
 			{
-			case Crazy:
-				return true;
-			case Queen:
-				return true;
-			case King:
-				if (a.diffMultiple(pos) == 1)
+				Position a = elem.getPositionFirstObstacleRange(tmp, elem.get(tmp, elem.indexOf(tmp, pos)), nps);
+				ePawns p = elem.get(tmp, elem.indexOf(tmp, a)).GetClass();
+				switch (p)
+				{
+				case Crazy:
 					return true;
-			case Pawn:
-				if (a.diffMultiple(pos) == 1)
+				case Queen:
 					return true;
-			default:
-				return false;
+				case King:
+					if (a.diffMultiple(pos) == 1)
+						return true;
+				case Pawn:
+					if (a.diffMultiple(pos) == 1)
+						return true;
+				default:
+					return false;
+				}
 			}
+			return false;
 		}
-		return false;
-	}
-	
-	private static boolean isCheckKing_LaunchRow(List<Pawn> tmp, BoardGame elem, Position pos, eColor e) {
-		Position nps = new Position();
-		nps.row = pos.row;
-		nps.column = 'a' - 1;// Set to 'a' -1 to Check Position 'a'
-		if (isCheckKing_LaunchRange(tmp, elem, pos, nps, e))
-			return true;
-		nps.row = pos.row; 
-		nps.column = 'i';// Set to 'i' to check Position 'h'
-		if (isCheckKing_LaunchRange(tmp, elem, pos, nps, e))
-			return true;
-		return false;
-	}
-	private static boolean isCheckKing_LaunchColumn(List<Pawn> tmp, BoardGame elem, Position pos, eColor e) {
-		Position nps = new Position();
-		nps.row = 0; // Set to 0 to Check Position 1
-		nps.column = pos.column;
-		if (isCheckKing_LaunchRange(tmp, elem, pos, nps, e))
-			return true;
-		nps.row = 9; // Set to 9 to check Position 8
-		nps.column = pos.column;
-		if (isCheckKing_LaunchRange(tmp, elem, pos, nps, e))
-			return true;
-		return false;
-	}
-	private static boolean isCheckKing_LaunchDiagonal(List<Pawn> tmp, BoardGame elem, Position pos, eColor e) {
-		Position nps = new Position();
-		nps.SetPosition(pos);
-		while (nps.row > 0 && nps.column > 'a' - 1) {
-			nps.column -= 1;
-			nps.row -= 1;
-		}
-		if (isCheckKing_LaunchRangeDiagonal(tmp, elem, pos, nps, e))
-			return true;
-		nps.SetPosition(pos);
-		while (nps.row < 9 && nps.column < 'i') {
-			nps.column += 1;
-			nps.row += 1;
-		}
-		System.out.println("Shoudl Thind Something");
-		if (isCheckKing_LaunchRangeDiagonal(tmp, elem, pos, nps, e))
-			return true;
-		nps.SetPosition(pos);
-		while (nps.row < 9 && nps.column > 'a' - 1) {
-			nps.column -= 1;
-			nps.row += 1;
-		}
-		if (isCheckKing_LaunchRangeDiagonal(tmp, elem, pos, nps, e))
-			return true;
-		nps.SetPosition(pos);
-		while (nps.row > 0 && nps.column < 'i') {
-			nps.column += 1;
-			nps.row -= 1;
-		}
-		if (isCheckKing_LaunchRangeDiagonal(tmp, elem, pos, nps, e))
-			return true;
-		return false;
-	}
-	private static boolean isCheckKing(List<Pawn> tmp, BoardGame elem, Position pos, eColor e) {
-		if (isCheckKing_LaunchRow(tmp, elem, pos, e))
-			return true;
-		if (isCheckKing_LaunchColumn(tmp, elem, pos,e)) {
-			return true;
-		}
-		if (isCheckKing_LaunchDiagonal(tmp, elem, pos,e))
-			return true;
-		if (isCheckKing_LaunchCavalery(tmp, elem, pos, e))
-			return true;
-		return false;
-	}
-	
-	private static boolean _isCheckKing_LaunchCavalery(List<Pawn> tmp, BoardGame elem, Position oldp, eColor e) {
-		if (elem.contains(tmp, oldp))
-		{
-			Pawn p = elem.get(tmp, elem.indexOf(tmp, oldp));
-			if (p.GetColor() != e && p.GetClass() == ePawns.Cavalery)
+		private static boolean isCheckKing_LaunchRow(List<Pawn> tmp, BoardGame elem, Position pos, eColor e) {
+			Position nps = new Position();
+			nps.row = pos.row;
+			nps.column = 'a' - 1;// Set to 'a' -1 to Check Position 'a'
+			if (isCheckKing_LaunchRange(tmp, elem, pos, nps, e))
 				return true;
+			nps.row = pos.row; 
+			nps.column = 'i';// Set to 'i' to check Position 'h'
+			if (isCheckKing_LaunchRange(tmp, elem, pos, nps, e))
+				return true;
+			return false;
 		}
-		return false;
+		private static boolean isCheckKing_LaunchColumn(List<Pawn> tmp, BoardGame elem, Position pos, eColor e) {
+			Position nps = new Position();
+			nps.row = 0; // Set to 0 to Check Position 1
+			nps.column = pos.column;
+			if (isCheckKing_LaunchRange(tmp, elem, pos, nps, e))
+				return true;
+			nps.row = 9; // Set to 9 to check Position 8
+			nps.column = pos.column;
+			if (isCheckKing_LaunchRange(tmp, elem, pos, nps, e))
+				return true;
+			return false;
 	}
-	private static boolean isCheckKing_LaunchCavalery(List<Pawn> tmp, BoardGame elem, Position pos, eColor e) {
-		Position oldp = new Position();
-		@SuppressWarnings("serial")
-		List<Pair<Integer, Integer>> l = new ArrayList<Pair<Integer, Integer>>() {{
-			add(new Pair<Integer, Integer>(1,2));
-			add(new Pair<Integer, Integer>(2,1));
-			add(new Pair<Integer, Integer>(-1,2));
-			add(new Pair<Integer, Integer>(-2,1));
-			add(new Pair<Integer, Integer>(1,-2));
-			add(new Pair<Integer, Integer>(2,-1));
-			add(new Pair<Integer, Integer>(-1,-2));
-			add(new Pair<Integer, Integer>(-2,-1));
-		}};
-		for (Pair<Integer, Integer> a : l) {
-		oldp.SetPosition(pos);
-		oldp.row += a.GetLeft();
-		oldp.column += a.GetRight();
-		if (_isCheckKing_LaunchCavalery(tmp, elem, oldp, e))
-			return true;
+		private static boolean isCheckKing_LaunchDiagonal(List<Pawn> tmp, BoardGame elem, Position pos, eColor e) {
+			Position nps = new Position();
+			nps.SetPosition(pos);
+			while (nps.row > 0 && nps.column > 'a' - 1) {
+				nps.column -= 1;
+				nps.row -= 1;
+			}
+			if (isCheckKing_LaunchRangeDiagonal(tmp, elem, pos, nps, e))
+				return true;
+			nps.SetPosition(pos);
+			while (nps.row < 9 && nps.column < 'i') {
+				nps.column += 1;
+				nps.row += 1;
+			}
+			if (isCheckKing_LaunchRangeDiagonal(tmp, elem, pos, nps, e))
+				return true;
+			nps.SetPosition(pos);
+			while (nps.row < 9 && nps.column > 'a' - 1) {
+				nps.column -= 1;
+				nps.row += 1;
+			}
+			if (isCheckKing_LaunchRangeDiagonal(tmp, elem, pos, nps, e))
+				return true;
+			nps.SetPosition(pos);
+			while (nps.row > 0 && nps.column < 'i') {
+				nps.column += 1;
+				nps.row -= 1;
+			}
+			if (isCheckKing_LaunchRangeDiagonal(tmp, elem, pos, nps, e))
+				return true;
+			return false;
 		}
-		return false;
+		private static boolean _isCheckKing_LaunchCavalery(List<Pawn> tmp, BoardGame elem, Position oldp, eColor e) {
+			if (elem.contains(tmp, oldp)) {
+				Pawn p = elem.get(tmp, elem.indexOf(tmp, oldp));
+				if (p.GetColor() != e && p.GetClass() == ePawns.Cavalery)
+					return true;
+			}
+			return false;
+		}
+		private static boolean isCheckKing_LaunchCavalery(List<Pawn> tmp, BoardGame elem, Position pos, eColor e) {
+			Position oldp = new Position();
+			@SuppressWarnings("serial")
+			List<Pair<Integer, Integer>> l = new ArrayList<Pair<Integer, Integer>>() {{
+				add(new Pair<Integer, Integer>(1,2));
+				add(new Pair<Integer, Integer>(2,1));
+				add(new Pair<Integer, Integer>(-1,2));
+				add(new Pair<Integer, Integer>(-2,1));
+				add(new Pair<Integer, Integer>(1,-2));
+				add(new Pair<Integer, Integer>(2,-1));
+				add(new Pair<Integer, Integer>(-1,-2));
+				add(new Pair<Integer, Integer>(-2,-1));
+			}};
+			for (Pair<Integer, Integer> a : l) {
+				oldp.SetPosition(pos);
+				oldp.row += a.GetLeft();
+				oldp.column += a.GetRight();
+				if (_isCheckKing_LaunchCavalery(tmp, elem, oldp, e))
+					return true;
+			}
+			return false;
+		}
+		private static boolean isCheckKing(List<Pawn> tmp, BoardGame elem, Position pos, eColor e) {
+			if (isCheckKing_LaunchRow(tmp, elem, pos, e))
+				return true;
+			if (isCheckKing_LaunchColumn(tmp, elem, pos,e))
+				return true;
+			if (isCheckKing_LaunchDiagonal(tmp, elem, pos,e))
+				return true;
+			if (isCheckKing_LaunchCavalery(tmp, elem, pos, e))
+				return true;
+			return false;
+		}
+		public static boolean isCheckKing(List<Pawn> tmp, BoardGame elem, eColor e) {
+			Position k = elem.getPawnsBoardPosition(e, ePawns.King, tmp);
+			return isCheckKing(tmp,  elem,  k, e);
+		}
+		public static eColor isCheckKing(List<Pawn> tmp, BoardGame elem) {
+			if (isCheckKing(tmp, elem, eColor.White))
+				return eColor.White;
+			if (isCheckKing(tmp, elem, eColor.Black))
+				return eColor.Black;
+			return eColor.None;
+		}
 	}
-
-	public static eColor isCheckKing(List<Pawn> tmp, BoardGame elem) {
-		Position kw = elem.getPawnsBoardPosition(eColor.White, ePawns.King, tmp);
-		Position kb = elem.getPawnsBoardPosition(eColor.Black, ePawns.King, tmp);
-		if (kw != null && isCheckKing(tmp, elem, kw, eColor.White))
-			return eColor.White;
-		if (kb != null && isCheckKing(tmp, elem, kb, eColor.Black))
-			return eColor.Black;
-		return eColor.None;
-	}
-
 	public static boolean isDraw(List<Pawn> tmp, eColor c, BoardGame elem) {	
-		if (ImpossibilityCheckMate(tmp, elem))
-			return true;
-		if (Stalemate(tmp, c, elem))
-			return true;
-		return false;
-	}
-
-	private static boolean Stalemate(List<Pawn> tmp, eColor e, BoardGame elem) {
-		//List<Pawn> allColor = elem.getAllColor(e);
-		//for (Pawn p : allColor)
-		//	if (CheckMat(tmp, p, ))
-		//	return false;
-		// for each Pawns of Next Player
-		// if all == eGameState.CheckMat_my_color
-		// return true
-		return false;
-	}
+			if (ImpossibilityCheckMate(tmp, elem))
+				return true;
+			if (Stalemate(tmp, c, elem))
+				return true;
+			return false;
+		}
+		private static boolean Stalemate(List<Pawn> tmp, eColor e, BoardGame elem) {
+			//List<Pawn> allColor = elem.getAllColor(e);
+			//for (Pawn p : allColor)
+			//	if (CheckMat(tmp, p, ))
+			//	return false;
+			// for each Pawns of Next Player
+			// if all == eGameState.CheckMat_my_color
+			// return true
+			return false;
+		}
 
 	private static boolean ImpossibilityCheckMate(List<Pawn> tmp, BoardGame elem) {
 		if (tmp.size() <= 4) {
@@ -440,8 +446,7 @@ public class Rules {
 	 * @param elem
 	 * @return  <- if move not valid eGameState=SAME
 	 */
-	static public Pair<eMoveState, eGameState> DoMovePawns(Pawn p, Position newPos, BoardGame elem)
-	{
+	static public Pair<eMoveState, eGameState> DoMovePawns(Pawn p, Position newPos, BoardGame elem) {
 		eMoveState r = eMoveState.FAIL_CLASS_UNKNOWN;
 		eGameState r2 = eGameState.SAME;
 		for (Map.Entry<ePawns, MapFunctor.Functor> entry : Rules.MapFunctor.MapFunction.entrySet()) {
@@ -450,7 +455,6 @@ public class Rules {
 		    		r2 = ((MapFunctor.Functor)entry.getValue()).ShouldMove(p, newPos, elem);
 		    		if (TestState(r2, p.GetColor())) {
 		    			((MapFunctor.Functor)entry.getValue()).execute(p, newPos, elem);
-		    			newPos.print();
 		    			return new Pair<eMoveState, eGameState>(r, r2);
 		    		}
 		    		else
@@ -460,4 +464,39 @@ public class Rules {
 		}
   		return new Pair<eMoveState, eGameState>(r, r2);
 	}
-};
+	/**
+	 * Make The move for one Pawn (whatever is the ePawns) if shoot is in l
+	 * begin by lookin for the key[ePawns] in Rules.MapFunctor.MapFunction
+	 * then Call: Value[key].canMove()
+	 * 			  Value[key].ShouldMove()
+	 * 			  Value[Key].execute()
+	 * @param l
+	 * @param p
+	 * @param click
+	 * @param elem
+	 * @return
+	 */
+	public static Pair<eMoveState, eGameState> DoMovePawns(List<Pair<Position, Position>> l, Pawn p,
+			Position click,	BoardGame elem) {
+		eMoveState r = eMoveState.FAIL_CLASS_UNKNOWN;
+		eGameState r2 = eGameState.SAME;
+		for (Pair<Position, Position> i : l) {
+			if (i.GetLeft().equals(p.GetPosition()) && click.equals(i.GetRight()))
+				for (Map.Entry<ePawns, MapFunctor.Functor> entry : Rules.MapFunctor.MapFunction.entrySet()) {
+					if (p.GetClass().equals((ePawns)entry.getKey())) {
+						if ((r = ((MapFunctor.Functor)entry.getValue()).CanMove(p, click, elem)) == eMoveState.SUCCESS) {
+							r2 = ((MapFunctor.Functor)entry.getValue()).ShouldMove(p, click, elem);
+							if (TestState(r2, p.GetColor())) {
+								((MapFunctor.Functor)entry.getValue()).execute(p, click, elem);
+								return new Pair<eMoveState, eGameState>(r, r2);
+							}
+							else
+								r2 = eGameState.SAME;
+						}
+					}
+				}
+			return new Pair<eMoveState, eGameState>(eMoveState.FAIL_CHECK, r2);
+		}
+		return new Pair<eMoveState, eGameState>(r, r2);
+	}
+}
