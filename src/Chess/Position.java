@@ -56,10 +56,11 @@ public class Position {
 	 * @param newPos
 	 * @return
 	 */
-	public boolean DiagonalMove(Position newPos) {
-		if (diffMultiple(newPos) != -1)
-			return true;
-		return false;
+	public boolean DiagonalMove(Position p) {
+		int r1 = diffColumn(p);
+		if (r1 != diffRow(p))
+			return false;
+		return true;
 	}
 	public int diffRow(Position p) {
 		int res = p.row - row;
