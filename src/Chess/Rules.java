@@ -3,9 +3,11 @@
  */
 package Chess;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+
 import main.Pair;
 /**
  * @author Lumy-
@@ -354,46 +356,24 @@ public class Rules {
 	}
 	private static boolean isCheckKing_LaunchCavalery(List<Pawn> tmp, BoardGame elem, Position pos, eColor e) {
 		Position oldp = new Position();
+		@SuppressWarnings("serial")
+		List<Pair<Integer, Integer>> l = new ArrayList<Pair<Integer, Integer>>() {{
+			add(new Pair<Integer, Integer>(1,2));
+			add(new Pair<Integer, Integer>(2,1));
+			add(new Pair<Integer, Integer>(-1,2));
+			add(new Pair<Integer, Integer>(-2,1));
+			add(new Pair<Integer, Integer>(1,-2));
+			add(new Pair<Integer, Integer>(2,-1));
+			add(new Pair<Integer, Integer>(-1,-2));
+			add(new Pair<Integer, Integer>(-2,-1));
+		}};
+		for (Pair<Integer, Integer> a : l) {
 		oldp.SetPosition(pos);
-		oldp.row += 1;
-		oldp.column += 2;
+		oldp.row += a.GetLeft();
+		oldp.column += a.GetRight();
 		if (_isCheckKing_LaunchCavalery(tmp, elem, oldp, e))
 			return true;
-		oldp.SetPosition(pos);
-		oldp.row += 2;
-		oldp.column += 1;
-		if (_isCheckKing_LaunchCavalery(tmp, elem, oldp, e))
-			return true;
-		oldp.SetPosition(pos);
-		oldp.row -= 1;
-		oldp.column += 2;
-		if (_isCheckKing_LaunchCavalery(tmp, elem, oldp, e))
-			return true;
-		oldp.SetPosition(pos);
-		oldp.row -= 2;
-		oldp.column += 1;
-		if (_isCheckKing_LaunchCavalery(tmp, elem, oldp, e))
-			return true;
-		oldp.SetPosition(pos);
-		oldp.row += 1;
-		oldp.column -= 2;
-		if (_isCheckKing_LaunchCavalery(tmp, elem, oldp, e))
-			return true;
-		oldp.SetPosition(pos);
-		oldp.row += 2;
-		oldp.column -= 1;
-		if (_isCheckKing_LaunchCavalery(tmp, elem, oldp, e))
-			return true;
-		oldp.SetPosition(pos);
-		oldp.row -= 1;
-		oldp.column -= 2;
-		if (_isCheckKing_LaunchCavalery(tmp, elem, oldp, e))
-			return true;
-		oldp.SetPosition(pos);
-		oldp.row -= 2;
-		oldp.column -= 1;
-		if (_isCheckKing_LaunchCavalery(tmp, elem, oldp, e))
-			return true;
+		}
 		return false;
 	}
 
@@ -418,7 +398,7 @@ public class Rules {
 	private static boolean Stalemate(List<Pawn> tmp, eColor e, BoardGame elem) {
 		//List<Pawn> allColor = elem.getAllColor(e);
 		//for (Pawn p : allColor)
-			//if (CheckMat(tmp, p, ))
+		//	if (CheckMat(tmp, p, ))
 		//	return false;
 		// for each Pawns of Next Player
 		// if all == eGameState.CheckMat_my_color
