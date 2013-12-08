@@ -7,13 +7,19 @@ package Chess;
  * @author Lumy-
  *
  */
-public class Pawn {
+public class Pawn implements Cloneable  {
 	private eColor color;
 	private Position position;
 	private ePawns type;
 	private boolean initialePosition;
-	private boolean isSeeingAdverseKing;
 
+	public Pawn(Pawn e) {
+		color = e.GetColor();
+		position = new Position();
+		SetPosition(e.GetPosition());
+		type = e.GetClass();
+		initialePosition = e.isStartPosition();		
+	}
 	public Pawn(eColor c, Position p, ePawns t) {
 		color = c;
 		position = p;
@@ -25,6 +31,10 @@ public class Pawn {
 		System.out.println((color == eColor.Black ? "black - " : "white - ") + type +  " [" + position.column + "," + position.row+"]");
 	}
 	@Override
+	public Pawn clone() {
+		return new Pawn(this);
+	}
+	@Override
 	public boolean equals(Object t)
 	{
 		if (t != null && t.getClass() == Position.class)
@@ -34,6 +44,9 @@ public class Pawn {
 
 	public ePawns GetClass() {
 		return type;
+	}
+	public eColor GetEnemyColor() {
+	 return (color == eColor.Black ? eColor.White : eColor.Black);
 	}
 	public eColor GetColor() {
 		return color;
