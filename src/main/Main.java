@@ -19,7 +19,7 @@ public class Main extends JFrame {
 	
 	public Main() {		
 		// set the window size
-		setSize(655,675);
+		setSize(800,715);
 		// set the title of the window
 		setTitle("Our ChessGame");
 		// set the default close operation
