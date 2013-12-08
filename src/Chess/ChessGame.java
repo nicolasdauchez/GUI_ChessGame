@@ -128,8 +128,11 @@ public class ChessGame {
 	}
 	public Pair<eMoveState, eGameState> catchEvent(Position firstClick, Position secondClick)
 	{
-		if (State != eGameState.NEXT)
-			System.out.println("IS Not NORMAL MOVE");
+		if (State == eGameState.CHECK_MATE_B || State == eGameState.CHECK_MATE_W)
+		{
+			System.out.println("IS CheckMate");
+			return null;
+		}
 		Pair<eMoveState, eGameState> r1 = Rules.DoMovePawns(elem.get(elem.indexOf(firstClick)), secondClick, elem);
 		if (r1.GetRight() != eGameState.SAME)
 		{
