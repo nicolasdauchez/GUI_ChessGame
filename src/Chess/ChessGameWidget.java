@@ -143,7 +143,10 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	
 	private void handleMove(Pair<eMoveState, eGameState> moveAccepted) {
 		this.message = null;
-		if (moveAccepted.GetLeft() == eMoveState.SUCCESS) {
+		eMoveState moveState = moveAccepted.GetLeft();
+		eGameState gameState = moveAccepted.GetRight();
+		
+		if (moveState == eMoveState.SUCCESS) {
 			//reinitialize click positions
 			this.posFirstClick = null;
 		}
@@ -159,6 +162,14 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 				}
 				case FAIL_UNAUTHORIZED: {
 					message = "You can't move your piece here: unauthorized move.";
+					break;
+				}
+				case FAIL_PAWNS_BACKWARD: {
+					message = "Pawns can't go or eat backward.";
+					break;
+				}
+				case FAIL_PAWNS_EAT_FORWARD: {
+					message = "Pawns can't eat forward.";
 					break;
 				}
 			default:
