@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.DebugGraphics;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 
 import main.Pair;
 
@@ -33,6 +34,9 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	// Positions of clicked piece and clicked square
 	Position posFirstClick;
 	Position posSecondClick;
+	// message written at the bottom of the board,
+	// indicating game state
+	String message;
 	
 	public ChessGameWidget() {
 		// initializes game logic
@@ -44,6 +48,11 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		this.selectionned = new Color(0, 0, 255, 75);
 		// initializes pieces images
 		loadPieces();
+		
+		
+		JLabel msg = new JLabel("BLAH!");
+		add(msg);
+		
 		// update game board
 		repaint();
 		// adds mouse listener
@@ -80,8 +89,8 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 
 	@Override // not used
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+//		System.out.println("ici");
+//		if (getMousePosition(e))
 	}
 
 	@Override // not used
@@ -97,26 +106,22 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 
 	@Override // the mouse released event is the only one we use
 	public void mouseReleased(MouseEvent e) {
-		int X = e.getX(); 
-		int Y = e.getY();
-		
+		Position clickedPos = getMousePosition(e);
 		// mouse was cliked within game board limits
-		if (X >= 0 && X <= 640 
-				&& Y >= 0 && Y <= 640) {
+		if (!this.game.elem.isOutside(clickedPos)) {
 			// nothing selected yet : first click
 			if (posFirstClick == null) {
-				this.posFirstClick = new Position();
-				this.posFirstClick.row = (Y / 80) + 1;
-				this.posFirstClick.column = (char)('a' + (X / 80));
+				this.posFirstClick = clickedPos;
 				// first click doesn't count if it's on an empty square
-				if (!this.game.elem.contains(this.posFirstClick))
+				// first click doesn't count if not current player's pieces clicked
+				if (!this.game.elem. contains(this.posFirstClick)
+					|| this.game.elem.getObstacleCase(this.posFirstClick) != this.game.GetTurn())
 					this.posFirstClick = null;
+					
 			}
 			// one piece is already selected : second click
 			else {
-				this.posSecondClick = new Position();
-				this.posSecondClick.row = (Y / 80) +1;
-				this.posSecondClick.column = (char)('a' + (X / 80));
+				this.posSecondClick = clickedPos;
 				if (!this.posFirstClick.equals(this.posSecondClick))
 				{
 				
@@ -124,11 +129,10 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 					Pair<eMoveState, eGameState> moveAccepted = this.game.catchEvent(posFirstClick, posSecondClick);
 					
 					// update game board (piece moving or text explaining why not)
-					handleMove(true);//moveAccepted);
-					
-					//reinitialize click positions
-					this.posFirstClick = null;
+					handleMove(moveAccepted);
 				}
+				else
+					this.posFirstClick = null;
 				this.posSecondClick = null;
 			}
 			repaint();
@@ -142,20 +146,66 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		
 	}
 	
-	private void handleMove(boolean moveAccepted) {
-		// TODO Auto-generated method stub
-		if (moveAccepted) {
-			repaint();
+	private void handleMove(Pair<eMoveState, eGameState> moveAccepted) {
+		this.message = null;
+		eMoveState moveState = moveAccepted.GetLeft();
+		eGameState gameState = moveAccepted.GetRight();
+		
+		if (moveState == eMoveState.SUCCESS) {
+			//reinitialize click positions
+			this.posFirstClick = null;
 		}
 		else {
-			
+			switch (moveAccepted.GetLeft()) {
+				case FAIL_SAME_COLOR_CASE_OCCUPIED: {
+					this.posFirstClick = this.posSecondClick;
+					break;
+				}
+				case FAIL_CHECK: {
+					message = "You can't move your piece here: your king would be in check.";
+					break;
+				}
+				case FAIL_UNAUTHORIZED: {
+					message = "You can't move your piece here: unauthorized move.";
+					break;
+				}
+				case FAIL_PAWNS_BACKWARD: {
+					message = "Pawns can't go or eat backward.";
+					break;
+				}
+				case FAIL_PAWNS_EAT_FORWARD: {
+					message = "Pawns can't eat forward.";
+					break;
+				}
+			default:
+				break;
+			}
 		}
 	}
 
+	// Return a Position object of the mouse current event
+	Position getMousePosition(MouseEvent e) {
+		int X = e.getX(); 
+		int Y = e.getY();
+		
+		Position curPos = new Position();
+		curPos.row = (Y / 80) + 1;
+		curPos.column = (char)('a' + (X / 80));
+
+		return curPos;
+	}
+	
 	// repaints the widget when an update of any kind is made
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;		
+		
+		g2d.drawString("Player turn:", 650, 160);
+		g2d.drawString((this.game.GetTurn() == eColor.Black) ? ("BLACK") : ("WHITE"), 650, 175);
+		
+		g2d.drawString("> ", 5, 665);
+		if (message != null)
+			g2d.drawString(message, 15, 665);
 		
 		// re-draw all game board
 		drawGrid(g2d);
@@ -187,9 +237,9 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 				// light brown or dark brown square
 				if ((i % 2 == 0 && j%2 == 0) 
 						|| (i % 2 != 0 && j%2 != 0))
-					g2d.setColor(brown_dark);
-				else
 					g2d.setColor(brown_light);
+				else
+					g2d.setColor(brown_dark);
 				g2d.fillRect((i*80)+1, (j*80)+1, 79, 79);
 			}
 		}
