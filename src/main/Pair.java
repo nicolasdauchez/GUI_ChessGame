@@ -21,7 +21,7 @@ public class Pair<L,R>
 	    this.right = right;
 	  }
 
-	  public L GetLeft()
+	public L GetLeft()
 	  {
 		  return left;
 	  }

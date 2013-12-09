@@ -11,7 +11,7 @@ public class Position {
 	public int 		row;
 	public char  column;
 	public void print() {
-		System.out.println("R,C[" + row+ "," +column+"]" );
+		System.out.print("R,C[" + row+ "," +column+"]" );
 	}
 	public Position()
 	{

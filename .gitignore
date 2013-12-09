@@ -15,6 +15,14 @@ local.properties
 .settings/
 .loadpath
 
+src/commons-collections4-4.0/apidocs/
+src/*.zip
+src/commons-collections4-4.0/NOTICE.txt
+src/commons-collections4-4.0/RELEASE-NOTES.txt
+src/commons-collections4-4.0/commons-collections4-4.0-javadoc.jar
+src/commons-collections4-4.0/commons-collections4-4.0-sources.jar
+src/commons-collections4-4.0/commons-collections4-4.0-tests.jar
+src/commons-collections4-4.0/commons-collections4-4.0-test-sources.jar
 # External tool builders
 .externalToolBuilders/
 

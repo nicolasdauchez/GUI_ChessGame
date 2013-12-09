@@ -127,7 +127,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 				
 					// check move validity
 					Pair<eMoveState, eGameState> moveAccepted = this.game.catchEvent(posFirstClick, posSecondClick);
-					
+					System.out.println("eMoveState" + moveAccepted.GetLeft() + " eGameState:" + moveAccepted.GetRight() + " TurnPlayer" + game.GetTurn());
 					// update game board (piece moving or text explaining why not)
 					handleMove(moveAccepted);
 				}
