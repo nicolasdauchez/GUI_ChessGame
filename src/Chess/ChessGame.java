@@ -99,8 +99,10 @@ public class ChessGame {
 
 	public Pair<eMoveState, eGameState> catchEvent(Position firstClick, Position secondClick)
 	{
+		Pair<eMoveState, eGameState> r1;
 		if (State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W)
 		{
+			Pair<eMoveState, eGameState> r2;
 			List<Pair<Position, Position>> r;
 			if (State == eGameState.CHECK_KING_B)
 				r = elem.getListPositionPossibleProtectKing(eColor.Black);
@@ -108,14 +110,32 @@ public class ChessGame {
 				r = elem.getListPositionPossibleProtectKing(eColor.White);
 			if (r.size() == 0)
 				return new Pair<eMoveState, eGameState>(eMoveState.SUCCESS, (eGameState.CHECK_KING_W == State ? eGameState.CHECK_MATE_W : eGameState.CHECK_MATE_B));
-			else
-				return Rules.DoMovePawns(r, elem.get(elem.indexOf(firstClick)), secondClick, elem);
+			else {
+				r2 = Rules.DoMovePawns(r, elem.get(elem.indexOf(firstClick)), secondClick, elem);
+				if (r2.GetRight() != eGameState.SAME)
+				{
+					log.add(firstClick, secondClick);
+					NextTurn(r2.GetRight());
+				}					
+				return r2;
+			}
 		}
-		Pair<eMoveState, eGameState> r1 = Rules.DoMovePawns(elem.get(elem.indexOf(firstClick)), secondClick, elem);
+		r1 = Rules.DoMovePawns(elem.get(elem.indexOf(firstClick)), secondClick, elem);
 		if (r1.GetRight() != eGameState.SAME)
 		{
 			log.add(firstClick, secondClick);
 			NextTurn(r1.GetRight());
+		}
+		if (State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W)
+		{
+			Pair<eMoveState, eGameState> r2;
+			List<Pair<Position, Position>> r;
+			if (State == eGameState.CHECK_KING_B)
+				r = elem.getListPositionPossibleProtectKing(eColor.Black);
+			else
+				r = elem.getListPositionPossibleProtectKing(eColor.White);
+			if (r.size() == 0)
+				return new Pair<eMoveState, eGameState>(eMoveState.SUCCESS, (eGameState.CHECK_KING_W == State ? eGameState.CHECK_MATE_W : eGameState.CHECK_MATE_B));
 		}
 		return r1;
 	}

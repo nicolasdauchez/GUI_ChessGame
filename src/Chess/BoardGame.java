@@ -4,10 +4,13 @@
 package Chess;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import main.Pair;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
@@ -23,6 +26,16 @@ public class BoardGame {
 	}
 	
 	/**
+	 * Return A const Iterator To Travel.
+	 * @return
+	 */
+	public Collection<Pawn> getElem()
+	{
+		Collection<Pawn> constVector =
+				java.util.Collections.unmodifiableCollection(elem);
+		return constVector;
+	}
+	/**
 	 * 
 	 * @return
 	 */
@@ -36,7 +49,7 @@ public class BoardGame {
 	 * @param s
 	 * @return
 	 */
-	public int indexOf(List<Pawn> p, Position s) {
+	public int indexOf(Collection<Pawn> p, Position s) {
 		int c = 0;
 		for (Pawn e : p)
 		{
@@ -52,13 +65,15 @@ public class BoardGame {
 	public int indexOf(Pawn p) {
 		return indexOf(p.GetPosition());
 	}
-	public Pawn get(List<Pawn> l, int c) {
-		return l.get(c);
+	public Pawn get(Collection<Pawn> l, int c) {
+		int i = 0;
+		Pawn ret = CollectionUtils.get(l, c);
+		return ret;
 	}
 	public Pawn get(int c) {
 		return get(elem, c);
 	}
-	public boolean contains(List<Pawn> l, Position e) {
+	public boolean contains(Collection<Pawn> l, Position e) {
 		for (Pawn p : l)
 			if (p.equals(e))
 				return true;
@@ -92,7 +107,7 @@ public class BoardGame {
 	 * @param p
 	 * @return
 	 */
-	public eColor getObstacleCase(List<Pawn> l, Position p) {
+	public eColor getObstacleCase(Collection<Pawn> l, Position p) {
 		int i = -1;
 		i = indexOf(l, p);
 		if (i != -1)
@@ -115,7 +130,7 @@ public class BoardGame {
 	 * @param range
 	 * @return
 	 */
-	public eColor getObstacleRowRange(List<Pawn> l, Pawn p, Position range) {
+	public eColor getObstacleRowRange(Collection<Pawn> l, Pawn p, Position range) {
 		Position t = new Position();
 		t.SetPosition(p.GetPosition());
 		t.row += (t.row < range.row ? 1 : - 1);
@@ -145,7 +160,7 @@ public class BoardGame {
 	 * @param max
 	 * @return
 	 */
-	public eColor getObstacleColumnRange(List<Pawn> l, Pawn p, Position max) {
+	public eColor getObstacleColumnRange(Collection<Pawn> l, Pawn p, Position max) {
 		Position t = new Position();
 		t.SetPosition(p.GetPosition());
 		t.column += (t.column < max.column ? 1 : -1);
@@ -175,7 +190,7 @@ public class BoardGame {
 	 * @param newPos
 	 * @return
 	 */
-	public eColor getObstacleRange(List<Pawn> l, Pawn p, Position newPos) {
+	public eColor getObstacleRange(Collection<Pawn> l, Pawn p, Position newPos) {
 		Position oldp = p.GetPosition();
 		if (oldp.sameRow(newPos))
 			return getObstacleColumnRange(l, p, newPos);
@@ -206,20 +221,14 @@ public class BoardGame {
 	 * @param newPos
 	 * @return
 	 */
-	public Position getPositionFirstObstacleRange(List<Pawn> l, Pawn p, Position newPos) {
+	public Position getPositionFirstObstacleRange(Collection<Pawn> l, Pawn p, Position newPos) {
 		Position oldp = p.GetPosition();
-		if (oldp.sameRow(newPos)) {
-			System.out.println("Test Position Row");
+		if (oldp.sameRow(newPos))
 			return getPositionFirstObstacleColumnRange(l, p, newPos);
-		}
-		else if (oldp.sameColumn(newPos)) {
-			System.out.println("Test Position Column");
+		else if (oldp.sameColumn(newPos))
 			return getPositionFirstObstacleRowRange(l, p, newPos);
-		}
-		else if (oldp.DiagonalMove(newPos)) {
-			System.out.println("Test Position Diagonal");
+		else if (oldp.DiagonalMove(newPos))
 			return getPositionFirstObstacleRangeDiagonal(l, p, newPos);
-		}
 		return null;
 
 	}
@@ -230,7 +239,7 @@ public class BoardGame {
 	 * @param max
 	 * @return
 	 */
-	public Position getPositionFirstObstacleColumnRange(List<Pawn> l, Pawn p, Position max) {
+	public Position getPositionFirstObstacleColumnRange(Collection<Pawn> l, Pawn p, Position max) {
 		Position t = new Position();
 		t.SetPosition(p.GetPosition());
 		t.column += (t.column < max.column ? 1 : -1);
@@ -249,7 +258,7 @@ public class BoardGame {
 	 * @param range
 	 * @return
 	 */
-	public Position getPositionFirstObstacleRowRange(List<Pawn> l, Pawn p, Position range) {
+	public Position getPositionFirstObstacleRowRange(Collection<Pawn> l, Pawn p, Position range) {
 		Position t = new Position();
 		t.SetPosition(p.GetPosition());
 		t.row += (t.row < range.row ? 1 : - 1);
@@ -261,7 +270,7 @@ public class BoardGame {
 		}
 		return null;
 	}
-	private Position getPositionFirstObstacleRangeDiagonal(List<Pawn> l, Pawn p, Position newPos) {
+	private Position getPositionFirstObstacleRangeDiagonal(Collection<Pawn> l, Pawn p, Position newPos) {
 		Position	tmp = new Position();
 		tmp.SetPosition(p.GetPosition());
 		tmp.column += (newPos.column < tmp.column ? -1 : 1);
@@ -275,7 +284,7 @@ public class BoardGame {
 		}
 		return null;
 	}
-	private eColor getObstacleRangeDiagonal(List<Pawn> l, Pawn p, Position newPos) {
+	private eColor getObstacleRangeDiagonal(Collection<Pawn> l, Pawn p, Position newPos) {
 		Position	tmp = new Position();
 		tmp.SetPosition(p.GetPosition());
 		tmp.column += (newPos.column < tmp.column ? -1 : 1);
@@ -317,14 +326,26 @@ public class BoardGame {
 	 * @return
 	 */
 	public List<Pawn> getNewCopie(Pawn p, Position newPos) {
+		return getNewCopie(elem, p, newPos);
+	}
+	
+	/**
+	 * return a new copy of a List<Pawn> with new position set for List tmp
+	 * @param tmp
+	 * @param p
+	 * @param newPos
+	 * @return
+	 */
+	public List<Pawn> getNewCopie(Collection<Pawn> tmp, Pawn p, Position newPos) {
 		List<Pawn> ret= new ArrayList<Pawn>(elem.size());
-	    for(Pawn item: elem) ret.add(item.clone());
+		for(Pawn item: tmp) ret.add(item.clone());
 		if (-1 != indexOf(ret, newPos))
 			ret.remove(indexOf(ret, newPos));
 		ret.get(indexOf(ret, p.GetPosition())).SetPosition(newPos);
 		return ret;
 	}
-	public Position getPawnsBoardPosition(eColor e, ePawns c, List<Pawn> l)
+
+	public Position getPawnsBoardPosition(eColor e, ePawns c, Collection<Pawn> l)
 	{
 		for (Pawn p : l)
     		if (p.GetClass() == c && p.GetColor() == e)
@@ -340,8 +361,11 @@ public class BoardGame {
 	}
 
 	public List<Pawn> getAllColor(eColor e) {
+		return getAllColor(elem, e);
+	}
+	public List<Pawn> getAllColor(List<Pawn> p, eColor e) {
 		List<Pawn> ret = new ArrayList<Pawn>();
-	    for(Pawn item: elem)
+	    for(Pawn item: p)
 	    	if (item.GetColor() == e)
 	    		ret.add(item.clone());
 		return ret;
@@ -349,8 +373,8 @@ public class BoardGame {
 
 	public void newGame() {
 		elem.clear();
-		addLinePion(eColor.Black);
-		addLinePion(eColor.White);
+		//addLinePion(eColor.Black);
+		//addLinePion(eColor.White);
 		addHeadLine(eColor.Black);
 		addHeadLine(eColor.White);
 	}
@@ -382,13 +406,27 @@ public class BoardGame {
 			p.column += 1;
 		}
 	}
+	public List<Position> AllCheckKing(eColor e) {
+		return Rules.CheckKing.AllCheckKing(elem,  this, e);
+	}
 
 	private void getListPositionPossibleProtectKing(eColor e, List<Pair<Position, Position>> r) {
-		//add Position To Eat if Help
-		//add Position Obstacle if Help
+		for (Pawn p : elem) {
+			if (p.GetClass() != ePawns.King && p.GetColor() == e)
+			{
+				List<Pair<Position, Position>> cp = Rules.MapFunctor.GetPossibleMoveProtect(p, this);
+				for (Pair<Position, Position> way : cp)
+				{
+					List<Pawn> tmp = this.getNewCopie(p, way.GetRight()); //add Position To Eat if Help
+					if (!Rules.CheckKing.isCheckKing(tmp,  this , e))
+						r.add(way); // Add if Move can Protect.
+				} //add Position Obstacle if Help
+			}
+		}
 	}
 	private void getListPositionPossibleMoveKing(eColor e, List<Pair<Position, Position>> r) {
 		//Position k = getKingPosition(e);
+		@SuppressWarnings("serial")
 		List<Pair<Integer, Integer>> allPos = new ArrayList<Pair<Integer, Integer>>() {{
 			add(new Pair<Integer, Integer>(0,1));
 			add(new Pair<Integer, Integer>(1,1));
@@ -418,5 +456,7 @@ public class BoardGame {
 		getListPositionPossibleProtectKing(e, ret);
 		return ret;
 	}
+
+
 }	
 
