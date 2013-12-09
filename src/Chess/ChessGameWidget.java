@@ -48,6 +48,11 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		this.selectionned = new Color(0, 0, 255, 75);
 		// initializes pieces images
 		loadPieces();
+		
+		
+		JLabel msg = new JLabel("BLAH!");
+		add(msg);
+		
 		// update game board
 		repaint();
 		// adds mouse listener
