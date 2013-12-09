@@ -486,7 +486,8 @@ public class Rules {
 	 */
 	private static boolean TestState(eGameState r2, eColor c) {
 		if (r2 == eGameState.SAME || (r2 == eGameState.CHECK_MATE_B && c == eColor.Black) ||
-				(r2 == eGameState.CHECK_MATE_W && c == eColor.White))
+				(r2 == eGameState.CHECK_MATE_W && c == eColor.White) || (r2 == eGameState.CHECK_KING_B && c == eColor.Black) ||
+				(r2 == eGameState.CHECK_KING_W && c == eColor.White))
 			return false;
 		return true;
 	}
