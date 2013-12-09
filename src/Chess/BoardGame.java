@@ -10,7 +10,6 @@ import java.util.List;
 import main.Pair;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
@@ -66,7 +65,6 @@ public class BoardGame {
 		return indexOf(p.GetPosition());
 	}
 	public Pawn get(Collection<Pawn> l, int c) {
-		int i = 0;
 		Pawn ret = CollectionUtils.get(l, c);
 		return ret;
 	}
@@ -373,8 +371,8 @@ public class BoardGame {
 
 	public void newGame() {
 		elem.clear();
-		//addLinePion(eColor.Black);
-		//addLinePion(eColor.White);
+		addLinePion(eColor.Black);
+		addLinePion(eColor.White);
 		addHeadLine(eColor.Black);
 		addHeadLine(eColor.White);
 	}
