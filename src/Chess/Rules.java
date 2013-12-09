@@ -784,9 +784,7 @@ public class Rules {
 		}
 	private static boolean Stalemate(List<Pawn> tmp, eColor e, BoardGame elem) {
 			List<Pawn> allColor = elem.getAllColor(tmp, e);
-			for (Pawn pawn : allColor)
-			{
-				pawn.print();
+			for (Pawn pawn : allColor) {
 				if (Rules.MapFunctor.isPossibleMove(tmp, pawn, elem))
 					return false;
 			}
