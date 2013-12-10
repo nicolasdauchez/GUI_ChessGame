@@ -874,6 +874,8 @@ public class Rules {
 	public static Pair<eMoveState, eGameState> DoMovePawns(List<Pair<Position, Position>> l, Pawn p, Position click, BoardGame elem) {
 		eMoveState r = eMoveState.FAIL_CHECK;
 		eGameState r2 = eGameState.SAME;
+		if (elem.getObstacleCase(click) == p.GetColor())
+			return new Pair<eMoveState, eGameState>(eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED, r2);
 		for (Pair<Position, Position> i : l) {
 			if (i.GetLeft().equals(p.GetPosition()) && click.equals(i.GetRight()))
 				for (Map.Entry<ePawns, MapFunctor.Functor> entry : Rules.MapFunctor.MapFunction.entrySet()) {
