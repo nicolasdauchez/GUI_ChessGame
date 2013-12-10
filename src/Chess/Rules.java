@@ -576,8 +576,8 @@ public class Rules {
 			if (ret != eColor.None && e != ret) // Something not Same Color
 			{
 				Position a = elem.getPositionFirstObstacleRange(tmp, elem.get(tmp, elem.indexOf(tmp, pos)), nps);
-				ePawns p = elem.get(tmp, elem.indexOf(tmp, a)).GetClass();
-				switch (p)
+				Pawn p = elem.get(tmp, elem.indexOf(tmp, a));
+				switch (p.GetClass())
 				{
 				case Crazy:
 					r.add(new Position(a));
@@ -592,7 +592,7 @@ public class Rules {
 						return true;
 					}
 				case Pawn:
-					if (a.diffMultiple(pos) == 1)
+					if (a.diffMultiple(pos) == 1 && (p.GetColor() == eColor.White ? a.row < pos.row : a.row > pos.row))
 					{
 						r.add(new Position(a));
 						return true;
@@ -638,7 +638,7 @@ public class Rules {
 			isCheckKing_LaunchRange(tmp, elem, pos, nps, e, ret);
 			nps.row = 9; // Set to 9 to check Position 8
 			nps.column = pos.column;
-			isCheckKing_LaunchRange(tmp, elem, pos, nps, e, ret);	
+			isCheckKing_LaunchRange(tmp, elem, pos, nps, e, ret);
 			return ret;
 	}
 		/**
@@ -848,7 +848,6 @@ public class Rules {
 		    if (p.GetClass().equals((ePawns)entry.getKey())) {
 		    	if ((r = ((MapFunctor.Functor)entry.getValue()).CanMove(p, newPos, elem)) == eMoveState.SUCCESS) {
 		    		r2 = ((MapFunctor.Functor)entry.getValue()).ShouldMove(p, newPos, elem);
-		    		System.out.println("Return Should Move " + r2);
 		    		if (TestState(r2, p.GetColor())) {
 		    			((MapFunctor.Functor)entry.getValue()).execute(p, newPos, elem);
 		    			return new Pair<eMoveState, eGameState>(r, r2);
