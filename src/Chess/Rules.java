@@ -848,13 +848,17 @@ public class Rules {
 		    if (p.GetClass().equals((ePawns)entry.getKey())) {
 		    	if ((r = ((MapFunctor.Functor)entry.getValue()).CanMove(p, newPos, elem)) == eMoveState.SUCCESS) {
 		    		r2 = ((MapFunctor.Functor)entry.getValue()).ShouldMove(p, newPos, elem);
+		    		System.out.println("Return Should Move " + r2);
 		    		if (TestState(r2, p.GetColor())) {
 		    			((MapFunctor.Functor)entry.getValue()).execute(p, newPos, elem);
 		    			return new Pair<eMoveState, eGameState>(r, r2);
 		    		}
-		    		else
+		    		else {
+		    			if (r2 == eGameState.CHECK_KING_B || r2 == eGameState.CHECK_KING_W)
+		    				r = eMoveState.FAIL_CHECK;
 		    			r2 = eGameState.SAME;
-			    }
+		    		}
+		    	}
 		    }
 		}
   		return new Pair<eMoveState, eGameState>(r, r2);
