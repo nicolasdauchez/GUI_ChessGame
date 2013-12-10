@@ -286,14 +286,13 @@ public class Rules {
 		static private class DoMoveCavalery extends Functor {
 			@Override
 			public eMoveState CanMove(Collection <Pawn> l, Pawn p, Position newPos, BoardGame elem) {
+				if (elem.getObstacleCase(l, newPos) == p.GetColor()) // Occupied Same Color
+					return eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED;
 				Position oldp = p.GetPosition();
 				int d1 = oldp.diffRow(newPos); //GetDiffRow
 				if ((d1 == 1 && oldp.diffColumn(newPos) == 2) || //CheckPosition
 					(d1 == 2 && oldp.diffColumn(newPos) == 1)) // CheckPosition
-					if (elem.getObstacleCase(l, newPos) != p.GetColor()) // Not Occupied or Not Same Color
-						return eMoveState.SUCCESS;
-					else
-						return eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED;
+					return eMoveState.SUCCESS;
 				return eMoveState.FAIL_UNAUTHORIZED;
 			}
 
