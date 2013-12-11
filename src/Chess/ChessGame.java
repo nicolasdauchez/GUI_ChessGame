@@ -99,17 +99,22 @@ public class ChessGame {
 
 	public Pair<eMoveState, eGameState> catchEvent(Position firstClick, Position secondClick)
 	{
-		Pair<eMoveState, eGameState> r1;
+		Pair<eMoveState, eGameState> r1 = new Pair<eMoveState, eGameState>(eMoveState.FAIL_UNAUTHORIZED, eGameState.SAME);
+		if (State == eGameState.DRAW)
+			return r1;
 		if (State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W)
 		{
+			System.out.println("CatcEvent: Before");
 			Pair<eMoveState, eGameState> r2;
 			List<Pair<Position, Position>> r;
 			if (State == eGameState.CHECK_KING_B)
 				r = elem.getListPositionPossibleProtectKing(eColor.Black);
 			else
 				r = elem.getListPositionPossibleProtectKing(eColor.White);
-			if (r.size() == 0)
+			if (r.size() == 0) {
+				System.out.println("----------");
 				return new Pair<eMoveState, eGameState>(eMoveState.SUCCESS, (eGameState.CHECK_KING_W == State ? eGameState.CHECK_MATE_W : eGameState.CHECK_MATE_B));
+			}
 			else {
 				r2 = Rules.DoMovePawns(r, elem.get(elem.indexOf(firstClick)), secondClick, elem);
 				if (r2.GetRight() != eGameState.SAME)
@@ -117,26 +122,31 @@ public class ChessGame {
 					log.add(firstClick, secondClick);
 					NextTurn(r2.GetRight());
 				}					
+				System.out.println("----------");
 				return r2;
 			}
 		}
+		System.out.println("CatcEvent: Normal");
 		r1 = Rules.DoMovePawns(elem.get(elem.indexOf(firstClick)), secondClick, elem);
+		System.out.println("OutDoMovePawns: Normal");
 		if (r1.GetRight() != eGameState.SAME)
 		{
 			log.add(firstClick, secondClick);
 			NextTurn(r1.GetRight());
 		}
-		if (State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W)
+		if ((State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W) &&
+		   (elem.getObstacleCase(firstClick) == eColor.Black ? eGameState.CHECK_KING_B : eGameState.CHECK_KING_W) != State)
 		{
-			Pair<eMoveState, eGameState> r2;
+			System.out.println("CatcEvent: After");
 			List<Pair<Position, Position>> r;
 			if (State == eGameState.CHECK_KING_B)
 				r = elem.getListPositionPossibleProtectKing(eColor.Black);
 			else
 				r = elem.getListPositionPossibleProtectKing(eColor.White);
 			if (r.size() == 0)
-				return new Pair<eMoveState, eGameState>(eMoveState.SUCCESS, (eGameState.CHECK_KING_W == State ? eGameState.CHECK_MATE_W : eGameState.CHECK_MATE_B));
+				r1 = new Pair<eMoveState, eGameState>(eMoveState.SUCCESS, (eGameState.CHECK_KING_W == State ? eGameState.CHECK_MATE_W : eGameState.CHECK_MATE_B));
 		}
+		System.out.println("----------");
 		return r1;
 	}
 }
