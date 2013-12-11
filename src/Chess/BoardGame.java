@@ -18,12 +18,25 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class BoardGame {
 	private List<Pawn>	elem;
+	private List<Pawn>	Eaten;
 
 	public BoardGame()
 	{
 		elem = new ArrayList<Pawn>();
+		Eaten = new ArrayList<Pawn>();
 	}
 	
+	/**
+	 * Return a const Collection with all Pawn Dead.
+	 * @return
+	 */
+	public Collection<Pawn>	GetEaten()
+	{
+		Collection<Pawn> constVector =
+				java.util.Collections.unmodifiableCollection(elem);
+		return constVector;
+	}
+
 	/**
 	 * Return A const Iterator To Travel.
 	 * @return
@@ -85,7 +98,7 @@ public class BoardGame {
 		elem.add(pion);
 	}
 	public void remove(Pawn eaten) {
-		elem.remove(indexOf(eaten));
+		Eaten.add(elem.remove(indexOf(eaten)));
 	}
  	public void print() {
  		print(elem);
@@ -371,6 +384,7 @@ public class BoardGame {
 
 	public void newGame() {
 		elem.clear();
+		Eaten.clear();
 		addLinePion(eColor.Black);
 		addLinePion(eColor.White);
 		addHeadLine(eColor.Black);
@@ -397,8 +411,8 @@ public class BoardGame {
 			p.row = 1;
 		p.column = 'a';
 		ePawns e[] = { ePawns.Tower, ePawns.Cavalery, ePawns.Crazy, ePawns.King, ePawns.Queen, ePawns.Crazy, ePawns.Cavalery, ePawns.Tower };
-		if (c == eColor.White)
-			ArrayUtils.reverse(e);
+		//if (c == eColor.White)
+		//	ArrayUtils.reverse(e);
 		for (int i = 0; i < e.length; i++) {
 			add(c, new Position(p), e[i]);
 			p.column += 1;
