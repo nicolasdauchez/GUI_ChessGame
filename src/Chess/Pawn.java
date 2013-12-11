@@ -78,4 +78,11 @@ public class Pawn implements Cloneable  {
 	public boolean isStartPosition() {
 		return initialePosition;
 	}
+	public void Promotion(ePawns c) {
+		int row = 1;
+		if (color != eColor.Black)
+			row = 8;
+		if (type == ePawns.Pawn || position.row == row)
+			type = c;		
+	}
 }

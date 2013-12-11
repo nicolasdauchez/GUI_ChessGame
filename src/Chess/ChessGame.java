@@ -96,6 +96,22 @@ public class ChessGame {
 		State = eGameState.NEXT;
 		Turn = eColor.White;
 	}
+	
+	/**
+	 * return if the current position is an Promotion
+	 * @param pos
+	 * @return
+	 */
+	public boolean isPromotion(Position pos) {
+		if (elem.contains(pos))
+			if (Rules.isPromotion(elem.get(elem.indexOf(pos))))
+				return true;
+		return false;
+	}
+	public void		DoPromotion(Position p, ePawns c) {
+		elem.Promotion(p, c);
+		return ;
+	}
 
 	public Pair<eMoveState, eGameState> catchEvent(Position firstClick, Position secondClick)
 	{

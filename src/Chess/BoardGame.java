@@ -6,11 +6,8 @@ package Chess;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import main.Pair;
-
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * @author Lumy-
@@ -467,6 +464,12 @@ public class BoardGame {
 		getListPositionPossibleMoveKing(e, ret);
 		getListPositionPossibleProtectKing(e, ret);
 		return ret;
+	}
+
+	public void Promotion(Position pos, ePawns c) {
+		Pawn pawn = get(indexOf(pos));
+		pawn.Promotion(c);
+		return ;
 	}
 
 

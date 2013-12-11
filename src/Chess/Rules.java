@@ -41,7 +41,6 @@ public class Rules {
 			public eGameState ShouldMove(Collection<Pawn> l, Pawn p, Position newPos, BoardGame elem) {
 				List<Pawn> tmp = elem.getNewCopie(l, p, newPos);
 				eGameState ret = eGameState.NEXT;
-				eColor n = eColor.None;
 				if (Rules.isDraw(tmp, p.GetEnemyColor(), elem)) {
 					ret = eGameState.DRAW;
 					return ret; // That MEAN HE COULD.
@@ -916,4 +915,12 @@ public class Rules {
 		    		return false;
 	return false;
 	}
+	public static boolean isPromotion(Pawn pawn) {
+		int row = 1;
+		if (pawn.GetColor() != eColor.Black)
+			row = 8;
+		if (pawn.GetClass() == ePawns.Pawn && pawn.GetPosition().row == row)
+			return true;
+		return false;
 	}
+}
