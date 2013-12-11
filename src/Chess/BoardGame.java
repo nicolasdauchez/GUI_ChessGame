@@ -472,6 +472,11 @@ public class BoardGame {
 		return ;
 	}
 
+	public void NextTurn() {
+		for (Pawn p : elem)
+			p.NextTurn();// implemented for enPassant Rule
+	}
+
 
 }	
 

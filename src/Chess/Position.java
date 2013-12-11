@@ -18,6 +18,15 @@ public class Position {
 		row = 0;
 		column = '\0';
 	}
+	public Position(char c, int i)
+	{
+		this(i,c);
+	}
+	public Position(int i, char c)
+	{
+		row = i;
+		column = c;
+	}
 	public Position(Position p)
 	{
 		row = p.row;
