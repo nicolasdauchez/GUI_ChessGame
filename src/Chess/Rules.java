@@ -46,8 +46,10 @@ public class Rules {
 					ret = eGameState.DRAW;
 					return ret; // That MEAN HE COULD.
 				}
-				else if ((n = Rules.CheckKing.isCheckKing(tmp, elem)) != eColor.None)
-					ret = (n == eColor.Black ? eGameState.CHECK_KING_B : eGameState.CHECK_KING_W);
+				else if (Rules.CheckKing.isCheckKing(tmp, elem, p.GetColor()))
+					return (eColor.Black == p.GetColor() ? eGameState.CHECK_KING_B : eGameState.CHECK_KING_W);
+				else if (Rules.CheckKing.isCheckKing(tmp, elem, p.GetEnemyColor()))
+					return (eColor.Black == p.GetEnemyColor() ? eGameState.CHECK_KING_B : eGameState.CHECK_KING_W);
 				/*else if ((n = Rules.CheckMate.isCheckMate(tmp, elem)) != eColor.None)
 					ret = (n == eColor.Black ? eGameState.CHECK_MATE_B : eGameState.CHECK_MATE_W);*/
 				return ret;
