@@ -16,8 +16,10 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.DebugGraphics;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import main.Main;
 import main.Pair;
 
 public class ChessGameWidget extends JComponent implements MouseListener{
@@ -37,8 +39,10 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	// message written at the bottom of the board,
 	// indicating game state
 	String message;
+	// container reference
+	Main main;
 	
-	public ChessGameWidget() {
+	public ChessGameWidget(Main _main) {
 		// initializes game logic
 		this.game = new ChessGame();
 		// initializes game colors
@@ -48,10 +52,8 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		this.selectionned = new Color(0, 0, 255, 75);
 		// initializes pieces images
 		loadPieces();
-		
-		
-		JLabel msg = new JLabel("BLAH!");
-		add(msg);
+		// reference to the Main class
+		this.main = _main;
 		
 		// update game board
 		repaint();
@@ -147,22 +149,47 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	}
 	
 	private void handleMove(Pair<eMoveState, eGameState> moveAccepted) {
-		this.message = null;
+		this.message = " ";
 		eMoveState moveState = moveAccepted.GetLeft();
 		eGameState gameState = moveAccepted.GetRight();
 		
 		if (moveState == eMoveState.SUCCESS) {
 			//reinitialize click positions
 			this.posFirstClick = null;
+
+			switch (gameState) {
+				case CHECK_KING_B: {
+					message = "Black King is in CHECK!";
+					break;
+				}
+				case CHECK_KING_W: {
+					message = "White King is in CHECK!";
+					break;
+				}
+				case CHECK_MATE_B: {
+					message = "Black King is in CHECK MATE! Game over.";
+					break;
+				}
+				case CHECK_MATE_W: {
+					message = "White King is in CHECK MATE! Game over.";
+					break;
+				}
+				case DRAW: {
+					message = "Stalemate! Game over.";
+					break;
+				}
+				default: 
+					break;
+			}
 		}
 		else {
-			switch (moveAccepted.GetLeft()) {
+			switch (moveState) {
 				case FAIL_SAME_COLOR_CASE_OCCUPIED: {
 					this.posFirstClick = this.posSecondClick;
 					break;
 				}
 				case FAIL_CHECK: {
-					message = "You can't move your piece here: your king would be in check.";
+					message = "You can't move your piece here: your king would be/stay in check.";
 					break;
 				}
 				case FAIL_UNAUTHORIZED: {
@@ -200,12 +227,13 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;		
 		
-		g2d.drawString("Player turn:", 650, 160);
-		g2d.drawString((this.game.GetTurn() == eColor.Black) ? ("BLACK") : ("WHITE"), 650, 175);
+		// Updates player turn notification
+		main.changePlayerTurn(this.game.GetTurn());
+//		g2d.drawString("Player turn:", 650, 160);
+//		g2d.drawString((this.game.GetTurn() == eColor.Black) ? ("BLACK") : ("WHITE"), 650, 175);
 		
-		g2d.drawString("> ", 5, 665);
-		if (message != null)
-			g2d.drawString(message, 15, 665);
+		// Updates game status message
+		main.changeStatutMsg(message);
 		
 		// re-draw all game board
 		drawGrid(g2d);
