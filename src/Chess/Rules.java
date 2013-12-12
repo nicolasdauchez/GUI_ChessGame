@@ -15,6 +15,20 @@ import main.Pair;
  *
  */
 public class Rules {
+	static class OptionalRules {
+		static boolean enPassant = true; // http://en.wikipedia.org/wiki/En_passant
+		static boolean Castling = true; // http://en.wikipedia.org/wiki/Castling
+		static boolean Promotion = true; // http://en.wikipedia.org/wiki/Promotion_(chess)
+		public void setEnPassant(boolean e) {
+			enPassant = e;
+		}
+		public void setCastling(boolean e) {
+			Castling = e;
+		}
+		public void setPromotion(boolean e) {
+			Promotion = e;
+		}
+	}
 
 	static class MapFunctor
 	{
@@ -41,7 +55,6 @@ public class Rules {
 			public eGameState ShouldMove(Collection<Pawn> l, Pawn p, Position newPos, BoardGame elem) {
 				List<Pawn> tmp = elem.getNewCopie(l, p, newPos);
 				eGameState ret = eGameState.NEXT;
-				eColor n = eColor.None;
 				if (Rules.isDraw(tmp, p.GetEnemyColor(), elem)) {
 					ret = eGameState.DRAW;
 					return ret; // That MEAN HE COULD.
@@ -70,6 +83,34 @@ public class Rules {
 		 *
 		 */
 		static private class DoMovePawn extends Functor {
+			private boolean isMakeEnPassant(Collection<Pawn> tmp, Pawn p, Position newPos, BoardGame elem) {
+				if (!Rules.OptionalRules.enPassant)
+					return false;
+				Position test = new Position(p.GetPosition().row, newPos.column);
+				if (elem.contains(tmp, test) && p.GetColor() != elem.getObstacleCase(tmp,  test))
+					if (elem.get(tmp, elem.indexOf(tmp, test)).enPassant()) // check if you can eat like with enPassant rules
+						return true;
+				return false;
+			}
+			private void exec_enPassant(Pawn p, Position newPos, BoardGame elem) {
+				if (!Rules.OptionalRules.enPassant)
+					return ;
+				Position test = new Position(p.GetPosition().row, newPos.column);
+				MapFunctor.DoEatPawn(p, elem.get(elem.indexOf(test)), elem);
+				return ;
+				
+			}
+
+			@Override
+			public  void execute(Pawn p, Position newPos, BoardGame elem) {
+				if (isMakeEnPassant(elem.getElem(), p, newPos, elem))
+					exec_enPassant(p, newPos, elem);
+				if (elem.getObstacleCase(newPos) == eColor.None)
+					p.SetPosition(newPos);
+				else
+					MapFunctor.DoEatPawn(p, elem.get(elem.indexOf(newPos)), elem);
+			}
+	
 			@Override
 			public eMoveState CanMove(Collection<Pawn> tmp, Pawn p, Position newPos, BoardGame elem) {
 				if (elem.getObstacleCase(tmp, newPos) == p.GetColor())
@@ -86,14 +127,10 @@ public class Rules {
 									return eMoveState.SUCCESS;
 							return eMoveState.FAIL_UNAUTHORIZED; //To much Move
 						}
-				if ((newPos.column - 1 == p.GetPosition().column || newPos.column + 1 == p.GetPosition().column) && // Move Diagonal
-				    elem.contains(newPos)) { // Contain Something and not Same Color (Enemy)
-					if (newPos.diffRow(p.GetPosition()) == 1)// try to make one move
-						if (elem.getObstacleCase(newPos) != p.GetColor())
+				else if ((newPos.column - 1 == p.GetPosition().column || newPos.column + 1 == p.GetPosition().column) && newPos.diffRow(p.GetPosition()) == 1  && // Move  1 - Diagonal
+						((elem.contains(newPos)  && elem.getObstacleCase(newPos) != p.GetColor()) || // Contain Something and not Same Color (Enemy) or
+						isMakeEnPassant(tmp, p, newPos, elem))) // make enPassant Rule
 							return eMoveState.SUCCESS;
-						else
-							return eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED;
-				}
 				return eMoveState.FAIL_UNAUTHORIZED;
 			}
 			public List<Position> GetListPosition(final Pawn p, BoardGame elem) {
@@ -916,4 +953,12 @@ public class Rules {
 		    		return false;
 	return false;
 	}
+	public static boolean isPromotion(Pawn pawn) {
+		int row = 1;
+		if (pawn.GetColor() != eColor.Black)
+			row = 8;
+		if (pawn.GetClass() == ePawns.Pawn && pawn.GetPosition().row == row)
+			return true;
+		return false;
 	}
+}
