@@ -40,6 +40,7 @@ public class ChessGame {
 	private void NextTurn(eGameState e) {
 		SetState(e);
 		Turn = (Turn == eColor.Black) ? eColor.White : eColor.Black;
+		elem.NextTurn(); // for enPassant rules
 	}
 	/**
 	 * Set current Player Loser by abandon
@@ -96,36 +97,50 @@ public class ChessGame {
 		State = eGameState.NEXT;
 		Turn = eColor.White;
 	}
+	
+	/**
+	 * return if the current position is an Promotion
+	 * @param pos
+	 * @return
+	 */
+	public boolean isPromotion(Position pos) {
+		if (elem.contains(pos))
+			if (Rules.isPromotion(elem.get(elem.indexOf(pos))))
+				return true;
+		return false;
+	}
+	public void		DoPromotion(Position p, ePawns c) {
+		elem.Promotion(p, c);
+		return ;
+	}
 
+	public Pair<eMoveState, eGameState> Check_King_Way(Position firstClick, Position secondClick)
+	{
+		System.out.println("CatcEvent: Before");
+		Pair<eMoveState, eGameState> r2;
+		List<Pair<Position, Position>> r;
+		r = elem.getListPositionPossibleProtectKing((State == eGameState.CHECK_KING_B ? eColor.Black : eColor.White));
+		if (r.size() == 0) {
+			System.out.println("----------");
+			return new Pair<eMoveState, eGameState>(eMoveState.SUCCESS, (eGameState.CHECK_KING_W == State ? eGameState.CHECK_MATE_W : eGameState.CHECK_MATE_B));
+		}
+		r2 = Rules.DoMovePawns(r, elem.get(elem.indexOf(firstClick)), secondClick, elem);
+		if (r2.GetRight() != eGameState.SAME)
+		{
+			log.add(firstClick, secondClick);
+			NextTurn(r2.GetRight());
+		}
+		System.out.println("----------");
+		return r2;
+	}
+	
 	public Pair<eMoveState, eGameState> catchEvent(Position firstClick, Position secondClick)
 	{
 		Pair<eMoveState, eGameState> r1 = new Pair<eMoveState, eGameState>(eMoveState.FAIL_UNAUTHORIZED, eGameState.SAME);
 		if (State == eGameState.DRAW)
 			return r1;
 		if (State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W)
-		{
-			System.out.println("CatcEvent: Before");
-			Pair<eMoveState, eGameState> r2;
-			List<Pair<Position, Position>> r;
-			if (State == eGameState.CHECK_KING_B)
-				r = elem.getListPositionPossibleProtectKing(eColor.Black);
-			else
-				r = elem.getListPositionPossibleProtectKing(eColor.White);
-			if (r.size() == 0) {
-				System.out.println("----------");
-				return new Pair<eMoveState, eGameState>(eMoveState.SUCCESS, (eGameState.CHECK_KING_W == State ? eGameState.CHECK_MATE_W : eGameState.CHECK_MATE_B));
-			}
-			else {
-				r2 = Rules.DoMovePawns(r, elem.get(elem.indexOf(firstClick)), secondClick, elem);
-				if (r2.GetRight() != eGameState.SAME)
-				{
-					log.add(firstClick, secondClick);
-					NextTurn(r2.GetRight());
-				}					
-				System.out.println("----------");
-				return r2;
-			}
-		}
+			return Check_King_Way(firstClick, secondClick);
 		System.out.println("CatcEvent: Normal");
 		r1 = Rules.DoMovePawns(elem.get(elem.indexOf(firstClick)), secondClick, elem);
 		System.out.println("OutDoMovePawns: Normal");
