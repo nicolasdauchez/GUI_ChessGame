@@ -83,8 +83,8 @@ public class Main extends JFrame {
 		this.blackEatenPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		this.blackEatenPanel.setBackground(Color.LIGHT_GRAY);
 		
-		this.rightPanel.add(whiteEatenPanel, BorderLayout.PAGE_START);
-		this.rightPanel.add(blackEatenPanel, BorderLayout.PAGE_END);
+		this.rightPanel.add(whiteEatenPanel, BorderLayout.PAGE_END);
+		this.rightPanel.add(blackEatenPanel, BorderLayout.PAGE_START);
 		
 		mainPanel.add(rightPanel, BorderLayout.EAST);
 		
