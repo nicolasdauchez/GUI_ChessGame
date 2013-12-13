@@ -10,7 +10,9 @@ import java.awt.image.BufferedImage;
 import java.io.Console;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -18,6 +20,8 @@ import javax.swing.DebugGraphics;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+
+import org.apache.commons.collections4.collection.UnmodifiableCollection;
 
 import main.Main;
 import main.Pair;
@@ -126,12 +130,20 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 				this.posSecondClick = clickedPos;
 				if (!this.posFirstClick.equals(this.posSecondClick))
 				{
+					// saving some stats
+					int eatenPiecesNb = this.game.elem.GetEaten().size();
+					eColor currentPlayer = this.game.GetTurn();
 				
 					// check move validity
 					Pair<eMoveState, eGameState> moveAccepted = this.game.catchEvent(posFirstClick, posSecondClick);
+
 					System.out.println("eMoveState" + moveAccepted.GetLeft() + " eGameState:" + moveAccepted.GetRight() + " TurnPlayer" + game.GetTurn());
+					
 					// update game board (piece moving or text explaining why not)
 					handleMove(moveAccepted);
+					// updates eaten pieces panel if necessary
+					if (this.game.elem.GetEaten().size() > eatenPiecesNb)
+						this.main.updateEatenPieces(currentPlayer, this.game.elem.GetEaten());
 				}
 				else
 					this.posFirstClick = null;
@@ -139,13 +151,6 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 			}
 			repaint();
 		}
-		
-//			posFC.row = newY / 80;
-//			posFC.column = (char) ('a' + (newX / 80));
-//			posSC.row = newY / 80;
-//			posSC.column = (char) ('a' + (newX / 80));
-//			
-		
 	}
 	
 	private void handleMove(Pair<eMoveState, eGameState> moveAccepted) {
@@ -226,25 +231,22 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;		
-		
 		// Updates player turn notification
-		main.changePlayerTurn(this.game.GetTurn());
-//		g2d.drawString("Player turn:", 650, 160);
-//		g2d.drawString((this.game.GetTurn() == eColor.Black) ? ("BLACK") : ("WHITE"), 650, 175);
-		
+		main.changePlayerTurn(this.game.GetTurn());		
 		// Updates game status message
 		main.changeStatutMsg(message);
-		
 		// re-draw all game board
 		drawGrid(g2d);
 		drawPieces(g2d);
 	}
 
 	private void drawPieces(Graphics2D g2d) {
-		for (int i = 0; i < this.game.elem.size(); i++) {
-			Pawn piece = this.game.elem.get(i);
-			if (piece != null) {
-				ePawns piece_class = piece.GetClass();
+		Collection<Pawn> alivePieces = this.game.elem.getElem();
+		if (!alivePieces.isEmpty()) {
+			Iterator<Pawn> iterator = alivePieces.iterator();
+  		    while(iterator.hasNext()) {
+  		    	Pawn piece = iterator.next();
+  		    	ePawns piece_class = piece.GetClass();
 				eColor piece_color = piece.GetColor();
 				Position piece_pos = piece.GetPosition();
 				if (piece_color == eColor.Black)
@@ -252,9 +254,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 				else
 					g2d.drawImage(pieces_images_white.get(piece_class), null, (piece_pos.column- 'a')*80, (piece_pos.row - 1)*80);
 			}
-		}
-//		g2d.drawImage(pieces_images_black.get(ePawns.Pion), null, 0, 0);
-//		g2d.drawImage(pieces_images_black.get(ePawns.Tower), null, 80, 80);
+		 }
 	}
 
 	private void drawGrid(Graphics2D g2d) {
@@ -276,6 +276,13 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 			g2d.setColor(selectionned);
 			g2d.fillRect(((posFirstClick.column - 'a')*80)+1, ((posFirstClick.row - 1)*80), 79, 79);
 		}
+	}
+	
+	
+	public Image getPieceImage(eColor color, ePawns classe) {
+		if (color == eColor.Black)
+			return this.pieces_images_black.get(classe);
+		return this.pieces_images_white.get(classe);
 	}
 		
 	

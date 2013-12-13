@@ -4,9 +4,19 @@
 package main;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -16,8 +26,11 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
+import sun.java2d.loops.ScaledBlit;
 import Chess.ChessGameWidget;
+import Chess.Pawn;
 import Chess.eColor;
+import Chess.ePawns;
 /**
  * @author Lumy-
  *
@@ -56,19 +69,23 @@ public class Main extends JFrame {
 		this.rightPanel = new JPanel();
 		BorderLayout rightPanelBL = new BorderLayout();
 		rightPanel.setLayout(rightPanelBL);
+		rightPanel.setBorder(new EmptyBorder(5,5,5,5));
 
-//		JPanel whiteDeadsPanel = new JPanel();
-		JPanel blackDeadsPanel = new JPanel();
-//		rightPanel.add(whiteDeadsPanel, BorderLayout.PAGE_START);
-		rightPanel.add(blackDeadsPanel, BorderLayout.PAGE_END);
-				
-//		JLabel image = new JLabel(new ImageIcon( "src/Images/WhitePawn.png"));
-		JLabel image2 = new JLabel(new ImageIcon( "src/Images/WhitePawn.png"));
-//		whiteDeadsPanel.add(image);
-		blackDeadsPanel.add(image2);
+		this.whiteEatenPanel = new JPanel();
+		this.whiteEatenPanel.setPreferredSize(new Dimension(95,250));
+		this.whiteEatenPanel.setLayout(new FlowLayout());
+		this.whiteEatenPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		this.whiteEatenPanel.setBackground(Color.LIGHT_GRAY);
 		
-		DeadsPanel deads = new DeadsPanel();
-		rightPanel.add(deads, BorderLayout.CENTER);
+		this.blackEatenPanel = new JPanel();
+		this.blackEatenPanel.setPreferredSize(new Dimension(95,250));
+		this.blackEatenPanel.setLayout(new FlowLayout());
+		this.blackEatenPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		this.blackEatenPanel.setBackground(Color.LIGHT_GRAY);
+		
+		this.rightPanel.add(whiteEatenPanel, BorderLayout.PAGE_START);
+		this.rightPanel.add(blackEatenPanel, BorderLayout.PAGE_END);
+		
 		mainPanel.add(rightPanel, BorderLayout.EAST);
 		
 		
@@ -86,7 +103,7 @@ public class Main extends JFrame {
 		subLeftPanel.add(this.fixedPlayerTurnLabel);
 		subLeftPanel.add(this.playerTurnLabel);
 
-		this.leftPanel.add (subLeftPanel);
+		this.leftPanel.add(subLeftPanel);
 		
 		mainPanel.add(leftPanel, BorderLayout.WEST);
 		
@@ -103,6 +120,34 @@ public class Main extends JFrame {
 		this.playerTurnLabel.setText((color == eColor.Black) ? ("BLACK") : ("WHITE"));
 	}
 	
+	public void updateEatenPieces(eColor currentPlayerColor, Collection<Pawn> eatenPawns) {
+		if (eatenPawns.size() > 0) {
+			JPanel eatenPanel = (currentPlayerColor == eColor.Black) ? (blackEatenPanel) : (whiteEatenPanel);
+			Iterator<Pawn> it = eatenPawns.iterator();
+	
+			eatenPanel.removeAll();
+			
+			System.out.println("collection size: " + eatenPawns.size());
+			
+			while (it.hasNext()) {
+				Pawn curEatenPawn = it.next();
+				eColor eatenColor = curEatenPawn.GetColor();
+				ePawns eatenClasse = curEatenPawn.GetClass();
+				
+				System.out.println("DEBUG: eatenColor:" + eatenColor + " & currentPlayerColor: " + currentPlayerColor);
+	
+				if (eatenColor != currentPlayerColor) {
+					
+					Image curEatenPawnImg = this.widget.getPieceImage(eatenColor, eatenClasse);
+					Image scaledImg = curEatenPawnImg.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+					ImageIcon icon = new ImageIcon(scaledImg);
+					JLabel imgLbl = new JLabel(icon);
+					eatenPanel.add(imgLbl);
+				}
+			}
+		}
+	}
+	
 	public static void main(String[] args) {
 		Main window = new Main();
 		window.setVisible(true);
@@ -115,6 +160,8 @@ public class Main extends JFrame {
 	JLabel playerTurnLabel;
 	JPanel leftPanel;
 	JPanel rightPanel;
+	JPanel whiteEatenPanel;
+	JPanel blackEatenPanel;
 		
 }
 
