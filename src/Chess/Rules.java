@@ -29,6 +29,86 @@ public class Rules {
 			Promotion = e;
 		}
 	}
+	
+	/**
+	 * Castling Rules
+	 * @author Lumy-
+	 *
+	 */
+	static class Castling {
+		/**
+		 * Check if the Last Case Create a invalide Move
+		 * @param tmp
+		 * @param pawn
+		 * @param enp
+		 * @param elem
+		 * @return
+		 */
+		private static boolean canMoveTheir_Castling(Collection<Pawn> tmp, Pawn pawn, Position enp, BoardGame elem) {
+			enp.print();System.out.println("<<<--");
+			Collection<Pawn> t = elem.getNewCopie(tmp, elem.get(tmp, elem.indexOf(tmp, pawn.GetPosition())), enp);
+			if (Rules.CheckKing.isCheckKing(t, elem, pawn.GetColor()))
+					return false;
+			return true;
+		}
+		 /**
+		  * Check if the King doesn't put under attack on the way
+		  * @param tmp
+		  * @param elem
+		  * @param pawn
+		  * @param enp
+		  * @return
+		  */
+		private static boolean canDoMove_Castling(Collection<Pawn> z, Pawn k, Position endp, BoardGame elem) {
+			Position i = new Position(k.GetPosition());
+			Position tmp = new Position(k.GetPosition());
+			Collection<Pawn> t = null;
+			
+			while (tmp.diffColumn(endp) != 0)
+			{
+				i.column += (tmp.column < endp.column ? 1 : -1);
+				t = elem.getNewCopie((t == null ? z : t), elem.get((t == null ? z : t), elem.indexOf((t == null ? z : t), tmp)), i);
+					if (Rules.CheckKing.isCheckKing(t, elem, k.GetColor()))
+					return false;
+				tmp.column += (tmp.column < endp.column ? 1 : -1);
+			}
+			return true;
+		}		
+
+		
+		static private boolean _canCastling(Collection<Pawn> tmp, Pawn p2, Pawn p1, BoardGame elem) {
+			if (isCastling(tmp, p2, p1.GetPosition(), elem)) // Type and Color
+				if (p2.isStartPosition() && p1.isStartPosition()) // Start Position
+					return true;
+			return false;
+		}
+		static public boolean isCastling(Collection<Pawn> tmp, Pawn p, Position newPos, BoardGame elem) {
+			if (Rules.OptionalRules.Castling == true)
+				if (elem.contains(tmp, newPos)) {
+					Pawn p2 = elem.get(tmp, elem.indexOf(tmp, newPos));
+					if (p2.GetColor() == p.GetColor() && ((p2.GetClass() == ePawns.King && p.GetClass() == ePawns.Tower) ||
+						(p.GetClass() == ePawns.King && p2.GetClass() == ePawns.Tower)))
+						return true;
+			}
+			return false;
+		}
+
+		public static boolean CanTheyCastling(Collection<Pawn> tmp, Pawn p2, Pawn p1, BoardGame elem) { // tmp is her the current BoardGame but don't care
+			if (!_canCastling(tmp, p2,p1,elem)) // Start Position and Good Pawns/Color
+				return false;
+			if (elem.getPositionFirstObstacleColumnRange(tmp, p2, p1.GetPosition()) != null)
+				return false;
+			if (Rules.CheckKing.isCheckKing(tmp, elem, p1.GetColor()))
+				return false;
+			Position enp = new Position(p2.GetPosition());
+			enp.column = ((p1.GetClass() == ePawns.Tower ? p1.GetPosition().column : p2.GetPosition().column) == 'a' ? 'c' : 'g');
+			if (!(canDoMove_Castling(tmp, (p1.GetClass() == ePawns.King ? p1 : p2), enp, elem)))
+				return false;
+			if (!(canMoveTheir_Castling(tmp, (p1.GetClass() == ePawns.King ? p1 : p2), enp, elem)))
+				return false;
+			return true;
+		}
+	}
 
 	static class MapFunctor
 	{
@@ -175,9 +255,11 @@ public class Rules {
 			@Override
 			public eMoveState CanMove(Collection<Pawn> tmp, Pawn p, Position newPos, BoardGame elem) {
 				Position oldp = p.GetPosition();
-				if (elem.getObstacleCase(tmp, newPos) == p.GetColor())
+				if (Rules.Castling.isCastling(tmp, p, newPos, elem))
+					return (Rules.Castling.CanTheyCastling(tmp, p, elem.get(tmp, elem.indexOf(tmp, newPos)), elem) ? eMoveState.CASTLING : eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED);
+				else if (elem.getObstacleCase(tmp, newPos) == p.GetColor())
 					return eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED;
-				if (oldp.sameRow(newPos) || oldp.sameColumn(newPos))
+				else if (oldp.sameRow(newPos) || oldp.sameColumn(newPos))
 					if (eColor.None == elem.getObstacleRange(tmp, p, newPos))
 						if (elem.getObstacleCase(tmp, newPos) != p.GetColor())
 							return eMoveState.SUCCESS;
@@ -234,9 +316,11 @@ public class Rules {
 		static private class DoMoveKing extends Functor {
 			@Override
 			public eMoveState CanMove(Collection<Pawn> tmp, Pawn p, Position newPos, BoardGame elem) {
-				if (elem.getObstacleCase(tmp, newPos) == p.GetColor())
+				if (Rules.Castling.isCastling(tmp, p, newPos, elem))
+					return (Rules.Castling.CanTheyCastling(tmp, p, elem.get(tmp, elem.indexOf(tmp, newPos)), elem) ? eMoveState.CASTLING : eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED);
+				else if (elem.getObstacleCase(tmp, newPos) == p.GetColor())
 					return eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED;
-				if (newPos.diffMultiple(p.GetPosition()) != 1)
+				else if (newPos.diffMultiple(p.GetPosition()) != 1)
 					return eMoveState.FAIL_UNAUTHORIZED; // A King Can't Move More Than One
 				return eMoveState.SUCCESS;
 			}

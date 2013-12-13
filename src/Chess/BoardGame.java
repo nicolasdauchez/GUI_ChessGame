@@ -345,7 +345,7 @@ public class BoardGame {
 	 * @return
 	 */
 	public List<Pawn> getNewCopie(Collection<Pawn> tmp, Pawn p, Position newPos) {
-		List<Pawn> ret= new ArrayList<Pawn>(elem.size());
+		List<Pawn> ret= new ArrayList<Pawn>(tmp.size());
 		for(Pawn item: tmp) ret.add(item.clone());
 		if (-1 != indexOf(ret, newPos))
 			ret.remove(indexOf(ret, newPos));

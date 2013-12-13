@@ -2,6 +2,7 @@ package Chess;
 
 public enum eMoveState {
 	SUCCESS,
+	CASTLING,
 	FAIL_UNAUTHORIZED,
 	FAIL_CHECK,
 	FAIL_PAWNS_BACKWARD,
