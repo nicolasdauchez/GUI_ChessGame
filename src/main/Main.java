@@ -21,6 +21,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -148,6 +149,11 @@ public class Main extends JFrame {
 		}
 	}
 	
+	public boolean askCastling() {
+		int result = JOptionPane.showConfirmDialog(this, "Du you want to perform a castling?", "Castling move detected", JOptionPane.YES_NO_OPTION);
+		return (result == 0);
+	}
+
 	public static void main(String[] args) {
 		Main window = new Main();
 		window.setVisible(true);

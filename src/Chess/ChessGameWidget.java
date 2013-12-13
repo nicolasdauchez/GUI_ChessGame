@@ -209,9 +209,24 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 					message = "Pawns can't eat forward.";
 					break;
 				}
+				case CASTLING: {
+					handleCastling();
+					break;
+				}
 			default:
 				break;
 			}
+		}
+	}
+
+	private void handleCastling() {
+		boolean castlingWanted = this.main.askCastling();
+		if (castlingWanted) {
+			this.game.DoCastling(this.posFirstClick, this.posSecondClick);
+			this.posFirstClick = null;
+		}
+		else {
+			this.posFirstClick = this.posSecondClick;
 		}
 	}
 
