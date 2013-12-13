@@ -119,9 +119,10 @@ public class ChessGame {
 	 * @param secondClick
 	 */
 	public void DoCastling(Position click1, Position click2) {
-		Pair<Position, Position> r = Rules.Castling.getPositionKing(click1, click2);
-		Pawn k = elem.get(elem.indexOf(click1));
-		Pawn t = elem.get(elem.indexOf(click2));
+		Position kp = elem.getKingPosition(elem.get(elem.indexOf(click1)).GetColor());
+		Pair<Position, Position> r = Rules.Castling.getPositionKing(kp, (kp.equals(click2) ? click1 : click2));
+		Pawn k = elem.get(elem.indexOf(kp));
+		Pawn t = elem.get(elem.indexOf(kp.equals(click1) ? click2 : click1));
 		k.SetPosition(r.GetLeft());
 		t.SetPosition(r.GetRight());
 		log.addCastling(k.GetColor(), (r.GetLeft().column == 'c' ? "O-O-O" : "O-O"));
