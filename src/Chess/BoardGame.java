@@ -365,7 +365,7 @@ public class BoardGame {
 		return getPawnsBoardPosition(e, c, elem);
 	}
 	public Position getKingPosition(eColor e) {
-		return getPawnsPosition(e, ePawns.King);
+		return getPawnsPosition(e, ePawns.KING);
 	}
 
 	public List<Pawn> getAllColor(eColor e) {
@@ -397,7 +397,7 @@ public class BoardGame {
 			p.row = 2;
 		p.column = 'a';
 		while (p.column != 'i') {
-			add(c, new Position(p), ePawns.Pawn);
+			add(c, new Position(p), ePawns.PAWN);
 			p.column += 1;
 		}
 	}
@@ -407,7 +407,7 @@ public class BoardGame {
 		if (c == eColor.White)
 			p.row = 1;
 		p.column = 'a';
-		ePawns e[] = { ePawns.Tower, ePawns.Cavalery, ePawns.Crazy, ePawns.Queen, ePawns.King, ePawns.Crazy, ePawns.Cavalery, ePawns.Tower };
+		ePawns e[] = { ePawns.ROOK, ePawns.KNIGHT, ePawns.BISHOP, ePawns.QUEEN, ePawns.KING, ePawns.BISHOP, ePawns.KNIGHT, ePawns.ROOK };
 		//if (c == eColor.White)
 		//	ArrayUtils.reverse(e);
 		for (int i = 0; i < e.length; i++) {
@@ -421,7 +421,7 @@ public class BoardGame {
 
 	private void getListPositionPossibleProtectKing(eColor e, List<Pair<Position, Position>> r) {
 		for (Pawn p : elem) {
-			if (p.GetClass() != ePawns.King && p.GetColor() == e)
+			if (p.GetClass() != ePawns.KING && p.GetColor() == e)
 			{
 				List<Pair<Position, Position>> cp = Rules.MapFunctor.GetPossibleMoveProtect(p, this);
 				for (Pair<Position, Position> way : cp)

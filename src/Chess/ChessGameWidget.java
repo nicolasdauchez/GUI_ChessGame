@@ -69,18 +69,18 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		this.pieces_images_white = new Hashtable<ePawns, BufferedImage>();
 		this.pieces_images_black = new Hashtable<ePawns, BufferedImage>();
 		try {
-			this.pieces_images_white.put(ePawns.Pawn, ImageIO.read(new File("src/Images/WhitePawn.png")));
-			this.pieces_images_white.put(ePawns.Crazy, ImageIO.read(new File("src/Images/WhiteBishop.png")));
-			this.pieces_images_white.put(ePawns.Tower, ImageIO.read(new File("src/Images/WhiteRook.png")));
-			this.pieces_images_white.put(ePawns.Queen, ImageIO.read(new File("src/Images/WhiteQueen.png")));
-			this.pieces_images_white.put(ePawns.King, ImageIO.read(new File("src/Images/WhiteKing.png")));
-			this.pieces_images_white.put(ePawns.Cavalery, ImageIO.read(new File("src/Images/WhiteKnight.png")));
-			this.pieces_images_black.put(ePawns.Cavalery, ImageIO.read(new File("src/Images/BlackKnight.png")));
-			this.pieces_images_black.put(ePawns.King, ImageIO.read(new File("src/Images/BlackKing.png")));
-			this.pieces_images_black.put(ePawns.Queen, ImageIO.read(new File("src/Images/BlackQueen.png")));
-			this.pieces_images_black.put(ePawns.Tower, ImageIO.read(new File("src/Images/BlackRook.png")));
-			this.pieces_images_black.put(ePawns.Crazy, ImageIO.read(new File("src/Images/BlackBishop.png")));
-			this.pieces_images_black.put(ePawns.Pawn, ImageIO.read(new File("src/Images/BlackPawn.png")));
+			this.pieces_images_white.put(ePawns.PAWN, ImageIO.read(new File("src/Images/WhitePawn.png")));
+			this.pieces_images_white.put(ePawns.BISHOP, ImageIO.read(new File("src/Images/WhiteBishop.png")));
+			this.pieces_images_white.put(ePawns.ROOK, ImageIO.read(new File("src/Images/WhiteRook.png")));
+			this.pieces_images_white.put(ePawns.QUEEN, ImageIO.read(new File("src/Images/WhiteQueen.png")));
+			this.pieces_images_white.put(ePawns.KING, ImageIO.read(new File("src/Images/WhiteKing.png")));
+			this.pieces_images_white.put(ePawns.KNIGHT, ImageIO.read(new File("src/Images/WhiteKnight.png")));
+			this.pieces_images_black.put(ePawns.KNIGHT, ImageIO.read(new File("src/Images/BlackKnight.png")));
+			this.pieces_images_black.put(ePawns.KING, ImageIO.read(new File("src/Images/BlackKing.png")));
+			this.pieces_images_black.put(ePawns.QUEEN, ImageIO.read(new File("src/Images/BlackQueen.png")));
+			this.pieces_images_black.put(ePawns.ROOK, ImageIO.read(new File("src/Images/BlackRook.png")));
+			this.pieces_images_black.put(ePawns.BISHOP, ImageIO.read(new File("src/Images/BlackBishop.png")));
+			this.pieces_images_black.put(ePawns.PAWN, ImageIO.read(new File("src/Images/BlackPawn.png")));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -137,7 +137,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 					// check move validity
 					Pair<eMoveState, eGameState> moveAccepted = this.game.catchEvent(posFirstClick, posSecondClick);
 
-					System.out.println("eMoveState" + moveAccepted.GetLeft() + " eGameState:" + moveAccepted.GetRight() + " TurnPlayer" + game.GetTurn());
+					System.out.println("eMoveState: " + moveAccepted.GetLeft() + " eGameState:" + moveAccepted.GetRight() + " TurnPlayer: " + game.GetTurn());
 					
 					// update game board (piece moving or text explaining why not)
 					handleMove(moveAccepted);
@@ -186,6 +186,10 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 				default: 
 					break;
 			}
+			
+			// check if a pawn managed to get a Promotion
+			handlePromotion();
+			
 		}
 		else {
 			switch (moveState) {
@@ -215,6 +219,28 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 				}
 			default:
 				break;
+			}
+		}
+	}
+
+	private void handlePromotion() {
+		Collection<Pawn> alivePieces = this.game.elem.getElem();
+		if (!alivePieces.isEmpty()) {
+			Iterator<Pawn> iterator = alivePieces.iterator();
+			while(iterator.hasNext()) {
+  		    	Pawn piece = iterator.next();
+  		    	ePawns classe = piece.GetClass();
+  		    	if (classe == ePawns.PAWN) {
+  		    		eColor color = piece.GetColor();
+	    			Position pos = piece.GetPosition();  		    			
+  		    			if ((color == eColor.Black) && (pos.row == 1)
+	    					|| (color == eColor.White) && (pos.row == 8)) {
+	    					ePawns newClasse = this.main.askPromotion();
+	    					if (newClasse != null)
+	    						this.game.DoPromotion(pos, newClasse);
+  		    			}
+  		    			
+  		    	}
 			}
 		}
 	}

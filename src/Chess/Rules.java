@@ -86,8 +86,8 @@ public class Rules {
 			if (Rules.OptionalRules.Castling == true)
 				if (elem.contains(tmp, newPos)) {
 					Pawn p2 = elem.get(tmp, elem.indexOf(tmp, newPos));
-					if (p2.GetColor() == p.GetColor() && ((p2.GetClass() == ePawns.King && p.GetClass() == ePawns.Tower) ||
-						(p.GetClass() == ePawns.King && p2.GetClass() == ePawns.Tower)))
+					if (p2.GetColor() == p.GetColor() && ((p2.GetClass() == ePawns.KING && p.GetClass() == ePawns.ROOK) ||
+						(p.GetClass() == ePawns.KING && p2.GetClass() == ePawns.ROOK)))
 						return true;
 			}
 			return false;
@@ -113,10 +113,10 @@ public class Rules {
 			if (Rules.CheckKing.isCheckKing(tmp, elem, p1.GetColor()))
 				return false;
 			Position enp = new Position(p2.GetPosition());
-			enp.column = ((p1.GetClass() == ePawns.Tower ? p1.GetPosition().column : p2.GetPosition().column) == 'a' ? 'c' : 'g');
-			if (!(canDoMove_Castling(tmp, (p1.GetClass() == ePawns.King ? p1 : p2), enp, elem)))
+			enp.column = ((p1.GetClass() == ePawns.ROOK ? p1.GetPosition().column : p2.GetPosition().column) == 'a' ? 'c' : 'g');
+			if (!(canDoMove_Castling(tmp, (p1.GetClass() == ePawns.KING ? p1 : p2), enp, elem)))
 				return false;
-			if (!(canMoveTheir_Castling(tmp, (p1.GetClass() == ePawns.King ? p1 : p2), enp, elem)))
+			if (!(canMoveTheir_Castling(tmp, (p1.GetClass() == ePawns.KING ? p1 : p2), enp, elem)))
 				return false;
 			return true;
 		}
@@ -547,12 +547,12 @@ public class Rules {
 		static final public Map<ePawns, Functor> MapFunction = createMap();
 		static public Map<ePawns, Functor> createMap() {
 	        Map<ePawns, Functor> aMap = new Hashtable<ePawns, Functor>();
-	        aMap.put(ePawns.Pawn, new DoMovePawn());
-	        aMap.put(ePawns.Tower, new DoMoveTower());
-	        aMap.put(ePawns.King, new DoMoveKing());
-	        aMap.put(ePawns.Crazy, new DoMoveCrazy());
-	        aMap.put(ePawns.Cavalery, new DoMoveCavalery());
-	        aMap.put(ePawns.Queen, new DoMoveQueen());
+	        aMap.put(ePawns.PAWN, new DoMovePawn());
+	        aMap.put(ePawns.ROOK, new DoMoveTower());
+	        aMap.put(ePawns.KING, new DoMoveKing());
+	        aMap.put(ePawns.BISHOP, new DoMoveCrazy());
+	        aMap.put(ePawns.KNIGHT, new DoMoveCavalery());
+	        aMap.put(ePawns.QUEEN, new DoMoveQueen());
 	 	    return aMap;
 	    }
 		
@@ -678,13 +678,13 @@ public class Rules {
 				ePawns p = elem.get(tmp, elem.indexOf(tmp, a)).GetClass();
 				switch (p)
 				{
-				case Queen:
+				case QUEEN:
 					r.add(a);
 					return true;
-				case Tower:
+				case ROOK:
 					r.add(a);
 					return true;
-				case King:
+				case KING:
 					if (a.diffMultiple(pos) == 1) {
 						r.add(a);
 						return true;
@@ -714,19 +714,19 @@ public class Rules {
 				Pawn p = elem.get(tmp, elem.indexOf(tmp, a));
 				switch (p.GetClass())
 				{
-				case Crazy:
+				case BISHOP:
 					r.add(new Position(a));
 					return true;
-				case Queen:
+				case QUEEN:
 					r.add(new Position(a));
 					return true;
-				case King:
+				case KING:
 					if (a.diffMultiple(pos) == 1)
 					{
 						r.add(new Position(a));
 						return true;
 					}
-				case Pawn:
+				case PAWN:
 					if (a.diffMultiple(pos) == 1 && (p.GetColor() == eColor.White ? a.row < pos.row : a.row > pos.row))
 					{
 						r.add(new Position(a));
@@ -824,7 +824,7 @@ public class Rules {
 		private static boolean _isCheckKing_LaunchCavalery(Collection<Pawn> tmp, BoardGame elem, Position oldp, eColor e) {
 			if (elem.contains(tmp, oldp)) {
 				Pawn p = elem.get(tmp, elem.indexOf(tmp, oldp));
-				if (p.GetColor() != e && p.GetClass() == ePawns.Cavalery)
+				if (p.GetColor() != e && p.GetClass() == ePawns.KNIGHT)
 					return true;
 			}
 			return false;
@@ -895,7 +895,7 @@ public class Rules {
 		 * @return
 		 */
 		public static List<Position> AllCheckKing(Collection<Pawn> tmp, BoardGame elem, eColor e) {
-				Position k = elem.getPawnsBoardPosition(e, ePawns.King, tmp);
+				Position k = elem.getPawnsBoardPosition(e, ePawns.KING, tmp);
 				return isCheckKing(tmp, elem, k, e);
 		}
 		public static boolean isCheckKing(Collection<Pawn> tmp, BoardGame elem, eColor e) {
@@ -946,20 +946,20 @@ public class Rules {
 	private static boolean ImpossibilityCheckMate(List<Pawn> tmp, BoardGame elem) {
 		if (tmp.size() <= 4) {
 			
-			if (tmp.size() == 2 && null != elem.getPawnsBoardPosition(eColor.Black, ePawns.King, tmp) && null != elem.getPawnsBoardPosition(eColor.White, ePawns.King, tmp)) // king versus king Draw !
+			if (tmp.size() == 2 && null != elem.getPawnsBoardPosition(eColor.Black, ePawns.KING, tmp) && null != elem.getPawnsBoardPosition(eColor.White, ePawns.KING, tmp)) // king versus king Draw !
 				return true;
 			else if (tmp.size() == 3) {
-				if (null != elem.getPawnsBoardPosition(eColor.Black, ePawns.King, tmp) && null != elem.getPawnsBoardPosition(eColor.White, ePawns.King, tmp) &&
-					(null != elem.getPawnsBoardPosition(eColor.Black, ePawns.Crazy, tmp) || null != elem.getPawnsBoardPosition(eColor.White, ePawns.Crazy, tmp))) //king and bishop versus king
+				if (null != elem.getPawnsBoardPosition(eColor.Black, ePawns.KING, tmp) && null != elem.getPawnsBoardPosition(eColor.White, ePawns.KING, tmp) &&
+					(null != elem.getPawnsBoardPosition(eColor.Black, ePawns.BISHOP, tmp) || null != elem.getPawnsBoardPosition(eColor.White, ePawns.BISHOP, tmp))) //king and bishop versus king
 					return true;
-				if (null != elem.getPawnsBoardPosition(eColor.Black, ePawns.King, tmp) && null != elem.getPawnsBoardPosition(eColor.White, ePawns.King, tmp) &&
-				    (null != elem.getPawnsBoardPosition(eColor.Black, ePawns.Cavalery, tmp) || null != elem.getPawnsBoardPosition(eColor.White, ePawns.Cavalery, tmp) )) //king and knight versus king
+				if (null != elem.getPawnsBoardPosition(eColor.Black, ePawns.KING, tmp) && null != elem.getPawnsBoardPosition(eColor.White, ePawns.KING, tmp) &&
+				    (null != elem.getPawnsBoardPosition(eColor.Black, ePawns.KNIGHT, tmp) || null != elem.getPawnsBoardPosition(eColor.White, ePawns.KNIGHT, tmp) )) //king and knight versus king
 						 	return true;
 			}
 			else
-					if (null != elem.getPawnsBoardPosition(eColor.Black, ePawns.King, tmp) && null != elem.getPawnsBoardPosition(eColor.White, ePawns.King, tmp) &&
-						(null != elem.getPawnsBoardPosition(eColor.Black, ePawns.Crazy, tmp) && null != elem.getPawnsBoardPosition(eColor.White, ePawns.Crazy, tmp) )) //king and bishop versus king and bishop with the bishops on the same colour.
-						if (elem.getPawnsBoardPosition(eColor.Black, ePawns.Crazy, tmp).GetColorCase() == elem.getPawnsBoardPosition(eColor.White, ePawns.Crazy, tmp).GetColorCase())
+					if (null != elem.getPawnsBoardPosition(eColor.Black, ePawns.KING, tmp) && null != elem.getPawnsBoardPosition(eColor.White, ePawns.KING, tmp) &&
+						(null != elem.getPawnsBoardPosition(eColor.Black, ePawns.BISHOP, tmp) && null != elem.getPawnsBoardPosition(eColor.White, ePawns.BISHOP, tmp) )) //king and bishop versus king and bishop with the bishops on the same colour.
+						if (elem.getPawnsBoardPosition(eColor.Black, ePawns.BISHOP, tmp).GetColorCase() == elem.getPawnsBoardPosition(eColor.White, ePawns.BISHOP, tmp).GetColorCase())
 							return true;
 			}
 		return false;
@@ -1053,7 +1053,7 @@ public class Rules {
 		int row = 1;
 		if (pawn.GetColor() != eColor.Black)
 			row = 8;
-		if (pawn.GetClass() == ePawns.Pawn && pawn.GetPosition().row == row)
+		if (pawn.GetClass() == ePawns.PAWN && pawn.GetPosition().row == row)
 			return true;
 		return false;
 	}

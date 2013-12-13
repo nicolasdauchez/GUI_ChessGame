@@ -8,10 +8,10 @@ package Chess;
  *
  */
 public enum ePawns {
-	Pawn,
-	Tower,
-	Crazy,
-	Cavalery,
-	Queen,
-	King
+	PAWN,
+	ROOK,
+	BISHOP,
+	KNIGHT,
+	QUEEN,
+	KING
 }

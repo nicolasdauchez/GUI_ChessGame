@@ -125,18 +125,11 @@ public class Main extends JFrame {
 		if (eatenPawns.size() > 0) {
 			JPanel eatenPanel = (currentPlayerColor == eColor.Black) ? (blackEatenPanel) : (whiteEatenPanel);
 			Iterator<Pawn> it = eatenPawns.iterator();
-	
 			eatenPanel.removeAll();
-			
-			System.out.println("collection size: " + eatenPawns.size());
-			
 			while (it.hasNext()) {
 				Pawn curEatenPawn = it.next();
 				eColor eatenColor = curEatenPawn.GetColor();
-				ePawns eatenClasse = curEatenPawn.GetClass();
-				
-				System.out.println("DEBUG: eatenColor:" + eatenColor + " & currentPlayerColor: " + currentPlayerColor);
-	
+				ePawns eatenClasse = curEatenPawn.GetClass();	
 				if (eatenColor != currentPlayerColor) {
 					
 					Image curEatenPawnImg = this.widget.getPieceImage(eatenColor, eatenClasse);
@@ -152,6 +145,18 @@ public class Main extends JFrame {
 	public boolean askCastling() {
 		int result = JOptionPane.showConfirmDialog(this, "Du you want to perform a castling?", "Castling move detected", JOptionPane.YES_NO_OPTION);
 		return (result == 0);
+	}
+
+	public ePawns askPromotion() {
+
+		Object[] choices = {ePawns.QUEEN, ePawns.ROOK, ePawns.BISHOP, ePawns.KNIGHT};
+		ePawns selectedPiece = (ePawns)JOptionPane.showInputDialog(this, 
+						"Choose promotion piece for your promoted pawn:",
+						"Promotion detected!", 
+						JOptionPane.QUESTION_MESSAGE,
+						null, 
+						choices, choices[0]);
+		return selectedPiece;	
 	}
 
 	public static void main(String[] args) {

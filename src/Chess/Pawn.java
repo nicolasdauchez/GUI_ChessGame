@@ -57,7 +57,7 @@ public class Pawn implements Cloneable  {
 	}
 	public void SetPosition(Position p)
 	{
-		if (initialePosition = true && position.diffMultiple(p) == 2 && type == ePawns.Pawn)
+		if (initialePosition = true && position.diffMultiple(p) == 2 && type == ePawns.PAWN)
 			enPassant = true;
 		initialePosition = false;
 		position.SetPosition(p);
@@ -99,7 +99,7 @@ public class Pawn implements Cloneable  {
 		int row = 1;
 		if (color != eColor.Black)
 			row = 8;
-		if (type == ePawns.Pawn || position.row == row)
+		if (type == ePawns.PAWN || position.row == row)
 			type = c;		
 	}
 }
