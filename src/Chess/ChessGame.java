@@ -113,8 +113,19 @@ public class ChessGame {
 		elem.Promotion(p, c);
 		return ;
 	}
-	public void DoCastling(Position firstClick, Position secondClick) {
-		
+	/**
+	 * Assuming that This function it's called after get the CASTLING state that has already check if you've the right
+	 * @param firstClick
+	 * @param secondClick
+	 */
+	public void DoCastling(Position click1, Position click2) {
+		Pair<Position, Position> r = Rules.Castling.getPositionKing(click1, click2);
+		Pawn k = elem.get(elem.indexOf(click1));
+		Pawn t = elem.get(elem.indexOf(click2));
+		k.SetPosition(r.GetLeft());
+		t.SetPosition(r.GetRight());
+		log.addCastling(k.GetColor(), (r.GetLeft().column == 'c' ? "O-O-O" : "O-O"));
+		NextTurn(eGameState.NEXT);
 	}
 
 	public Pair<eMoveState, eGameState> Check_King_Way(Position firstClick, Position secondClick)
