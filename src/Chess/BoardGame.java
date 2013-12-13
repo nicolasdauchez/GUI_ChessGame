@@ -407,7 +407,7 @@ public class BoardGame {
 		if (c == eColor.White)
 			p.row = 1;
 		p.column = 'a';
-		ePawns e[] = { ePawns.Tower, ePawns.Cavalery, ePawns.Crazy, ePawns.King, ePawns.Queen, ePawns.Crazy, ePawns.Cavalery, ePawns.Tower };
+		ePawns e[] = { ePawns.Tower, ePawns.Cavalery, ePawns.Crazy, ePawns.Queen, ePawns.King, ePawns.Crazy, ePawns.Cavalery, ePawns.Tower };
 		//if (c == eColor.White)
 		//	ArrayUtils.reverse(e);
 		for (int i = 0; i < e.length; i++) {
