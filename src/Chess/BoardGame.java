@@ -30,7 +30,7 @@ public class BoardGame {
 	public Collection<Pawn>	GetEaten()
 	{
 		Collection<Pawn> constVector =
-				java.util.Collections.unmodifiableCollection(elem);
+				java.util.Collections.unmodifiableCollection(Eaten);
 		return constVector;
 	}
 
