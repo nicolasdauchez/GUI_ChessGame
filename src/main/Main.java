@@ -21,6 +21,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -83,8 +84,8 @@ public class Main extends JFrame {
 		this.blackEatenPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		this.blackEatenPanel.setBackground(Color.LIGHT_GRAY);
 		
-		this.rightPanel.add(whiteEatenPanel, BorderLayout.PAGE_START);
-		this.rightPanel.add(blackEatenPanel, BorderLayout.PAGE_END);
+		this.rightPanel.add(whiteEatenPanel, BorderLayout.PAGE_END);
+		this.rightPanel.add(blackEatenPanel, BorderLayout.PAGE_START);
 		
 		mainPanel.add(rightPanel, BorderLayout.EAST);
 		
@@ -148,6 +149,11 @@ public class Main extends JFrame {
 		}
 	}
 	
+	public boolean askCastling() {
+		int result = JOptionPane.showConfirmDialog(this, "Du you want to perform a castling?", "Castling move detected", JOptionPane.YES_NO_OPTION);
+		return (result == 0);
+	}
+
 	public static void main(String[] args) {
 		Main window = new Main();
 		window.setVisible(true);

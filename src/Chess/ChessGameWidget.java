@@ -209,9 +209,24 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 					message = "Pawns can't eat forward.";
 					break;
 				}
+				case CASTLING: {
+					handleCastling();
+					break;
+				}
 			default:
 				break;
 			}
+		}
+	}
+
+	private void handleCastling() {
+		boolean castlingWanted = this.main.askCastling();
+		if (castlingWanted) {
+			this.game.DoCastling(this.posFirstClick, this.posSecondClick);
+			this.posFirstClick = null;
+		}
+		else {
+			this.posFirstClick = this.posSecondClick;
 		}
 	}
 
@@ -221,7 +236,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		int Y = e.getY();
 		
 		Position curPos = new Position();
-		curPos.row = (Y / 80) + 1;
+		curPos.row = 8 - (Y / 80);
 		curPos.column = (char)('a' + (X / 80));
 
 		return curPos;
@@ -243,16 +258,17 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	private void drawPieces(Graphics2D g2d) {
 		Collection<Pawn> alivePieces = this.game.elem.getElem();
 		if (!alivePieces.isEmpty()) {
+			Map<ePawns, BufferedImage> tmpPiecesImg = null;
 			Iterator<Pawn> iterator = alivePieces.iterator();
-  		    while(iterator.hasNext()) {
+
+			while(iterator.hasNext()) {
   		    	Pawn piece = iterator.next();
   		    	ePawns piece_class = piece.GetClass();
 				eColor piece_color = piece.GetColor();
 				Position piece_pos = piece.GetPosition();
-				if (piece_color == eColor.Black)
-					g2d.drawImage(pieces_images_black.get(piece_class), null, (piece_pos.column - 'a')*80, (piece_pos.row - 1)*80);
-				else
-					g2d.drawImage(pieces_images_white.get(piece_class), null, (piece_pos.column- 'a')*80, (piece_pos.row - 1)*80);
+				if (piece_color == eColor.Black) tmpPiecesImg = pieces_images_black;
+				else tmpPiecesImg = pieces_images_white;
+				g2d.drawImage(tmpPiecesImg.get(piece_class), null, (piece_pos.column- 'a')*80, ((8 - piece_pos.row))*80);
 			}
 		 }
 	}
@@ -274,7 +290,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		// colors selectionned piece's square
 		if (this.posFirstClick != null) {
 			g2d.setColor(selectionned);
-			g2d.fillRect(((posFirstClick.column - 'a')*80)+1, ((posFirstClick.row - 1)*80), 79, 79);
+			g2d.fillRect(((posFirstClick.column - 'a')*80)+1, ((8 - posFirstClick.row)*80), 79, 79);
 		}
 	}
 	
