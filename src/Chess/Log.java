@@ -107,11 +107,10 @@ public class Log {
 	private Tree		t;
 	public Log() {
 		t = new Tree();
-	//	log = new ArrayList<Pair<Position, Position>>();
 	}
 	
 	public void newGame() {
-		//log.clear();
+		t = new Tree();
 	}
 
 	public void Initialize()
@@ -120,11 +119,17 @@ public class Log {
 	public Pair<Position, Position> GoBackward() {
 		return t.goBackward();
 	}
+	public int getSizeCurrentElem() {
+		return t.getSizeElems();
+	}
 	public Collection<Pair<Position, Position>>	getForward() {
 		return t.getAllForwardShoot();	
 	}
 	public void add(Position p, Position newp) {
 		t.addMoveHead(new Pair<Position,Position>(new Position(p), new Position(newp)));
+	}
+	public Pair<Position, Position>	getCurrentShoot() {
+		return t.getCurrentShoot();
 	}
 
 	public Boolean Export(ChessDataGame header) {
