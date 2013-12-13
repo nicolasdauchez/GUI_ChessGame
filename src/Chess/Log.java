@@ -3,6 +3,7 @@
  */
 package Chess;
 import main.Pair;
+
 import java.util.ArrayList;
 /**
  * @author Lumy-
@@ -43,5 +44,9 @@ public class Log {
 	public void Import(String path) {
 		Import.ImportPathName(path);
 		return ;
+	}
+
+	public void addCastling(eColor getColor, String string) {
+		//AddCasting
 	}
 }
