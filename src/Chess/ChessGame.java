@@ -113,6 +113,9 @@ public class ChessGame {
 		elem.Promotion(p, c);
 		return ;
 	}
+	public void DoCastling(Position firstClick, Position secondClick) {
+		
+	}
 
 	public Pair<eMoveState, eGameState> Check_King_Way(Position firstClick, Position secondClick)
 	{
