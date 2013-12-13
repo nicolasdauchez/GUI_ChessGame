@@ -92,6 +92,18 @@ public class Rules {
 			}
 			return false;
 		}
+		
+		/**
+		 * Return PAir, Left pos King, Right Pos Tower
+		 * @param click1
+		 * @param click2
+		 * @return
+		 */
+		public static Pair<Position, Position>	getPositionKing(Position click1, Position click2) {
+			Position k = new Position(click1.row, click2.column < click1.column ? 'c' : 'g');
+			Position t = new Position(click1.row, click2.column < click1.column ? 'd' : 'f');
+			return new Pair<Position, Position>(k, t);
+		}
 
 		public static boolean CanTheyCastling(Collection<Pawn> tmp, Pawn p2, Pawn p1, BoardGame elem) { // tmp is her the current BoardGame but don't care
 			if (!_canCastling(tmp, p2,p1,elem)) // Start Position and Good Pawns/Color
