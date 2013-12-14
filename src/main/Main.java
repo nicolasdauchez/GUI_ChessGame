@@ -9,6 +9,10 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,13 +23,17 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 
 import sun.java2d.loops.ScaledBlit;
 import Chess.ChessGameWidget;
@@ -36,11 +44,21 @@ import Chess.ePawns;
  * @author Lumy-
  *
  */
-public class Main extends JFrame {
+public class Main extends JFrame implements ActionListener {
 	
+	// program entry point
+	public static void main(String[] args) {
+		Main window = new Main();
+		window.setVisible(true);
+	}
+
+
+
+	private JButton resetBtn;
+
 	public Main() {		
 		// set the window size
-		setSize(860,715);
+		setSize(860,700);
 		// set the title of the window
 		setTitle("Our ChessGame");
 		// set the default close operation
@@ -51,50 +69,75 @@ public class Main extends JFrame {
 
 	private void initPanels() {
 		// main panel with BorderLayout
-		mainPanel = new JPanel();
-		BorderLayout bdrl = new BorderLayout();
-		mainPanel.setLayout(bdrl);
+		this.mainPanel = new JPanel();
+		this.mainPanel.setLayout(new BorderLayout());
 
 		// creates ChessGame widget and add it to ContentPane
 		this.widget = new ChessGameWidget(this);
+
+//		this.widget.setBorder(BorderFactory.createLineBorder(Color.green));
+		
 //		this.widget.setMaximumSize(new Dimension(640,640));
 //		this.widget.setMinimumSize(new Dimension(640,640));
 //		this.widget.setPreferredSize(new Dimension(640,640));
-		mainPanel.add(this.widget, BorderLayout.CENTER);
-
-		// [Label] Game status message
-		this.gameStatusMsgLabel = new JLabel(" ", JLabel.CENTER);
-//		msgLabel.setMaximumSize(new Dimension(800, 20));
-//		msgLabel.setMinimumSize(new Dimension(800, 20));
-//		msgLabel.setPreferredSize(new Dimension(800, 20));
-		mainPanel.add(gameStatusMsgLabel, BorderLayout.SOUTH);
+		this.mainPanel.add(this.widget, BorderLayout.CENTER);
 		
 		initRightPanel();
 		initLeftPanel();
+		initBottomPanel();
 		
 		getContentPane().add(mainPanel);		
 	}
 
-	private void initLeftPanel() {		
-		// left panel with game informations
-		this.leftPanel = new JPanel();
-		leftPanel.setLayout(new GridBagLayout());
-		leftPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		
-		// "player turn" Panel
-		JPanel subLeftPanel = new JPanel();
-//		subLeftPanel.setBorder(BorderFactory.);
-		subLeftPanel.setLayout(new BoxLayout(subLeftPanel, BoxLayout.Y_AXIS));
-		this.fixedPlayerTurnLabel = new JLabel("Player turn:", SwingConstants.CENTER);
-		this.playerTurnLabel = new JLabel(" ", SwingConstants.CENTER);
-		subLeftPanel.add(this.fixedPlayerTurnLabel);
-		subLeftPanel.add(this.playerTurnLabel);
-
-		this.leftPanel.add(subLeftPanel);
-		
-		mainPanel.add(leftPanel, BorderLayout.WEST);
+	private void initBottomPanel() {
+		// Game status message
+		JPanel bottomPanel = new JPanel();
+		bottomPanel.setLayout(new GridBagLayout());
+		Dimension bottomPanelDim = bottomPanel.getPreferredSize();
+		bottomPanelDim.height = 20;
+		bottomPanel.setPreferredSize(bottomPanelDim);
+//		bottomPanel.setBorder(BorderFactory.createLineBorder(Color.red));
+		this.mainPanel.add(bottomPanel, BorderLayout.PAGE_END);
+		this.gameStatusMsgLabel = new JLabel("", JLabel.CENTER);
+		gameStatusMsgLabel.setOpaque(true);
+		gameStatusMsgLabel.setForeground(Color.red);
+//		msgLabel.setMaximumSize(new Dimension(800, 20));
+//		msgLabel.setMinimumSize(new Dimension(800, 20));
+//		msgLabel.setPreferredSize(new Dimension(800, 20));
+		bottomPanel.add(gameStatusMsgLabel);
+		this.mainPanel.add(bottomPanel, BorderLayout.PAGE_END);
 	}
 
+	private void initLeftPanel() {
+		// left panel with game informations
+		this.leftPanel = new JPanel();
+//		leftPanel.setLayout(new GridBagLayout());
+		leftPanel.setLayout(new BorderLayout());
+		leftPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+//		leftPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		
+		// "player turn" Panel
+		JPanel playerTurnPanel = new JPanel();
+		playerTurnPanel.setLayout(new GridBagLayout());
+		JPanel subLeftPanel = new JPanel();
+		subLeftPanel.setLayout(new BoxLayout(subLeftPanel, BoxLayout.Y_AXIS));
+		this.fixedPlayerTurnLabel = new JLabel("Player turn:", SwingConstants.CENTER);
+		this.playerTurnLabel = new JLabel("", SwingConstants.CENTER);
+		subLeftPanel.add(this.fixedPlayerTurnLabel);
+		subLeftPanel.add(this.playerTurnLabel);
+		playerTurnPanel.add(subLeftPanel);
+		this.leftPanel.add(playerTurnPanel, BorderLayout.CENTER);
+		
+		// reset button
+		this.resetBtn = new JButton("Reset");
+		this.resetBtn.addActionListener(this);
+		this.leftPanel.add(resetBtn, BorderLayout.PAGE_END);
+		
+		
+		this.mainPanel.add(leftPanel, BorderLayout.WEST);
+	}
+
+	
 	private void initRightPanel() {
 		// right panel with dead pieces
 		this.rightPanel = new JPanel();
@@ -105,19 +148,21 @@ public class Main extends JFrame {
 		this.whiteEatenPanel = new JPanel();
 		this.whiteEatenPanel.setPreferredSize(new Dimension(105,250));
 		this.whiteEatenPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		this.whiteEatenPanel.setBorder(BorderFactory.createTitledBorder("Eaten pieces"));
-		this.whiteEatenPanel.setBackground(Color.LIGHT_GRAY);
+		Border eatenBorder = new LineBorder(Color.black);
+		TitledBorder eatenBorder2 = BorderFactory.createTitledBorder(eatenBorder, "Eaten pieces");
+		this.whiteEatenPanel.setBorder(eatenBorder2);
 		
 		this.blackEatenPanel = new JPanel();
 		this.blackEatenPanel.setPreferredSize(new Dimension(105,250));
 		this.blackEatenPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		this.blackEatenPanel.setBorder(BorderFactory.createTitledBorder("Eaten pieces"));
-		this.blackEatenPanel.setBackground(Color.LIGHT_GRAY);
+		Border eatenBorder3 = new LineBorder(Color.black);
+		TitledBorder eatenBorder4 = BorderFactory.createTitledBorder(eatenBorder2, "Eaten pieces");
+		this.blackEatenPanel.setBorder(eatenBorder4);
 		
 		this.rightPanel.add(whiteEatenPanel, BorderLayout.PAGE_END);
 		this.rightPanel.add(blackEatenPanel, BorderLayout.PAGE_START);
 		
-		mainPanel.add(rightPanel, BorderLayout.EAST);
+		this.mainPanel.add(rightPanel, BorderLayout.EAST);
 	}
 
 	public void changeStatutMsg(String message) {
@@ -166,11 +211,14 @@ public class Main extends JFrame {
 		return selectedPiece;	
 	}
 
-	public static void main(String[] args) {
-		Main window = new Main();
-		window.setVisible(true);
+	// events
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		if (arg0.getSource() == this.resetBtn)
+//			this.widget.game.NewGame("Whites", "Blacks");
+			;
 	}
-
+	
 	/** private fields **/
 	ChessGameWidget widget;	// where the game is being played
 	JLabel gameStatusMsgLabel;
@@ -181,7 +229,7 @@ public class Main extends JFrame {
 	JPanel rightPanel;
 	JPanel whiteEatenPanel;
 	JPanel blackEatenPanel;
-		
+
 }
 
 

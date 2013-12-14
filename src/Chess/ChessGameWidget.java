@@ -154,7 +154,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	}
 	
 	private void handleMove(Pair<eMoveState, eGameState> moveAccepted) {
-		this.message = " ";
+		this.message = "";
 		eMoveState moveState = moveAccepted.GetLeft();
 		eGameState gameState = moveAccepted.GetRight();
 		
