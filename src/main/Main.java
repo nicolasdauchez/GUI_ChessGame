@@ -40,14 +40,18 @@ public class Main extends JFrame {
 	
 	public Main() {		
 		// set the window size
-		setSize(850,715);
+		setSize(860,715);
 		// set the title of the window
 		setTitle("Our ChessGame");
 		// set the default close operation
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+		initPanels();
+	}
+
+	private void initPanels() {
 		// main panel with BorderLayout
-		JPanel mainPanel = new JPanel();
+		mainPanel = new JPanel();
 		BorderLayout bdrl = new BorderLayout();
 		mainPanel.setLayout(bdrl);
 
@@ -64,8 +68,34 @@ public class Main extends JFrame {
 //		msgLabel.setMinimumSize(new Dimension(800, 20));
 //		msgLabel.setPreferredSize(new Dimension(800, 20));
 		mainPanel.add(gameStatusMsgLabel, BorderLayout.SOUTH);
-
 		
+		initRightPanel();
+		initLeftPanel();
+		
+		getContentPane().add(mainPanel);		
+	}
+
+	private void initLeftPanel() {		
+		// left panel with game informations
+		this.leftPanel = new JPanel();
+		leftPanel.setLayout(new GridBagLayout());
+		leftPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		
+		// "player turn" Panel
+		JPanel subLeftPanel = new JPanel();
+//		subLeftPanel.setBorder(BorderFactory.);
+		subLeftPanel.setLayout(new BoxLayout(subLeftPanel, BoxLayout.Y_AXIS));
+		this.fixedPlayerTurnLabel = new JLabel("Player turn:", SwingConstants.CENTER);
+		this.playerTurnLabel = new JLabel(" ", SwingConstants.CENTER);
+		subLeftPanel.add(this.fixedPlayerTurnLabel);
+		subLeftPanel.add(this.playerTurnLabel);
+
+		this.leftPanel.add(subLeftPanel);
+		
+		mainPanel.add(leftPanel, BorderLayout.WEST);
+	}
+
+	private void initRightPanel() {
 		// right panel with dead pieces
 		this.rightPanel = new JPanel();
 		BorderLayout rightPanelBL = new BorderLayout();
@@ -73,44 +103,21 @@ public class Main extends JFrame {
 		rightPanel.setBorder(new EmptyBorder(5,5,5,5));
 
 		this.whiteEatenPanel = new JPanel();
-		this.whiteEatenPanel.setPreferredSize(new Dimension(95,250));
-		this.whiteEatenPanel.setLayout(new FlowLayout());
-		this.whiteEatenPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		this.whiteEatenPanel.setPreferredSize(new Dimension(105,250));
+		this.whiteEatenPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		this.whiteEatenPanel.setBorder(BorderFactory.createTitledBorder("Eaten pieces"));
 		this.whiteEatenPanel.setBackground(Color.LIGHT_GRAY);
 		
 		this.blackEatenPanel = new JPanel();
-		this.blackEatenPanel.setPreferredSize(new Dimension(95,250));
-		this.blackEatenPanel.setLayout(new FlowLayout());
-		this.blackEatenPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		this.blackEatenPanel.setPreferredSize(new Dimension(105,250));
+		this.blackEatenPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		this.blackEatenPanel.setBorder(BorderFactory.createTitledBorder("Eaten pieces"));
 		this.blackEatenPanel.setBackground(Color.LIGHT_GRAY);
 		
 		this.rightPanel.add(whiteEatenPanel, BorderLayout.PAGE_END);
 		this.rightPanel.add(blackEatenPanel, BorderLayout.PAGE_START);
 		
 		mainPanel.add(rightPanel, BorderLayout.EAST);
-		
-		
-		// left panel with game informations
-		this.leftPanel = new JPanel();
-		leftPanel.setLayout(new GridBagLayout());
-		leftPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		
-		JPanel subLeftPanel = new JPanel();
-		subLeftPanel.setLayout(new BoxLayout(subLeftPanel, BoxLayout.Y_AXIS));
-		
-		this.fixedPlayerTurnLabel = new JLabel("Player turn:", SwingConstants.CENTER);
-		this.playerTurnLabel = new JLabel(" ", SwingConstants.CENTER);
-		
-		subLeftPanel.add(this.fixedPlayerTurnLabel);
-		subLeftPanel.add(this.playerTurnLabel);
-
-		this.leftPanel.add(subLeftPanel);
-		
-		mainPanel.add(leftPanel, BorderLayout.WEST);
-		
-		
-		getContentPane().add(mainPanel);
-//		getContentPane().add(widget);
 	}
 
 	public void changeStatutMsg(String message) {
@@ -169,6 +176,7 @@ public class Main extends JFrame {
 	JLabel gameStatusMsgLabel;
 	JLabel fixedPlayerTurnLabel;
 	JLabel playerTurnLabel;
+	JPanel mainPanel;
 	JPanel leftPanel;
 	JPanel rightPanel;
 	JPanel whiteEatenPanel;
