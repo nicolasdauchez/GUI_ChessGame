@@ -146,9 +146,9 @@ public class Rules {
 			public eGameState ShouldMove(Collection<Pawn> l, Pawn p, Position newPos, BoardGame elem) {
 				List<Pawn> tmp = elem.getNewCopie(l, p, newPos);
 				eGameState ret = eGameState.NEXT;
-				if (Rules.isDraw(tmp, p.GetEnemyColor(), elem)) {
+				if (Rules.isDraw(tmp, p.GetColor(), elem)) {
 					ret = eGameState.DRAW;
-					return ret; // That MEAN HE COULD.
+					return ret;
 				}
 				else if (Rules.CheckKing.isCheckKing(tmp, elem, p.GetColor()))
 					return (eColor.Black == p.GetColor() ? eGameState.CHECK_KING_B : eGameState.CHECK_KING_W);

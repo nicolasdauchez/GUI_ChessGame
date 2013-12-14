@@ -160,9 +160,10 @@ public class ChessGame implements IChessGame {
 			log.add(firstClick, secondClick);
 			NextTurn(r1.GetRight());
 		}
-		if ((State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W) &&
-		   (elem.getObstacleCase(firstClick) == eColor.Black ? eGameState.CHECK_KING_B : eGameState.CHECK_KING_W) != State)
+		if ((State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W) && // one player in check
+		   (elem.getObstacleCase(secondClick) == eColor.Black ? eGameState.CHECK_KING_B : eGameState.CHECK_KING_W) != State) // current player not in check
 		{
+			
 			List<Pair<Position, Position>> r;
 			if (State == eGameState.CHECK_KING_B)
 				r = elem.getListPositionPossibleProtectKing(eColor.Black);
