@@ -131,7 +131,9 @@ public class Log {
 	public Pair<Position, Position>	getCurrentShoot() {
 		return t.getCurrentShoot();
 	}
-
+	public boolean goForward(int index){
+		return t.goForwardElem(index);
+	}
 	public Boolean Export(ChessDataGame header) {
 		//Export e = new Export(header, log);
 		return false;
