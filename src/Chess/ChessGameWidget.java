@@ -324,6 +324,12 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 			return this.pieces_images_black.get(classe);
 		return this.pieces_images_white.get(classe);
 	}
+
+	public void resetGame() {
+		this.game.NewGame("Whites", "Blacks");		
+		repaint();
+		this.main.changePlayerTurn(this.game.GetTurn());
+	}
 		
 	
 	

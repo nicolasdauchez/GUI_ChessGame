@@ -195,7 +195,7 @@ public class Main extends JFrame implements ActionListener {
 	}
 	
 	public boolean askCastling() {
-		int result = JOptionPane.showConfirmDialog(this, "Du you want to perform a castling?", "Castling move detected", JOptionPane.YES_NO_OPTION);
+		int result = JOptionPane.showConfirmDialog(this, "Do you want to perform a castling?", "Castling move detected", JOptionPane.YES_NO_OPTION);
 		return (result == 0);
 	}
 
@@ -214,11 +214,27 @@ public class Main extends JFrame implements ActionListener {
 	// events
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		if (arg0.getSource() == this.resetBtn)
-//			this.widget.game.NewGame("Whites", "Blacks");
-			;
+		// reset button clicked
+		if (arg0.getSource() == this.resetBtn) {
+			handleResetClicked();
+		}
 	}
 	
+	private void handleResetClicked() {
+		
+		int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to reset the game?", "Reset game", JOptionPane.YES_NO_OPTION);
+		
+		if (result == 0) {
+			this.widget.resetGame();
+			whiteEatenPanel.removeAll();
+			whiteEatenPanel.updateUI();
+			blackEatenPanel.removeAll();
+			blackEatenPanel.updateUI();
+			changeStatutMsg("");
+		}
+	}
+
+
 	/** private fields **/
 	ChessGameWidget widget;	// where the game is being played
 	JLabel gameStatusMsgLabel;
