@@ -151,7 +151,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	}
 	
 	private void handleMove(Pair<eMoveState, eGameState> moveAccepted) {
-		this.message = " ";
+		this.message = "";
 		eMoveState moveState = moveAccepted.GetLeft();
 		eGameState gameState = moveAccepted.GetRight();
 		
@@ -323,6 +323,12 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		if (color == eColor.Black)
 			return this.pieces_images_black.get(classe);
 		return this.pieces_images_white.get(classe);
+	}
+
+	public void resetGame() {
+		this.game.NewGame("Whites", "Blacks");		
+		repaint();
+		this.main.changePlayerTurn(this.game.GetTurn());
 	}
 		
 	
