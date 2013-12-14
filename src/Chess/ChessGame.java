@@ -20,7 +20,7 @@ public class ChessGame implements IChessGame {
 	public ChessGame()
 	{
 		State = eGameState.NEXT;
-		Turn = eColor.Black;
+		Turn = eColor.White;
 		log = new Log();
 		elem = new BoardGame();
 		log.Initialize();
