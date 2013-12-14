@@ -7,7 +7,6 @@ import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -16,17 +15,15 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
-import javax.swing.DebugGraphics;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
-import org.apache.commons.collections4.collection.UnmodifiableCollection;
-
 import main.Main;
 import main.Pair;
 
 public class ChessGameWidget extends JComponent implements MouseListener{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// Inner class which calculs the game logic
 	IChessGame game;
 	// board game colors
@@ -225,7 +222,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	}
 
 	private void handlePromotion() {
-		Collection<Pawn> alivePieces = this.game.elem.getElem();
+		Collection<Pawn> alivePieces = this.game.getBoardGame().getElem();
 		if (!alivePieces.isEmpty()) {
 			Iterator<Pawn> iterator = alivePieces.iterator();
 			while(iterator.hasNext()) {
