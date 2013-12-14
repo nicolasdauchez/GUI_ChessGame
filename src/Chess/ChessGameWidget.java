@@ -109,44 +109,46 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 
 	@Override // the mouse released event is the only one we use
 	public void mouseReleased(MouseEvent e) {
-		Position clickedPos = getMousePosition(e);
-		// mouse was cliked within game board limits
-		if (!this.game.getBoardGame().isOutside(clickedPos)) {
-			// nothing selected yet : first click
-			if (posFirstClick == null) {
-				this.posFirstClick = clickedPos;
-				// first click doesn't count if it's on an empty square
-				// first click doesn't count if not current player's pieces clicked
-				if (!this.game.getBoardGame(). contains(this.posFirstClick)
-					|| this.game.getBoardGame().getObstacleCase(this.posFirstClick) != this.game.GetTurn())
-					this.posFirstClick = null;
-					
-			}
-			// one piece is already selected : second click
-			else {
-				this.posSecondClick = clickedPos;
-				if (!this.posFirstClick.equals(this.posSecondClick))
-				{
-					// saving some stats
-					int eatenPiecesNb = this.game.getBoardGame().GetEaten().size();
-					eColor currentPlayer = this.game.GetTurn();
-				
-					// check move validity
-					Pair<eMoveState, eGameState> moveAccepted = this.game.catchEvent(posFirstClick, posSecondClick);
-
-					System.out.println("eMoveState: " + moveAccepted.GetLeft() + " eGameState:" + moveAccepted.GetRight() + " TurnPlayer: " + game.GetTurn());
-					
-					// update game board (piece moving or text explaining why not)
-					handleMove(moveAccepted);
-					// updates eaten pieces panel if necessary
-					if (this.game.getBoardGame().GetEaten().size() > eatenPiecesNb)
-						this.main.updateEatenPieces(currentPlayer, this.game.getBoardGame().GetEaten());
+		if (this.game.isCheckMat() == eColor.None && !this.game.isDraw()) {
+			Position clickedPos = getMousePosition(e);
+			// mouse was cliked within game board limits
+			if (!this.game.getBoardGame().isOutside(clickedPos)) {
+				// nothing selected yet : first click
+				if (posFirstClick == null) {
+					this.posFirstClick = clickedPos;
+					// first click doesn't count if it's on an empty square
+					// first click doesn't count if not current player's pieces clicked
+					if (!this.game.getBoardGame(). contains(this.posFirstClick)
+						|| this.game.getBoardGame().getObstacleCase(this.posFirstClick) != this.game.GetTurn())
+						this.posFirstClick = null;
+						
 				}
-				else
-					this.posFirstClick = null;
-				this.posSecondClick = null;
+				// one piece is already selected : second click
+				else {
+					this.posSecondClick = clickedPos;
+					if (!this.posFirstClick.equals(this.posSecondClick))
+					{
+						// saving some stats
+						int eatenPiecesNb = this.game.getBoardGame().GetEaten().size();
+						eColor currentPlayer = this.game.GetTurn();
+					
+						// check move validity
+						Pair<eMoveState, eGameState> moveAccepted = this.game.catchEvent(posFirstClick, posSecondClick);
+	
+						System.out.println("eMoveState: " + moveAccepted.GetLeft() + " eGameState:" + moveAccepted.GetRight() + " TurnPlayer: " + game.GetTurn());
+						
+						// update game board (piece moving or text explaining why not)
+						handleMove(moveAccepted);
+						// updates eaten pieces panel if necessary
+						if (this.game.getBoardGame().GetEaten().size() > eatenPiecesNb)
+							this.main.updateEatenPieces(currentPlayer, this.game.getBoardGame().GetEaten());
+					}
+					else
+						this.posFirstClick = null;
+					this.posSecondClick = null;
+				}
+				repaint();
 			}
-			repaint();
 		}
 	}
 	
