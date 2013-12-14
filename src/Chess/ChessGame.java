@@ -2,6 +2,7 @@
  * 
  */
 package Chess;
+import java.util.Collection;
 import java.util.List;
 
 import main.Pair;
@@ -9,8 +10,8 @@ import main.Pair;
  * @author Lumy-
  *
  */
-public class ChessGame {
-	public BoardGame		elem;
+public class ChessGame implements IChessGame {
+	private BoardGame		elem;
 	private Log 			log;
 	private ChessDataGame 	Header;
 	private eColor			Turn;
@@ -79,7 +80,7 @@ public class ChessGame {
 			return eColor.White;
 		return eColor.None;
 	}
-	public Boolean isDraw() {
+	public boolean isDraw() {
 		if (State == eGameState.DRAW)
 			return true;
 		return false;
@@ -114,7 +115,7 @@ public class ChessGame {
 		return ;
 	}
 
-	public Pair<eMoveState, eGameState> Check_King_Way(Position firstClick, Position secondClick)
+	private Pair<eMoveState, eGameState> Check_King_Way(Position firstClick, Position secondClick)
 	{
 		System.out.println("CatcEvent: Before");
 		Pair<eMoveState, eGameState> r2;
@@ -163,5 +164,29 @@ public class ChessGame {
 		}
 		System.out.println("----------");
 		return r1;
+	}
+	@Override
+	public int getSizeCurrentElem() {
+		return log.getSizeCurrentElem();
+	}
+	@Override
+	public Collection<Pair<Position, Position>> getForward() {
+		return log.getForward();
+	}
+	@Override
+	public boolean GoBackward() {
+		Pair<Position, Position> p = null;
+		if (null == (p = log.GoBackward()))
+			return false;
+		elem.get(elem.indexOf(p.GetLeft())).SetPosition(p.GetRight());
+		return true;
+	}
+	@Override
+	public boolean goForward(int index) {
+		return log.goForward(index);
+	}
+	@Override
+	public BoardGame getBoardGame() {
+		return elem;
 	}
 }
