@@ -2,6 +2,7 @@
  * 
  */
 package Chess;
+import java.util.Collection;
 import java.util.List;
 
 import main.Pair;
@@ -9,8 +10,8 @@ import main.Pair;
  * @author Lumy-
  *
  */
-public class ChessGame {
-	public BoardGame		elem;
+public class ChessGame implements IChessGame {
+	private BoardGame		elem;
 	private Log 			log;
 	private ChessDataGame 	Header;
 	private eColor			Turn;
@@ -19,7 +20,7 @@ public class ChessGame {
 	public ChessGame()
 	{
 		State = eGameState.NEXT;
-		Turn = eColor.White;
+		Turn = eColor.Black;
 		log = new Log();
 		elem = new BoardGame();
 		log.Initialize();
@@ -79,7 +80,7 @@ public class ChessGame {
 			return eColor.White;
 		return eColor.None;
 	}
-	public Boolean isDraw() {
+	public boolean isDraw() {
 		if (State == eGameState.DRAW)
 			return true;
 		return false;
@@ -129,14 +130,12 @@ public class ChessGame {
 		NextTurn(eGameState.NEXT);
 	}
 
-	public Pair<eMoveState, eGameState> Check_King_Way(Position firstClick, Position secondClick)
+	private Pair<eMoveState, eGameState> Check_King_Way(Position firstClick, Position secondClick)
 	{
-		System.out.println("CatcEvent: Before");
 		Pair<eMoveState, eGameState> r2;
 		List<Pair<Position, Position>> r;
 		r = elem.getListPositionPossibleProtectKing((State == eGameState.CHECK_KING_B ? eColor.Black : eColor.White));
 		if (r.size() == 0) {
-			System.out.println("----------");
 			return new Pair<eMoveState, eGameState>(eMoveState.SUCCESS, (eGameState.CHECK_KING_W == State ? eGameState.CHECK_MATE_W : eGameState.CHECK_MATE_B));
 		}
 		r2 = Rules.DoMovePawns(r, elem.get(elem.indexOf(firstClick)), secondClick, elem);
@@ -145,7 +144,6 @@ public class ChessGame {
 			log.add(firstClick, secondClick);
 			NextTurn(r2.GetRight());
 		}
-		System.out.println("----------");
 		return r2;
 	}
 	
@@ -156,9 +154,7 @@ public class ChessGame {
 			return r1;
 		if (State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W)
 			return Check_King_Way(firstClick, secondClick);
-		System.out.println("CatcEvent: Normal");
 		r1 = Rules.DoMovePawns(elem.get(elem.indexOf(firstClick)), secondClick, elem);
-		System.out.println("OutDoMovePawns: Normal");
 		if (r1.GetRight() != eGameState.SAME)
 		{
 			log.add(firstClick, secondClick);
@@ -167,7 +163,6 @@ public class ChessGame {
 		if ((State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W) &&
 		   (elem.getObstacleCase(firstClick) == eColor.Black ? eGameState.CHECK_KING_B : eGameState.CHECK_KING_W) != State)
 		{
-			System.out.println("CatcEvent: After");
 			List<Pair<Position, Position>> r;
 			if (State == eGameState.CHECK_KING_B)
 				r = elem.getListPositionPossibleProtectKing(eColor.Black);
@@ -176,7 +171,30 @@ public class ChessGame {
 			if (r.size() == 0)
 				r1 = new Pair<eMoveState, eGameState>(eMoveState.SUCCESS, (eGameState.CHECK_KING_W == State ? eGameState.CHECK_MATE_W : eGameState.CHECK_MATE_B));
 		}
-		System.out.println("----------");
 		return r1;
+	}
+	@Override
+	public int getSizeCurrentElem() {
+		return log.getSizeCurrentElem();
+	}
+	@Override
+	public Collection<Pair<Position, Position>> getForward() {
+		return log.getForward();
+	}
+	@Override
+	public boolean GoBackward() {
+		Pair<Position, Position> p = null;
+		if (null == (p = log.GoBackward()))
+			return false;
+		elem.get(elem.indexOf(p.GetLeft())).SetPosition(p.GetRight());
+		return true;
+	}
+	@Override
+	public boolean goForward(int index) {
+		return log.goForward(index);
+	}
+	@Override
+	public BoardGame getBoardGame() {
+		return elem;
 	}
 }
