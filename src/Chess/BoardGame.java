@@ -6,7 +6,9 @@ package Chess;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import main.Pair;
+
 import org.apache.commons.collections4.CollectionUtils;
 
 /**
@@ -371,9 +373,9 @@ public class BoardGame {
 	public List<Pawn> getAllColor(eColor e) {
 		return getAllColor(elem, e);
 	}
-	public List<Pawn> getAllColor(List<Pawn> p, eColor e) {
+	public List<Pawn> getAllColor(Collection<Pawn> tmp, eColor e) {
 		List<Pawn> ret = new ArrayList<Pawn>();
-	    for(Pawn item: p)
+	    for(Pawn item: tmp)
 	    	if (item.GetColor() == e)
 	    		ret.add(item.clone());
 		return ret;
@@ -386,6 +388,7 @@ public class BoardGame {
 		addLinePion(eColor.White);
 		addHeadLine(eColor.Black);
 		addHeadLine(eColor.White);
+	
 	}
 	private void add(eColor c, Position p, ePawns t) {
 			elem.add(new Pawn(c, p, t));

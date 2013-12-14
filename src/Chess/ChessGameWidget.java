@@ -180,6 +180,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 					break;
 				}
 				case DRAW: {
+					System.out.println("STALEMEAMTEMTEAT");
 					message = "Stalemate! Game over.";
 					break;
 				}

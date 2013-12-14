@@ -45,7 +45,6 @@ public class Rules {
 		 * @return
 		 */
 		private static boolean canMoveTheir_Castling(Collection<Pawn> tmp, Pawn pawn, Position enp, BoardGame elem) {
-			enp.print();System.out.println("<<<--");
 			Collection<Pawn> t = elem.getNewCopie(tmp, elem.get(tmp, elem.indexOf(tmp, pawn.GetPosition())), enp);
 			if (Rules.CheckKing.isCheckKing(t, elem, pawn.GetColor()))
 					return false;
@@ -594,7 +593,7 @@ public class Rules {
 		 * @param elem
 		 * @return
 		 */
-		public static boolean isPossibleMove(List<Pawn> tmp, Pawn pawn, BoardGame elem) {
+		public static boolean isPossibleMove(Collection<Pawn> tmp, Pawn pawn, BoardGame elem) {
 			List<Position> ret = null;
 			for (Map.Entry<ePawns, MapFunctor.Functor> entry : Rules.MapFunctor.MapFunction.entrySet()) {
 			    if (pawn.GetClass().equals((ePawns)entry.getKey()))
@@ -910,14 +909,14 @@ public class Rules {
 		}
 	}
 	
-	public static boolean isDraw(List<Pawn> tmp, eColor c, BoardGame elem) {	
+	public static boolean isDraw(Collection<Pawn> tmp, eColor c, BoardGame elem) {	
 			if (ImpossibilityCheckMate(tmp, elem))
 				return true;// == eColor.Black ? eColor.White : eColor.Black)
 			if (Stalemate(tmp, c, elem)) // Because we Check if the NEXT player can Play
 				return true;
 			return false;
 		}
-	private static boolean Stalemate(List<Pawn> tmp, eColor e, BoardGame elem) {
+	private static boolean Stalemate(Collection<Pawn> tmp, eColor e, BoardGame elem) {
 			List<Pawn> allColor = elem.getAllColor(tmp, e);
 			for (Pawn pawn : allColor) {
 				if (Rules.MapFunctor.isPossibleMove(tmp, pawn, elem))
@@ -943,7 +942,7 @@ public class Rules {
 		}
 		return true;
 	}*/
-	private static boolean ImpossibilityCheckMate(List<Pawn> tmp, BoardGame elem) {
+	private static boolean ImpossibilityCheckMate(Collection<Pawn> tmp, BoardGame elem) {
 		if (tmp.size() <= 4) {
 			
 			if (tmp.size() == 2 && null != elem.getPawnsBoardPosition(eColor.Black, ePawns.KING, tmp) && null != elem.getPawnsBoardPosition(eColor.White, ePawns.KING, tmp)) // king versus king Draw !
@@ -979,6 +978,8 @@ public class Rules {
 	static public Pair<eMoveState, eGameState> DoMovePawns(Pawn p, Position newPos, BoardGame elem) {
 		eMoveState r = eMoveState.FAIL_CLASS_UNKNOWN;
 		eGameState r2 = eGameState.SAME;
+		if (Rules.isDraw(elem.getElem(), p.GetColor(), elem))
+			return new Pair<eMoveState, eGameState>(eMoveState.SUCCESS, eGameState.DRAW);// That MEAN HE COULDN'T PLAY ANYMORE.
 		for (Map.Entry<ePawns, MapFunctor.Functor> entry : Rules.MapFunctor.MapFunction.entrySet()) {
 		    if (p.GetClass().equals((ePawns)entry.getKey())) {
 		    	if ((r = ((MapFunctor.Functor)entry.getValue()).CanMove(p, newPos, elem)) == eMoveState.SUCCESS) {
