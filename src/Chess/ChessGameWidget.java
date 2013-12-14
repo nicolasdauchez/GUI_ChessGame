@@ -28,7 +28,7 @@ import main.Pair;
 
 public class ChessGameWidget extends JComponent implements MouseListener{
 	// Inner class which calculs the game logic
-	ChessGame game;
+	IChessGame game;
 	// board game colors
 	Color black;
 	Color brown_dark;
@@ -114,14 +114,14 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	public void mouseReleased(MouseEvent e) {
 		Position clickedPos = getMousePosition(e);
 		// mouse was cliked within game board limits
-		if (!this.game.elem.isOutside(clickedPos)) {
+		if (!this.game.getBoardGame().isOutside(clickedPos)) {
 			// nothing selected yet : first click
 			if (posFirstClick == null) {
 				this.posFirstClick = clickedPos;
 				// first click doesn't count if it's on an empty square
 				// first click doesn't count if not current player's pieces clicked
-				if (!this.game.elem. contains(this.posFirstClick)
-					|| this.game.elem.getObstacleCase(this.posFirstClick) != this.game.GetTurn())
+				if (!this.game.getBoardGame(). contains(this.posFirstClick)
+					|| this.game.getBoardGame().getObstacleCase(this.posFirstClick) != this.game.GetTurn())
 					this.posFirstClick = null;
 					
 			}
@@ -131,7 +131,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 				if (!this.posFirstClick.equals(this.posSecondClick))
 				{
 					// saving some stats
-					int eatenPiecesNb = this.game.elem.GetEaten().size();
+					int eatenPiecesNb = this.game.getBoardGame().GetEaten().size();
 					eColor currentPlayer = this.game.GetTurn();
 				
 					// check move validity
@@ -142,8 +142,8 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 					// update game board (piece moving or text explaining why not)
 					handleMove(moveAccepted);
 					// updates eaten pieces panel if necessary
-					if (this.game.elem.GetEaten().size() > eatenPiecesNb)
-						this.main.updateEatenPieces(currentPlayer, this.game.elem.GetEaten());
+					if (this.game.getBoardGame().GetEaten().size() > eatenPiecesNb)
+						this.main.updateEatenPieces(currentPlayer, this.game.getBoardGame().GetEaten());
 				}
 				else
 					this.posFirstClick = null;
@@ -283,7 +283,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	}
 
 	private void drawPieces(Graphics2D g2d) {
-		Collection<Pawn> alivePieces = this.game.elem.getElem();
+		Collection<Pawn> alivePieces = this.game.getBoardGame().getElem();
 		if (!alivePieces.isEmpty()) {
 			Map<ePawns, BufferedImage> tmpPiecesImg = null;
 			Iterator<Pawn> iterator = alivePieces.iterator();
