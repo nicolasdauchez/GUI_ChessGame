@@ -126,8 +126,13 @@ public class Log {
 	public boolean canGoForward() {
 		return t.head.index != -1;
 	}
-	public boolean goForward(int index){
-		return t.goForwardElem(index);
+	public Pair<Position, Position> goForward(int index){
+		if (!t.goForwardElem(index))
+			return null;
+		return t.getCurrentShoot(); 
+	}
+	public Pair<Position, Position> goForward(){
+		return goForward(t.head.index);
 	}
 	public Collection<Pair<Position, Position>>	getForward() {
 		return t.getAllForwardShoot();	

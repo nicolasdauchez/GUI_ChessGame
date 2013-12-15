@@ -33,6 +33,10 @@ public class ChessGame implements IChessGame {
 	public eColor GetTurn() {
 		return Turn;
 	}
+	private void PrevTurn() {
+		Turn = (Turn == eColor.Black) ? eColor.White : eColor.Black;
+		
+	}
 	/**
 	 * Set The Next Player and setCheckMat
 	 * if eGameSate e
@@ -188,11 +192,26 @@ public class ChessGame implements IChessGame {
 		if (null == (p = log.GoBackward()))
 			return false;
 		elem.get(elem.indexOf(p.GetLeft())).SetPosition(p.GetRight());
+		PrevTurn();
 		return true;
 	}
 	@Override
 	public boolean goForward(int index) {
-		return log.goForward(index);
+		Pair<Position, Position> p = null;
+		if (null == ( p = log.goForward(index)))
+			return false;
+		elem.get(elem.indexOf(p.GetLeft())).SetPosition(p.GetRight());
+		PrevTurn();
+		return true;
+	}
+	@Override
+	public boolean goForward() {
+		Pair<Position, Position> p = null;
+		if (null == ( p = log.goForward()))
+			return false;
+		elem.get(elem.indexOf(p.GetLeft())).SetPosition(p.GetRight());
+		PrevTurn();
+		return true;
 	}
 	@Override
 	public BoardGame getBoardGame() {

@@ -345,10 +345,10 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	}
 
 	public boolean goForward() {
-//		if (this.game.goForward()) {
-//			repaint();
+		if (this.game.goForward()) {
+			repaint();
 //			this.main.enableBackButton(true);
-//		}
+		}
 		return this.game.canGoForward();
 	}
 		

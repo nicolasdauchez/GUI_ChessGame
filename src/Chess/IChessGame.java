@@ -21,6 +21,7 @@ public interface IChessGame {
 	public Collection<Pair<Position, Position>>			getForward();
 	public boolean 										GoBackward();
 	public boolean 										goForward(int index);
+	public boolean 										goForward();
 	public boolean 										canGoBackward();
 	public boolean 										canGoForward();
 
@@ -40,5 +41,6 @@ public interface IChessGame {
 	public boolean 										isPromotion(Position pos);
 	public void											DoPromotion(Position p, ePawns c);
 	public void 										DoCastling(Position click1, Position click2);
+	
 
 }
