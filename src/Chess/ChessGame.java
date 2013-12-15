@@ -199,11 +199,9 @@ public class ChessGame implements IChessGame {
 		return elem;
 	}
 	public boolean canGoForward() {
-		// TODO
-		return true;
+		return log.canGoForward();
 	}
 	public boolean canGoBackward() {
-		// TODO
-		return true;
+		return log.canGoBackward();
 	}
 }

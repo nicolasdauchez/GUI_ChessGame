@@ -119,20 +119,27 @@ public class Log {
 	public Pair<Position, Position> GoBackward() {
 		return t.goBackward();
 	}
-	public int getSizeCurrentElem() {
-		return t.getSizeElems();
+
+	public boolean canGoBackward() {
+		return t.head.mother != null;
+	}
+	public boolean canGoForward() {
+		return t.head.index != -1;
+	}
+	public boolean goForward(int index){
+		return t.goForwardElem(index);
 	}
 	public Collection<Pair<Position, Position>>	getForward() {
 		return t.getAllForwardShoot();	
+	}
+	public int getSizeCurrentElem() {
+		return t.getSizeElems();
 	}
 	public void add(Position p, Position newp) {
 		t.addMoveHead(new Pair<Position,Position>(new Position(p), new Position(newp)));
 	}
 	public Pair<Position, Position>	getCurrentShoot() {
 		return t.getCurrentShoot();
-	}
-	public boolean goForward(int index){
-		return t.goForwardElem(index);
 	}
 	public Boolean Export(ChessDataGame header) {
 		//Export e = new Export(header, log);
@@ -146,4 +153,6 @@ public class Log {
 	public void addCastling(eColor getColor, String string) {
 		//AddCasting
 	}
+
+
 }
