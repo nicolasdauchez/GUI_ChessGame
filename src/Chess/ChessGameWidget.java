@@ -190,6 +190,9 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 			// check if a pawn managed to get a Promotion
 			handlePromotion();
 			
+			// enable history's go back back button
+			this.main.enableBackwardButton(true);
+			
 		}
 		else {
 			switch (moveState) {
@@ -233,12 +236,12 @@ public class ChessGameWidget extends JComponent implements MouseListener{
   		    	if (classe == ePawns.PAWN) {
   		    		eColor color = piece.GetColor();
 	    			Position pos = piece.GetPosition();  		    			
-  		    			if ((color == eColor.Black) && (pos.row == 1)
-	    					|| (color == eColor.White) && (pos.row == 8)) {
-	    					ePawns newClasse = this.main.askPromotion();
-	    					if (newClasse != null)
-	    						this.game.DoPromotion(pos, newClasse);
-  		    			}
+	    			if ((color == eColor.Black) && (pos.row == 1)
+    					|| (color == eColor.White) && (pos.row == 8)) {
+    					ePawns newClasse = this.main.askPromotion();
+    					if (newClasse != null)
+    						this.game.DoPromotion(pos, newClasse);
+	    			}
   		    			
   		    	}
 			}
@@ -331,6 +334,22 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		this.game.NewGame("Whites", "Blacks");		
 		repaint();
 		this.main.changePlayerTurn(this.game.GetTurn());
+	}
+
+	public boolean goBack() {
+		if (this.game.GoBackward()) {
+			repaint();
+			this.main.enableForwardButton(true);
+		}
+		return this.game.canGoBackward();
+	}
+
+	public boolean goForward() {
+//		if (this.game.goForward()) {
+//			repaint();
+//			this.main.enableBackButton(true);
+//		}
+		return this.game.canGoForward();
 	}
 		
 	

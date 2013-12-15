@@ -7,8 +7,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -45,16 +47,8 @@ import Chess.ePawns;
  *
  */
 public class Main extends JFrame implements ActionListener {
-	
-	// program entry point
-	public static void main(String[] args) {
-		Main window = new Main();
-		window.setVisible(true);
-	}
 
 
-
-	private JButton resetBtn;
 
 	public Main() {		
 		// set the window size
@@ -67,6 +61,12 @@ public class Main extends JFrame implements ActionListener {
 		initPanels();
 	}
 
+	// program entry point
+	public static void main(String[] args) {
+		Main window = new Main();
+		window.setVisible(true);
+	}
+	
 	private void initPanels() {
 		// main panel with BorderLayout
 		this.mainPanel = new JPanel();
@@ -89,8 +89,8 @@ public class Main extends JFrame implements ActionListener {
 		getContentPane().add(mainPanel);		
 	}
 
+	// Bottom panel with game status message
 	private void initBottomPanel() {
-		// Game status message
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setLayout(new GridBagLayout());
 		Dimension bottomPanelDim = bottomPanel.getPreferredSize();
@@ -108,13 +108,14 @@ public class Main extends JFrame implements ActionListener {
 		this.mainPanel.add(bottomPanel, BorderLayout.PAGE_END);
 	}
 
+	// left panel with game informations
 	private void initLeftPanel() {
-		// left panel with game informations
 		this.leftPanel = new JPanel();
 //		leftPanel.setLayout(new GridBagLayout());
 		leftPanel.setLayout(new BorderLayout());
 		leftPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 //		leftPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		this.mainPanel.add(leftPanel, BorderLayout.WEST);
 		
 		// "player turn" Panel
 		JPanel playerTurnPanel = new JPanel();
@@ -132,19 +133,17 @@ public class Main extends JFrame implements ActionListener {
 		this.resetBtn = new JButton("Reset");
 		this.resetBtn.addActionListener(this);
 		this.leftPanel.add(resetBtn, BorderLayout.PAGE_END);
-		
-		
-		this.mainPanel.add(leftPanel, BorderLayout.WEST);
 	}
 
-	
+	// right panel with dead pieces & history buttons
 	private void initRightPanel() {
-		// right panel with dead pieces
 		this.rightPanel = new JPanel();
 		BorderLayout rightPanelBL = new BorderLayout();
 		rightPanel.setLayout(rightPanelBL);
 		rightPanel.setBorder(new EmptyBorder(5,5,5,5));
+		this.mainPanel.add(rightPanel, BorderLayout.EAST);
 
+		// dead pieces
 		this.whiteEatenPanel = new JPanel();
 		this.whiteEatenPanel.setPreferredSize(new Dimension(105,250));
 		this.whiteEatenPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -156,13 +155,41 @@ public class Main extends JFrame implements ActionListener {
 		this.blackEatenPanel.setPreferredSize(new Dimension(105,250));
 		this.blackEatenPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		Border eatenBorder3 = new LineBorder(Color.black);
-		TitledBorder eatenBorder4 = BorderFactory.createTitledBorder(eatenBorder2, "Eaten pieces");
+		TitledBorder eatenBorder4 = BorderFactory.createTitledBorder(eatenBorder3, "Eaten pieces");
 		this.blackEatenPanel.setBorder(eatenBorder4);
 		
 		this.rightPanel.add(whiteEatenPanel, BorderLayout.PAGE_END);
 		this.rightPanel.add(blackEatenPanel, BorderLayout.PAGE_START);
 		
-		this.mainPanel.add(rightPanel, BorderLayout.EAST);
+		// history buttons
+		JPanel historyPanel = new JPanel();
+		Dimension historyPanelDim = historyPanel.getPreferredSize();
+		historyPanelDim.width = 105;
+		historyPanel.setPreferredSize(historyPanelDim);
+		historyPanel.setLayout(new GridBagLayout());
+
+		this.rightPanel.add(historyPanel, BorderLayout.CENTER);
+		Border historyBorder = new LineBorder(Color.orange);
+		TitledBorder historyBorder2 = BorderFactory.createTitledBorder(historyBorder, "History");
+		historyPanel.setBorder(historyBorder2);
+		
+		goBackBtn = new JButton("<<");
+		goBackBtn.setEnabled(false);
+		goBackBtn.addActionListener(this);
+		
+		goForwardBtn = new JButton(">>");
+		goForwardBtn.setEnabled(false);
+		goForwardBtn.addActionListener(this);
+		
+		GridBagConstraints c = new GridBagConstraints();		
+		c.gridx = 0;
+		c.gridy = 0;
+		c.insets = new Insets(0, 0, 3, 20);
+		historyPanel.add(goBackBtn, c);
+		c.gridx = 0;
+		c.gridy = 1;
+		c.insets = new Insets(3, 20, 0, 0);
+		historyPanel.add(goForwardBtn, c);
 	}
 
 	public void changeStatutMsg(String message) {
@@ -214,12 +241,37 @@ public class Main extends JFrame implements ActionListener {
 	// events
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
+		Object objClicked = arg0.getSource();
 		// reset button clicked
-		if (arg0.getSource() == this.resetBtn) {
+		if (objClicked == this.resetBtn)
 			handleResetClicked();
-		}
+		else if (objClicked == this.goBackBtn)
+			handleGoBack();
+		else if (objClicked == this.goForwardBtn)
+			handleGoForward();			
 	}
 	
+
+	private void handleGoBack() {
+		boolean canGoBack = this.widget.goBack();
+		if (!canGoBack)
+			this.enableBackwardButton(false);
+	}
+
+	public void enableBackwardButton(boolean b) {
+		this.goBackBtn.setEnabled(b);
+	}
+
+	private void handleGoForward() {
+		boolean canGoForward = this.widget.goForward();
+		if (!canGoForward)
+			this.enableForwardButton(false);
+	}
+
+	public void enableForwardButton(boolean b) {
+		this.goForwardBtn.setEnabled(b);
+	}
+
 	private void handleResetClicked() {
 		
 		int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to reset the game?", "Reset game", JOptionPane.YES_NO_OPTION);
@@ -245,6 +297,9 @@ public class Main extends JFrame implements ActionListener {
 	JPanel rightPanel;
 	JPanel whiteEatenPanel;
 	JPanel blackEatenPanel;
+	JButton resetBtn;
+	JButton goBackBtn;
+	JButton goForwardBtn;
 
 }
 

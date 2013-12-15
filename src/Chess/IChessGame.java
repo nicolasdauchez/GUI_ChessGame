@@ -21,6 +21,8 @@ public interface IChessGame {
 	public Collection<Pair<Position, Position>>			getForward();
 	public boolean 										GoBackward();
 	public boolean 										goForward(int index);
+	public boolean 										canGoBackward();
+	public boolean 										canGoForward();
 
 	/**
 	 * ChessGameFunction

@@ -198,4 +198,12 @@ public class ChessGame implements IChessGame {
 	public BoardGame getBoardGame() {
 		return elem;
 	}
+	public boolean canGoForward() {
+		// TODO
+		return true;
+	}
+	public boolean canGoBackward() {
+		// TODO
+		return true;
+	}
 }
