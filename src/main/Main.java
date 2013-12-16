@@ -11,6 +11,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -18,8 +19,10 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -44,6 +47,7 @@ import javax.swing.border.TitledBorder;
 import sun.java2d.loops.ScaledBlit;
 import Chess.ChessGameWidget;
 import Chess.Pawn;
+import Chess.Position;
 import Chess.eColor;
 import Chess.ePawns;
 /**
@@ -79,6 +83,7 @@ public class Main extends JFrame implements ActionListener {
 		this.mainPanel = new JPanel();
 		this.mainPanel.setLayout(new BorderLayout());
 
+		// menu
 		menu = new JMenuBar();
 		item = new JMenu("File");
 		importe = new JMenuItem("Import");
@@ -288,7 +293,6 @@ public class Main extends JFrame implements ActionListener {
 		}
 	}
 	
-
 	private void handleGoBack() {
 		boolean canGoBack = this.widget.goBack();
 		if (!canGoBack)
@@ -300,7 +304,30 @@ public class Main extends JFrame implements ActionListener {
 	}
 
 	private void handleGoForward() {
-		boolean canGoForward = this.widget.goForward();
+		boolean canGoForward = false;
+
+		if (this.widget.hasManyForward()) {
+			int branchesNb = this.widget.getBranchesNb();
+			ArrayList<String> possibilities = new ArrayList<String>();
+			
+			for (int i = 0; i < branchesNb; i++) {
+				possibilities.add("Branch #" + i);
+			}
+			String[] possibilitiesStr = possibilities.toArray(new String[possibilities.size()]);
+			
+		    JOptionPane.showInputDialog(this, 
+		      "Choose which game branch to play:",
+		      "History manager",
+		      JOptionPane.QUESTION_MESSAGE,
+		      null,
+		      possibilitiesStr,
+		      possibilitiesStr[0]);
+		    
+		}
+		else {
+			canGoForward = this.widget.goForward();
+		}
+			
 		if (!canGoForward)
 			this.enableForwardButton(false);
 	}
