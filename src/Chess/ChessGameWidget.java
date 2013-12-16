@@ -353,14 +353,12 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	}
 
 	public void importGame(String path) {
-		// TODO 
+		this.game.Import(path);
 	}
 
 	public void exportGame(String path) {
-		// TODO 
+		this.game.Export(path); 
 	}
-		
-	
 	
 	
 }
