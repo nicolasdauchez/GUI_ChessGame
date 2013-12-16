@@ -504,5 +504,36 @@ public class BoardGame {
 		return null;
 	}
 
+	public void RedoCastling(String stringAction) {
+		
+	}
+
+	public void UndoCastling(String stringAction) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void RedoPromotion(Position p, String stringAction) {
+		ePawns e = ePawns.PAWN;
+		System.out.println(stringAction);
+		switch (stringAction) {
+		case "BISHOP":
+			e = ePawns.BISHOP;
+			break;
+		case "KNIGHT":
+			e = ePawns.KNIGHT;
+			break;
+		case "QUEEN":
+			e = ePawns.QUEEN;
+			break;
+		case "ROOK":
+			e = ePawns.ROOK;
+			break;
+		}
+		get(indexOf(p)).Promotion(e);
+	}
+
+	public void UndoPromotion(Position p) {
+		get(indexOf(p)).Promotion(ePawns.PAWN);
+	}
 }	
 

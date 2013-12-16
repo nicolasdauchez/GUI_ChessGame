@@ -140,6 +140,14 @@ public class Log {
 				}
 				elem.undoRemove(head.eaten, n);
 			}
+			if (head.StringAction != null) {
+				//Action
+				if (t.head.StringAction.equals("O-O") || t.head.StringAction.equals("O-O-O"))
+					elem.UndoCastling(t.head.StringAction);
+				else { // Promotion
+					elem.UndoPromotion(t.head.shoot.GetRight());
+				}
+			}
 			elem.get(elem.indexOf(head.shoot.GetRight())).SetPosition(head.shoot.GetLeft());
 			head = head.mother;
 			return true;
@@ -160,7 +168,7 @@ public class Log {
 	private Tree		t;
 	private Chess.Log.Tree.Elem		first;
 	private XStream xstream;
-
+	
 	public Log(String nB, String nW) {
 		t = new Tree();
 		first = t.head;
@@ -175,9 +183,6 @@ public class Log {
 		t.WhiteName = nW;
 	}
 
-	public void Initialize()
-	{		
-	}
 	public boolean GoBackward(BoardGame elem) {
 		return t.goBackward(elem);
 	}
@@ -192,12 +197,13 @@ public class Log {
 		if (!t.goForwardElem(index))
 			return false;
 		if (t.head.StringAction == null) {
+			System.out.println("No Action");
 			Pair<Position, Position> p = t.getCurrentShoot();
 			if (t.head.eaten != null && elem.indexOf(p.GetRight()) == -1) {
 				Position t = new Position(p.GetRight());
 				t.row += 1;
 				if (elem.indexOf(t) == -1 ||
-						elem.get(elem.indexOf(t)).GetClass() != ePawns.PAWN)
+					elem.get(elem.indexOf(t)).GetClass() != ePawns.PAWN)
 					t.row -= 2;
 				elem.remove(elem.get(elem.indexOf(t)));
 			}	
@@ -205,10 +211,15 @@ public class Log {
 		}
 		else // action
 		{
+			System.out.println(t.head.StringAction);
+			System.out.println("Action");
+
 			if (t.head.StringAction.equals("O-O") || t.head.StringAction.equals("O-O-O"))
-				;//RedoCastling
-			else // Promotion
-				System.out.println(t.head.StringAction);
+				elem.RedoCastling(t.head.StringAction);
+			else { // Promotion
+				elem.RedoPromotion(t.head.shoot.GetLeft(), t.head.StringAction);
+				elem.RedoMove(t.head.shoot);
+			}
 		}
 		return true;
 	}
@@ -229,6 +240,10 @@ public class Log {
 	}
 	public void addString(String string) {
 		t.addString(string);
+	}
+	public void LogPromotion(ePawns c) {
+		t.head.shoot.GetRight().print();
+		t.head.StringAction = "" + c;
 	}
 	public Pair<Position, Position>	getCurrentShoot() {
 		return t.getCurrentShoot();
@@ -282,5 +297,4 @@ public class Log {
 		t.head = first;
 		return true;
 	}
-
 }

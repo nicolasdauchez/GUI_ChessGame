@@ -22,7 +22,6 @@ public class ChessGame implements IChessGame {
 		Turn = eColor.White;
 		log = new Log("User1", "User2");
 		elem = new BoardGame();
-		log.Initialize();
 		elem.newGame();
 	}
 	/**
@@ -120,7 +119,7 @@ public class ChessGame implements IChessGame {
 	}
 	public void		DoPromotion(Position p, ePawns c) {
 		elem.Promotion(p, c);
-		log.addString("" + c, new Pair<Position, Position>(p, null));
+		log.LogPromotion(c);
 		return ;
 	}
 	/**
