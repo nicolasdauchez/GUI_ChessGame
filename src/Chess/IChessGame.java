@@ -24,13 +24,14 @@ public interface IChessGame {
 	public boolean 										goForward();
 	public boolean 										canGoBackward();
 	public boolean 										canGoForward();
+	public boolean 										Import(String path);
+	public boolean 										Export(String path);
 
 	/**
 	 * ChessGameFunction
 	 * @return
 	 */
 	public void											NewGame(String nameWhite, String nameBlack);
-	public void											NewGame(String nameWhite, String nameBlack, String round);
 	public BoardGame									getBoardGame();
 	public Pair<eMoveState, eGameState>		 			catchEvent(Position firstClick, Position secondClick);
 	public eColor 										GetTurn();

@@ -4,8 +4,19 @@
 package Chess;
 import main.Pair;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
+import com.thoughtworks.xstream.XStream;
 /**
  * @author Lumy-
  * Log Import and Export with PGN Norme
@@ -16,6 +27,7 @@ public class Log {
 		private class Elem {
 			private Elem						mother; //Backward
 			public ArrayList<Elem>				elems; // Heads
+			public String						StringAction;
 			public Pair<Position, Position>		shoot;
 			public int 							index;
 			
@@ -23,17 +35,26 @@ public class Log {
 				this(m, null);
 			}
 			public Elem(Elem m, Pair<Position, Position> p) {
+				this(m, p, null);
+			}
+			public Elem(Elem m, Pair<Position, Position> p, String f) {
 				mother = m;
 				elems = new ArrayList<Elem>();
 				shoot = p;
 				index = -1;
+				StringAction = f;
 			}
 		}
 
 		private Elem head;
-		
+		public String WhiteName;
+		public String BlackName;
+		public String Result;
+
 		public Tree() {
+			xstream = new XStream();
 			head = new Elem(null);
+			Result = "*";
 		}
 		/**
 		 * return the current Pair p
@@ -64,6 +85,25 @@ public class Log {
 		public void addCurrentHead(Pair<Position, Position> p) {
 			head.index += 1;
 			head.elems.add(new Elem(head, p));
+		}
+		/**
+		 * Add +1 at Head index and add String represent Castling (O-O || O-O-O)
+		 * Promotion use Position
+		 * @param string
+		 */
+		public void addString(String string) {
+			addString(string, null);
+		}
+		/**
+		 * Add +1 at Head index and add String represent Castling (O-O || O-O-O) OR Promotion
+		 * Castling p = null
+		 * @param string
+		 * @param p
+		 */
+		public void addString(String string, Pair<Position, Position> p) {
+			head.index += 1;
+			head.elems.add(new Elem(head, p, string));
+			goForwardElem();
 		}
 		/**
 		 * Go on the current index
@@ -105,12 +145,21 @@ public class Log {
 	}
 	
 	private Tree		t;
-	public Log() {
+	private Chess.Log.Tree.Elem		first;
+	private XStream xstream;
+
+	public Log(String nB, String nW) {
 		t = new Tree();
+		first = t.head;
+		t.BlackName = nB;
+		t.WhiteName = nW;
 	}
 	
-	public void newGame() {
+	public void newGame(String nW, String nB) {
 		t = new Tree();
+		first = t.head;
+		t.BlackName = nB;
+		t.WhiteName = nW;
 	}
 
 	public void Initialize()
@@ -143,21 +192,63 @@ public class Log {
 	public void add(Position p, Position newp) {
 		t.addMoveHead(new Pair<Position,Position>(new Position(p), new Position(newp)));
 	}
+	public void addString(String string, Pair<Position, Position> p) {
+		t.addString(string, p);
+	}
+	public void addString(String string) {
+		t.addString(string);
+	}
 	public Pair<Position, Position>	getCurrentShoot() {
 		return t.getCurrentShoot();
 	}
-	public Boolean Export(ChessDataGame header) {
-		//Export e = new Export(header, log);
+	public void addResult(String res) {
+		t.Result = res;
+	}
+	private boolean Write(String xml, String name) {
+		if (name == null)
+			name = "TMPFILE";
+		File file = new File(name + ".xml");
+		try {
+		if (!file.exists()) {
+				file.createNewFile();
+			}
+		FileWriter fw = new FileWriter(file.getAbsoluteFile());
+		BufferedWriter bw = new BufferedWriter(fw);
+		bw.write(xml);
+		bw.close();
+		return true;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 		return false;
 	}
-	public void Import(String path) {
-		Import.ImportPathName(path);
-		return ;
+	public boolean Export(String path) {
+		return Export(path, null, null);
+	}
+	public boolean Export(String path, String nW, String nB) {
+		if (nW == null)
+			nW = t.WhiteName;
+		if (nB == null)
+			nB = t.BlackName;
+		String xml = xstream.toXML(first);
+		return Write(xml, path);
 	}
 
-	public void addCastling(eColor getColor, String string) {
-		//AddCasting
+	public boolean Import(String p) {
+	    Path path = Paths.get(p);
+	    List<String> slist;
+		try {
+			slist = Files.readAllLines(path, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			return false;
+		}
+	    StringBuilder sb = new StringBuilder();
+	    for (String s : slist)
+	    	sb.append(s);
+	    first = (Log.Tree.Elem)xstream.fromXML(sb.toString());
+		t.head = first;
+		return true;
 	}
-
 
 }
