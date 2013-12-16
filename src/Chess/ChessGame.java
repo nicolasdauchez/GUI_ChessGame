@@ -13,7 +13,6 @@ import main.Pair;
 public class ChessGame implements IChessGame {
 	private BoardGame		elem;
 	private Log 			log;
-	private ChessDataGame 	Header;
 	private eColor			Turn;
 	private eGameState		State;
 
@@ -21,7 +20,7 @@ public class ChessGame implements IChessGame {
 	{
 		State = eGameState.NEXT;
 		Turn = eColor.White;
-		log = new Log();
+		log = new Log("User1", "User2");
 		elem = new BoardGame();
 		log.Initialize();
 		elem.newGame();
@@ -36,6 +35,16 @@ public class ChessGame implements IChessGame {
 	private void PrevTurn() {
 		Turn = (Turn == eColor.Black) ? eColor.White : eColor.Black;
 		
+	}
+	private void EndGame() {
+		String res = "*";
+		if (State == eGameState.CHECK_MATE_B || State == eGameState.CHECK_KING_B)
+			res = "0-1";
+		else if (State == eGameState.CHECK_MATE_W || State == eGameState.CHECK_KING_W)
+			res = "1-0";
+		else if (State == eGameState.DRAW)
+			res = "1/2-1/2";
+		log.addResult(res);
 	}
 	/**
 	 * Set The Next Player and setCheckMat
@@ -52,8 +61,8 @@ public class ChessGame implements IChessGame {
 	 */
 	public void AskDraw()
 	{
-		// Set Result to Draw
-		//Log the game in the file
+		SetState(eGameState.DRAW);
+		EndGame();
 	}
 	/**
 	 * SetCheckMat by Color
@@ -89,16 +98,11 @@ public class ChessGame implements IChessGame {
 			return true;
 		return false;
 	}
+
 	public void	NewGame(String nameWhite, String nameBlack)
 	{
-		NewGame(nameWhite, nameBlack, "1");
+		log.newGame(nameWhite, nameBlack);
 		elem.newGame();
-	}
-
-	public void	NewGame(String nameWhite, String nameBlack, String round)
-	{
-		Header = new ChessDataGame(nameWhite, nameBlack, round);
-		log.newGame();
 		State = eGameState.NEXT;
 		Turn = eColor.White;
 	}
@@ -116,6 +120,7 @@ public class ChessGame implements IChessGame {
 	}
 	public void		DoPromotion(Position p, ePawns c) {
 		elem.Promotion(p, c);
+		log.addString("" + c, new Pair<Position, Position>(p, null));
 		return ;
 	}
 	/**
@@ -130,7 +135,7 @@ public class ChessGame implements IChessGame {
 		Pawn t = elem.get(elem.indexOf(kp.equals(click1) ? click2 : click1));
 		k.SetPosition(r.GetLeft());
 		t.SetPosition(r.GetRight());
-		log.addCastling(k.GetColor(), (r.GetLeft().column == 'c' ? "O-O-O" : "O-O"));
+		log.addString((r.GetLeft().column == 'c' ? "O-O-O" : "O-O"));
 		NextTurn(eGameState.NEXT);
 	}
 
@@ -145,39 +150,45 @@ public class ChessGame implements IChessGame {
 		r2 = Rules.DoMovePawns(r, elem.get(elem.indexOf(firstClick)), secondClick, elem);
 		if (r2.GetRight() != eGameState.SAME)
 		{
-			log.add(firstClick, secondClick);
+			log.add(firstClick, secondClick, (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null));
 			NextTurn(r2.GetRight());
 		}
 		return r2;
 	}
-	
+
 	public Pair<eMoveState, eGameState> catchEvent(Position firstClick, Position secondClick)
 	{
 		Pair<eMoveState, eGameState> r1 = new Pair<eMoveState, eGameState>(eMoveState.FAIL_UNAUTHORIZED, eGameState.SAME);
-		if (State == eGameState.DRAW)
+		if (State == eGameState.DRAW) {
+			EndGame();
 			return r1;
+		}
 		if (State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W)
 			return Check_King_Way(firstClick, secondClick);
 		r1 = Rules.DoMovePawns(elem.get(elem.indexOf(firstClick)), secondClick, elem);
 		if (r1.GetRight() != eGameState.SAME)
 		{
-			log.add(firstClick, secondClick);
+			log.add(firstClick, secondClick, (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null));
 			NextTurn(r1.GetRight());
 		}
 		if ((State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W) && // one player in check
 		   (elem.getObstacleCase(secondClick) == eColor.Black ? eGameState.CHECK_KING_B : eGameState.CHECK_KING_W) != State) // current player not in check
 		{
-			
 			List<Pair<Position, Position>> r;
 			if (State == eGameState.CHECK_KING_B)
 				r = elem.getListPositionPossibleProtectKing(eColor.Black);
 			else
 				r = elem.getListPositionPossibleProtectKing(eColor.White);
-			if (r.size() == 0)
+			if (r.size() == 0) {
 				r1 = new Pair<eMoveState, eGameState>(eMoveState.SUCCESS, (eGameState.CHECK_KING_W == State ? eGameState.CHECK_MATE_W : eGameState.CHECK_MATE_B));
+				SetState(r1.GetRight());
+				EndGame();
+			}
+
 		}
 		return r1;
 	}
+
 	@Override
 	public int getSizeCurrentElem() {
 		return log.getSizeCurrentElem();
@@ -188,28 +199,22 @@ public class ChessGame implements IChessGame {
 	}
 	@Override
 	public boolean GoBackward() {
-		Pair<Position, Position> p = null;
-		if (null == (p = log.GoBackward()))
+		if (!log.GoBackward(elem))
 			return false;
-		elem.get(elem.indexOf(p.GetLeft())).SetPosition(p.GetRight());
 		PrevTurn();
 		return true;
 	}
 	@Override
 	public boolean goForward(int index) {
-		Pair<Position, Position> p = null;
-		if (null == ( p = log.goForward(index)))
+		if (!log.goForward(elem, index))
 			return false;
-		elem.get(elem.indexOf(p.GetLeft())).SetPosition(p.GetRight());
 		PrevTurn();
 		return true;
 	}
 	@Override
 	public boolean goForward() {
-		Pair<Position, Position> p = null;
-		if (null == ( p = log.goForward()))
+		if (!log.goForward(elem))
 			return false;
-		elem.get(elem.indexOf(p.GetLeft())).SetPosition(p.GetRight());
 		PrevTurn();
 		return true;
 	}
@@ -222,5 +227,13 @@ public class ChessGame implements IChessGame {
 	}
 	public boolean canGoBackward() {
 		return log.canGoBackward();
+	}
+	@Override
+	public boolean Import(String path) {
+		return log.Import(path);
+	}
+	@Override
+	public boolean Export(String path) {
+		return log.Export(path);
 	}
 }

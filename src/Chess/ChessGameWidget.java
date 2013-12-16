@@ -359,11 +359,11 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	
 	
 	public void importGame(String path) {
-		// TODO 
+		this.game.Import(path);
 	}
 
 	public void exportGame(String path) {
-		// TODO 
+		this.game.Export(path); 
 	}
 
 //	public Collection<Pair<Position, Position>> getBranches() {
@@ -372,9 +372,8 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 //	}
 	public int getBranchesNb() {
 		return this.game.getForward().size();
+		this.game.Export(path); 
 	}
-		
-	
 	
 	
 }

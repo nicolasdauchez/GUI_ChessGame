@@ -4,8 +4,19 @@
 package Chess;
 import main.Pair;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
+import com.thoughtworks.xstream.XStream;
 /**
  * @author Lumy-
  * Log Import and Export with PGN Norme
@@ -16,24 +27,37 @@ public class Log {
 		private class Elem {
 			private Elem						mother; //Backward
 			public ArrayList<Elem>				elems; // Heads
+			public String						StringAction;
 			public Pair<Position, Position>		shoot;
 			public int 							index;
-			
+			public ePawns						eaten;
+
+
 			public Elem(Elem m) {
-				this(m, null);
+				this(m, null, null);
 			}
-			public Elem(Elem m, Pair<Position, Position> p) {
+			public Elem(Elem m, Pair<Position, Position> p, ePawns e) {
+				this(m, p, null, e);
+			}
+			public Elem(Elem m, Pair<Position, Position> p, String f, ePawns e) {
 				mother = m;
 				elems = new ArrayList<Elem>();
 				shoot = p;
 				index = -1;
+				StringAction = f;
+				eaten = e;
 			}
 		}
 
 		private Elem head;
-		
+		public String WhiteName;
+		public String BlackName;
+		public String Result;
+
 		public Tree() {
+			xstream = new XStream();
 			head = new Elem(null);
+			Result = "*";
 		}
 		/**
 		 * return the current Pair p
@@ -53,17 +77,36 @@ public class Log {
 		 * Addthe Pair p and move on this Elem.
 		 * @param p
 		 */
-		public void addMoveHead(Pair<Position, Position> p) {
-			addCurrentHead(p);
+		public void addMoveHead(Pair<Position, Position> p, ePawns e) {
+			addCurrentHead(p, e);
 			goForwardElem();
 		}
 		/**
 		 * add +1 at head index and add p in head.elems
 		 * @param p
 		 */
-		public void addCurrentHead(Pair<Position, Position> p) {
+		public void addCurrentHead(Pair<Position, Position> p, ePawns e) {
 			head.index += 1;
-			head.elems.add(new Elem(head, p));
+			head.elems.add(new Elem(head, p, e));
+		}
+		/**
+		 * Add +1 at Head index and add String represent Castling (O-O || O-O-O)
+		 * Promotion use Position
+		 * @param string
+		 */
+		public void addString(String string) {
+			addString(string, null);
+		}
+		/**
+		 * Add +1 at Head index and add String represent Castling (O-O || O-O-O) OR Promotion
+		 * Castling p = null OR String = pos.print() + ePawns Or null
+		 * @param string
+		 * @param p
+		 */
+		public void addString(String string, Pair<Position, Position> p) {
+			head.index += 1;
+			head.elems.add(new Elem(head, p, string, null));
+			goForwardElem();
 		}
 		/**
 		 * Go on the current index
@@ -85,13 +128,18 @@ public class Log {
 			}
 			return false;
 		}
-		public Pair<Position, Position> goBackward() {
+		public boolean goBackward(BoardGame elem) {
 			if (head.mother == null)
-				return null;
-			Pair<Position, Position> ret = new Pair<Position,Position>(head.shoot.GetRight(), head.shoot.GetLeft());
+				return false;
+			if (head.eaten != null) {
+				elem.undoRemove(head.eaten, head.shoot.GetRight());
+			}
+			Pair<Position, Position> p = new Pair<Position,Position>(head.shoot.GetRight(), head.shoot.GetLeft());
 			head = head.mother;
-			return ret;
+			elem.get(elem.indexOf(p.GetLeft())).SetPosition(p.GetRight());
+			return true;
 		}
+
 		public Collection<Pair<Position, Position>> getAllForwardShoot() {
 			if (head.index > -1)
 			{
@@ -105,19 +153,28 @@ public class Log {
 	}
 	
 	private Tree		t;
-	public Log() {
+	private Chess.Log.Tree.Elem		first;
+	private XStream xstream;
+
+	public Log(String nB, String nW) {
 		t = new Tree();
+		first = t.head;
+		t.BlackName = nB;
+		t.WhiteName = nW;
 	}
 	
-	public void newGame() {
+	public void newGame(String nW, String nB) {
 		t = new Tree();
+		first = t.head;
+		t.BlackName = nB;
+		t.WhiteName = nW;
 	}
 
 	public void Initialize()
 	{		
 	}
-	public Pair<Position, Position> GoBackward() {
-		return t.goBackward();
+	public boolean GoBackward(BoardGame elem) {
+		return t.goBackward(elem);
 	}
 
 	public boolean canGoBackward() {
@@ -126,13 +183,15 @@ public class Log {
 	public boolean canGoForward() {
 		return t.head.index != -1;
 	}
-	public Pair<Position, Position> goForward(int index){
+	public boolean goForward(BoardGame elem, int index){
 		if (!t.goForwardElem(index))
-			return null;
-		return t.getCurrentShoot(); 
+			return false;
+		Pair<Position, Position> p = t.getCurrentShoot();
+		elem.RedoMove(p);
+		return true;
 	}
-	public Pair<Position, Position> goForward(){
-		return goForward(t.head.index);
+	public boolean goForward(BoardGame elem){
+		return goForward(elem, t.head.index);
 	}
 	public Collection<Pair<Position, Position>>	getForward() {
 		return t.getAllForwardShoot();	
@@ -140,24 +199,66 @@ public class Log {
 	public int getSizeCurrentElem() {
 		return t.getSizeElems();
 	}
-	public void add(Position p, Position newp) {
-		t.addMoveHead(new Pair<Position,Position>(new Position(p), new Position(newp)));
+	public void add(Position p, Position newp, ePawns e) {
+		t.addMoveHead(new Pair<Position,Position>(new Position(p), new Position(newp)), e);
+	}
+	public void addString(String string, Pair<Position, Position> p) {
+		t.addString(string, p);
+	}
+	public void addString(String string) {
+		t.addString(string);
 	}
 	public Pair<Position, Position>	getCurrentShoot() {
 		return t.getCurrentShoot();
 	}
-	public Boolean Export(ChessDataGame header) {
-		//Export e = new Export(header, log);
+	public void addResult(String res) {
+		t.Result = res;
+	}
+	private boolean Write(String xml, String name) {
+		if (name == null)
+			name = "TMPFILE";
+		File file = new File(name + ".xml");
+		try {
+		if (!file.exists()) {
+				file.createNewFile();
+			}
+		FileWriter fw = new FileWriter(file.getAbsoluteFile());
+		BufferedWriter bw = new BufferedWriter(fw);
+		bw.write(xml);
+		bw.close();
+		return true;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 		return false;
 	}
-	public void Import(String path) {
-		Import.ImportPathName(path);
-		return ;
+	public boolean Export(String path) {
+		return Export(path, null, null);
+	}
+	public boolean Export(String path, String nW, String nB) {
+		if (nW == null)
+			nW = t.WhiteName;
+		if (nB == null)
+			nB = t.BlackName;
+		String xml = xstream.toXML(t.head);
+		return Write(xml, path);
 	}
 
-	public void addCastling(eColor getColor, String string) {
-		//AddCasting
+	public boolean Import(String p) {
+	    Path path = Paths.get(p);
+	    List<String> slist;
+		try {
+			slist = Files.readAllLines(path, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			return false;
+		}
+	    StringBuilder sb = new StringBuilder();
+	    for (String s : slist)
+	    	sb.append(s);
+	    first = (Log.Tree.Elem)xstream.fromXML(sb.toString());
+		t.head = first;
+		return true;
 	}
-
 
 }

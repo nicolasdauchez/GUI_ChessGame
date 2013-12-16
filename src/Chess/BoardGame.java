@@ -18,9 +18,11 @@ import org.apache.commons.collections4.CollectionUtils;
 public class BoardGame {
 	private List<Pawn>	elem;
 	private List<Pawn>	Eaten;
+	private boolean			EatenTurn;
 
 	public BoardGame()
 	{
+		EatenTurn = false;
 		elem = new ArrayList<Pawn>();
 		Eaten = new ArrayList<Pawn>();
 	}
@@ -98,7 +100,19 @@ public class BoardGame {
 	}
 	public void remove(Pawn eaten) {
 		Eaten.add(elem.remove(indexOf(eaten)));
+		EatenTurn = true;
 	}
+	public void undoRemove(ePawns e, Position p) {
+		if (contains(Eaten, p)) {
+			elem.add(Eaten.remove(indexOf(Eaten, p)));
+		}
+	}
+	public void RedoMove(Pair<Position, Position> p) {
+		if (indexOf(p.GetRight()) != -1)
+			remove(get(indexOf(p.GetRight())));
+		get(indexOf(p.GetLeft())).SetPosition(p.GetRight());
+	}
+
  	public void print() {
  		print(elem);
  	}
@@ -384,6 +398,7 @@ public class BoardGame {
 	public void newGame() {
 		elem.clear();
 		Eaten.clear();
+		EatenTurn = false;
 		addLinePion(eColor.Black);
 		addLinePion(eColor.White);
 		addHeadLine(eColor.Black);
@@ -478,8 +493,16 @@ public class BoardGame {
 	public void NextTurn() {
 		for (Pawn p : elem)
 			p.NextTurn();// implemented for enPassant Rule
+		EatenTurn = false;
 	}
-
+	public boolean isEatThing() {
+		return EatenTurn;
+	}
+	public Pawn getLastEatThing() {
+		if (Eaten.size() != 0)
+			return Eaten.get(Eaten.size() - 1);
+		return null;
+	}
 
 }	
 
