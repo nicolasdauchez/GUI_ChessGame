@@ -26,8 +26,12 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -52,12 +56,15 @@ public class Main extends JFrame implements ActionListener {
 
 	public Main() {		
 		// set the window size
-		setSize(860,700);
+		setSize(860,730);
 		// set the title of the window
 		setTitle("Our ChessGame");
 		// set the default close operation
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-
+		
+		//Create a file chooser
+		fc = new JFileChooser();
+		
 		initPanels();
 	}
 
@@ -72,6 +79,21 @@ public class Main extends JFrame implements ActionListener {
 		this.mainPanel = new JPanel();
 		this.mainPanel.setLayout(new BorderLayout());
 
+		menu = new JMenuBar();
+		item = new JMenu("File");
+		importe = new JMenuItem("Import");
+		exporte = new JMenuItem("Export");
+		item.add(importe);
+		item.add(exporte);
+		menu.add(item);
+		importe.addActionListener(this);
+		
+//		//Create a file chooser
+//		final JFileChooser fc = new JFileChooser();
+//		int returnVal = fc.showOpenDialog(aComponent);
+		
+		mainPanel.add(menu, BorderLayout.PAGE_START);
+		
 		// creates ChessGame widget and add it to ContentPane
 		this.widget = new ChessGameWidget(this);
 
@@ -249,6 +271,20 @@ public class Main extends JFrame implements ActionListener {
 			handleGoBack();
 		else if (objClicked == this.goForwardBtn)
 			handleGoForward();			
+		else if (objClicked == this.importe) {
+			int returnVal = fc.showOpenDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+	            File file = fc.getSelectedFile();
+				this.widget.importGame(file.getAbsolutePath());
+			}
+		}
+		else if (objClicked == this.exporte) {
+			int returnVal = fc.showOpenDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+	            File file = fc.getSelectedFile();
+				this.widget.exportGame(file.getAbsolutePath());
+			}
+		}
 	}
 	
 
@@ -300,6 +336,12 @@ public class Main extends JFrame implements ActionListener {
 	JButton resetBtn;
 	JButton goBackBtn;
 	JButton goForwardBtn;
+	JFileChooser fc;
+	JMenuItem importe;
+	JMenuItem exporte;
+	JMenuBar menu;
+	JMenu item;
+	
 
 }
 

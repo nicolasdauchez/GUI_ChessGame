@@ -351,6 +351,14 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		}
 		return this.game.canGoForward();
 	}
+
+	public void importGame(String path) {
+		// TODO 
+	}
+
+	public void exportGame(String path) {
+		// TODO 
+	}
 		
 	
 	
