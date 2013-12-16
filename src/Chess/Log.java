@@ -128,7 +128,7 @@ public class Log {
 			}
 			return false;
 		}
-		public boolean goBackward(BoardGame elem) {
+		public boolean goBackward(BoardGame elem, eColor e) {
 			if (head.mother == null)
 				return false;
 			if (head.eaten != null) {
@@ -142,8 +142,11 @@ public class Log {
 			}
 			if (head.StringAction != null) {
 				//Action
-				if (t.head.StringAction.equals("O-O") || t.head.StringAction.equals("O-O-O"))
-					elem.UndoCastling(t.head.StringAction);
+				if (t.head.StringAction.equals("O-O") || t.head.StringAction.equals("O-O-O")) {
+					elem.UndoCastling(t.head.StringAction, e);
+					head = head.mother;
+					return true;
+				}
 				else { // Promotion
 					elem.UndoPromotion(t.head.shoot.GetRight());
 				}
@@ -183,8 +186,8 @@ public class Log {
 		t.WhiteName = nW;
 	}
 
-	public boolean GoBackward(BoardGame elem) {
-		return t.goBackward(elem);
+	public boolean GoBackward(BoardGame elem, eColor turn) {
+		return t.goBackward(elem, turn);
 	}
 
 	public boolean canGoBackward() {
@@ -193,7 +196,7 @@ public class Log {
 	public boolean canGoForward() {
 		return t.head.index != -1;
 	}
-	public boolean goForward(BoardGame elem, int index){
+	public boolean goForward(BoardGame elem, int index, eColor e){
 		if (!t.goForwardElem(index))
 			return false;
 		if (t.head.StringAction == null) {
@@ -215,7 +218,7 @@ public class Log {
 			System.out.println("Action");
 
 			if (t.head.StringAction.equals("O-O") || t.head.StringAction.equals("O-O-O"))
-				elem.RedoCastling(t.head.StringAction);
+				elem.RedoCastling(t.head.StringAction, e);
 			else { // Promotion
 				elem.RedoPromotion(t.head.shoot.GetLeft(), t.head.StringAction);
 				elem.RedoMove(t.head.shoot);
@@ -223,8 +226,8 @@ public class Log {
 		}
 		return true;
 	}
-	public boolean goForward(BoardGame elem){
-		return goForward(elem, t.head.index);
+	public boolean goForward(BoardGame elem, eColor e){
+		return goForward(elem, t.head.index, e);
 	}
 	public Collection<Pair<Position, Position>>	getForward() {
 		return t.getAllForwardShoot();	

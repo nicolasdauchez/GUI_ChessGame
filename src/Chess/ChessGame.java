@@ -198,21 +198,21 @@ public class ChessGame implements IChessGame {
 	}
 	@Override
 	public boolean GoBackward() {
-		if (!log.GoBackward(elem))
+		if (!log.GoBackward(elem, (Turn == eColor.Black ? eColor.White : eColor.Black)))
 			return false;
 		PrevTurn();
 		return true;
 	}
 	@Override
 	public boolean goForward(int index) {
-		if (!log.goForward(elem, index))
+		if (!log.goForward(elem, index, (Turn)))
 			return false;
 		PrevTurn();
 		return true;
 	}
 	@Override
 	public boolean goForward() {
-		if (!log.goForward(elem))
+		if (!log.goForward(elem, (Turn )))
 			return false;
 		PrevTurn();
 		return true;

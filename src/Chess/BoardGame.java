@@ -504,13 +504,48 @@ public class BoardGame {
 		return null;
 	}
 
-	public void RedoCastling(String stringAction) {
-		
+	public void RedoCastling(String stringAction, eColor e) {
+		int row = (e == eColor.Black ? 8 : 1);
+		Position pK = new Position('e', row);
+		Position pT = null;
+		Position nK = null;
+		Position nT = null;
+		if (stringAction.equals("O-O")) {
+			pT = new Position('h', row);
+			nK = new Position('g', row);
+			nT = new Position('f', row);
+		}
+		else {
+			nK = new Position('c', row);
+			nT = new Position('d', row);
+			pT = new Position('a', row);
+		}
+		if (indexOf(pK) == -1 || indexOf(pT) == -1)
+			return;
+		get(indexOf(pK)).SetPosition(nK);
+		get(indexOf(pT)).SetPosition(nT);
 	}
 
-	public void UndoCastling(String stringAction) {
-		// TODO Auto-generated method stub
-		
+	public void UndoCastling(String stringAction, eColor e) {
+		int row = (e == eColor.Black ? 8 : 1);
+		Position pK = null;
+		Position pT = null;
+		Position nK = new Position('e', row);
+		Position nT = null;
+		if (stringAction.equals("O-O")) {
+			nT = new Position('h', row);
+			pK = new Position('g', row);
+			pT = new Position('f', row);
+		}
+		else {
+			pK = new Position('c', row);
+			pT = new Position('d', row);
+			nT = new Position('a', row);
+		}
+		if (indexOf(pK) == -1 || indexOf(pT) == -1)
+			return;
+		get(indexOf(pK)).SetPosition(nK);
+		get(indexOf(pT)).SetPosition(nT);
 	}
 	public void RedoPromotion(Position p, String stringAction) {
 		ePawns e = ePawns.PAWN;
