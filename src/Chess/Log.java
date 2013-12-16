@@ -132,11 +132,16 @@ public class Log {
 			if (head.mother == null)
 				return false;
 			if (head.eaten != null) {
-				elem.undoRemove(head.eaten, head.shoot.GetRight());
+				Position n = new Position(head.shoot.GetRight());
+				if (elem.indexOf(elem.GetEaten(), n) == -1) {
+					n.row += 1;
+					if (elem.indexOf(elem.GetEaten(), n) == -1)
+						n.row -= 2;
+				}
+				elem.undoRemove(head.eaten, n);
 			}
-			Pair<Position, Position> p = new Pair<Position,Position>(head.shoot.GetRight(), head.shoot.GetLeft());
+			elem.get(elem.indexOf(head.shoot.GetRight())).SetPosition(head.shoot.GetLeft());
 			head = head.mother;
-			elem.get(elem.indexOf(p.GetLeft())).SetPosition(p.GetRight());
 			return true;
 		}
 
@@ -186,8 +191,25 @@ public class Log {
 	public boolean goForward(BoardGame elem, int index){
 		if (!t.goForwardElem(index))
 			return false;
-		Pair<Position, Position> p = t.getCurrentShoot();
-		elem.RedoMove(p);
+		if (t.head.StringAction == null) {
+			Pair<Position, Position> p = t.getCurrentShoot();
+			if (t.head.eaten != null && elem.indexOf(p.GetRight()) == -1) {
+				Position t = new Position(p.GetRight());
+				t.row += 1;
+				if (elem.indexOf(t) == -1 ||
+						elem.get(elem.indexOf(t)).GetClass() != ePawns.PAWN)
+					t.row -= 2;
+				elem.remove(elem.get(elem.indexOf(t)));
+			}	
+			elem.RedoMove(p);
+		}
+		else // action
+		{
+			if (t.head.StringAction.equals("O-O") || t.head.StringAction.equals("O-O-O"))
+				;//RedoCastling
+			else // Promotion
+				System.out.println(t.head.StringAction);
+		}
 		return true;
 	}
 	public boolean goForward(BoardGame elem){
