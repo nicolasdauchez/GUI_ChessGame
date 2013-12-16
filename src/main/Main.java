@@ -87,6 +87,7 @@ public class Main extends JFrame implements ActionListener {
 		item.add(exporte);
 		menu.add(item);
 		importe.addActionListener(this);
+		exporte.addActionListener(this);
 		
 //		//Create a file chooser
 //		final JFileChooser fc = new JFileChooser();
