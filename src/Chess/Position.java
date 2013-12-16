@@ -11,7 +11,7 @@ public class Position {
 	public int 		row;
 	public char  column;
 	public void print() {
-		System.out.print("R,C[" + row+ "," +column+"]" );
+		System.out.print(this);
 	}
 	public Position()
 	{
@@ -35,6 +35,10 @@ public class Position {
 	public void SetPosition(Position p) {
 		row = p.row;
 		column = p.column;
+	}
+	@Override
+	public String toString() {
+		return "R,C[" + row+ "," +column+"]";
 	}
 	@Override
 	public boolean equals(Object o)

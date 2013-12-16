@@ -150,7 +150,7 @@ public class ChessGame implements IChessGame {
 		r2 = Rules.DoMovePawns(r, elem.get(elem.indexOf(firstClick)), secondClick, elem);
 		if (r2.GetRight() != eGameState.SAME)
 		{
-			log.add(firstClick, secondClick);
+			log.add(firstClick, secondClick, (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null));
 			NextTurn(r2.GetRight());
 		}
 		return r2;
@@ -168,7 +168,7 @@ public class ChessGame implements IChessGame {
 		r1 = Rules.DoMovePawns(elem.get(elem.indexOf(firstClick)), secondClick, elem);
 		if (r1.GetRight() != eGameState.SAME)
 		{
-			log.add(firstClick, secondClick);
+			log.add(firstClick, secondClick, (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null));
 			NextTurn(r1.GetRight());
 		}
 		if ((State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W) && // one player in check
@@ -188,6 +188,7 @@ public class ChessGame implements IChessGame {
 		}
 		return r1;
 	}
+
 	@Override
 	public int getSizeCurrentElem() {
 		return log.getSizeCurrentElem();
@@ -198,28 +199,22 @@ public class ChessGame implements IChessGame {
 	}
 	@Override
 	public boolean GoBackward() {
-		Pair<Position, Position> p = null;
-		if (null == (p = log.GoBackward()))
+		if (!log.GoBackward(elem))
 			return false;
-		elem.get(elem.indexOf(p.GetLeft())).SetPosition(p.GetRight());
 		PrevTurn();
 		return true;
 	}
 	@Override
 	public boolean goForward(int index) {
-		Pair<Position, Position> p = null;
-		if (null == ( p = log.goForward(index)))
+		if (!log.goForward(elem, index))
 			return false;
-		elem.get(elem.indexOf(p.GetLeft())).SetPosition(p.GetRight());
 		PrevTurn();
 		return true;
 	}
 	@Override
 	public boolean goForward() {
-		Pair<Position, Position> p = null;
-		if (null == ( p = log.goForward()))
+		if (!log.goForward(elem))
 			return false;
-		elem.get(elem.indexOf(p.GetLeft())).SetPosition(p.GetRight());
 		PrevTurn();
 		return true;
 	}

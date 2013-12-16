@@ -30,19 +30,22 @@ public class Log {
 			public String						StringAction;
 			public Pair<Position, Position>		shoot;
 			public int 							index;
-			
+			public ePawns						eaten;
+
+
 			public Elem(Elem m) {
-				this(m, null);
+				this(m, null, null);
 			}
-			public Elem(Elem m, Pair<Position, Position> p) {
-				this(m, p, null);
+			public Elem(Elem m, Pair<Position, Position> p, ePawns e) {
+				this(m, p, null, e);
 			}
-			public Elem(Elem m, Pair<Position, Position> p, String f) {
+			public Elem(Elem m, Pair<Position, Position> p, String f, ePawns e) {
 				mother = m;
 				elems = new ArrayList<Elem>();
 				shoot = p;
 				index = -1;
 				StringAction = f;
+				eaten = e;
 			}
 		}
 
@@ -74,17 +77,17 @@ public class Log {
 		 * Addthe Pair p and move on this Elem.
 		 * @param p
 		 */
-		public void addMoveHead(Pair<Position, Position> p) {
-			addCurrentHead(p);
+		public void addMoveHead(Pair<Position, Position> p, ePawns e) {
+			addCurrentHead(p, e);
 			goForwardElem();
 		}
 		/**
 		 * add +1 at head index and add p in head.elems
 		 * @param p
 		 */
-		public void addCurrentHead(Pair<Position, Position> p) {
+		public void addCurrentHead(Pair<Position, Position> p, ePawns e) {
 			head.index += 1;
-			head.elems.add(new Elem(head, p));
+			head.elems.add(new Elem(head, p, e));
 		}
 		/**
 		 * Add +1 at Head index and add String represent Castling (O-O || O-O-O)
@@ -96,13 +99,13 @@ public class Log {
 		}
 		/**
 		 * Add +1 at Head index and add String represent Castling (O-O || O-O-O) OR Promotion
-		 * Castling p = null
+		 * Castling p = null OR String = pos.print() + ePawns Or null
 		 * @param string
 		 * @param p
 		 */
 		public void addString(String string, Pair<Position, Position> p) {
 			head.index += 1;
-			head.elems.add(new Elem(head, p, string));
+			head.elems.add(new Elem(head, p, string, null));
 			goForwardElem();
 		}
 		/**
@@ -125,13 +128,18 @@ public class Log {
 			}
 			return false;
 		}
-		public Pair<Position, Position> goBackward() {
+		public boolean goBackward(BoardGame elem) {
 			if (head.mother == null)
-				return null;
-			Pair<Position, Position> ret = new Pair<Position,Position>(head.shoot.GetRight(), head.shoot.GetLeft());
+				return false;
+			if (head.eaten != null) {
+				elem.undoRemove(head.eaten, head.shoot.GetRight());
+			}
+			Pair<Position, Position> p = new Pair<Position,Position>(head.shoot.GetRight(), head.shoot.GetLeft());
 			head = head.mother;
-			return ret;
+			elem.get(elem.indexOf(p.GetLeft())).SetPosition(p.GetRight());
+			return true;
 		}
+
 		public Collection<Pair<Position, Position>> getAllForwardShoot() {
 			if (head.index > -1)
 			{
@@ -165,8 +173,8 @@ public class Log {
 	public void Initialize()
 	{		
 	}
-	public Pair<Position, Position> GoBackward() {
-		return t.goBackward();
+	public boolean GoBackward(BoardGame elem) {
+		return t.goBackward(elem);
 	}
 
 	public boolean canGoBackward() {
@@ -175,13 +183,15 @@ public class Log {
 	public boolean canGoForward() {
 		return t.head.index != -1;
 	}
-	public Pair<Position, Position> goForward(int index){
+	public boolean goForward(BoardGame elem, int index){
 		if (!t.goForwardElem(index))
-			return null;
-		return t.getCurrentShoot(); 
+			return false;
+		Pair<Position, Position> p = t.getCurrentShoot();
+		elem.RedoMove(p);
+		return true;
 	}
-	public Pair<Position, Position> goForward(){
-		return goForward(t.head.index);
+	public boolean goForward(BoardGame elem){
+		return goForward(elem, t.head.index);
 	}
 	public Collection<Pair<Position, Position>>	getForward() {
 		return t.getAllForwardShoot();	
@@ -189,8 +199,8 @@ public class Log {
 	public int getSizeCurrentElem() {
 		return t.getSizeElems();
 	}
-	public void add(Position p, Position newp) {
-		t.addMoveHead(new Pair<Position,Position>(new Position(p), new Position(newp)));
+	public void add(Position p, Position newp, ePawns e) {
+		t.addMoveHead(new Pair<Position,Position>(new Position(p), new Position(newp)), e);
 	}
 	public void addString(String string, Pair<Position, Position> p) {
 		t.addString(string, p);
@@ -231,7 +241,7 @@ public class Log {
 			nW = t.WhiteName;
 		if (nB == null)
 			nB = t.BlackName;
-		String xml = xstream.toXML(first);
+		String xml = xstream.toXML(t.head);
 		return Write(xml, path);
 	}
 
