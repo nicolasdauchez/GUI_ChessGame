@@ -163,15 +163,6 @@ public class Log {
 		public boolean goBackward(BoardGame elem, eColor e) {
 			if (head.mother == null)
 				return false;
-			if (head.eaten != null) {
-				Position n = new Position(head.shoot.GetRight());
-				if (elem.indexOf(elem.GetEaten(), n) == -1) {
-					n.row += 1;
-					if (elem.indexOf(elem.GetEaten(), n) == -1)
-						n.row -= 2;
-				}
-				elem.undoRemove(head.eaten, n);
-			}
 			if (head.StringAction != null) {
 				//Action
 				if (t.head.StringAction.equals("O-O") || t.head.StringAction.equals("O-O-O")) {
@@ -184,6 +175,15 @@ public class Log {
 				}
 			}
 			elem.get(elem.indexOf(head.shoot.GetRight())).SetPosition(head.shoot.GetLeft());
+			if (head.eaten != null) {
+				Position n = new Position(head.shoot.GetRight());
+				if (elem.indexOf(elem.GetEaten(), n) == -1) {
+					n.row += 1;
+					if (elem.indexOf(elem.GetEaten(), n) == -1)
+						n.row -= 2;
+				}
+				elem.undoRemove(head.eaten, n);
+			}
 			if (!isMouvement(head.shoot.GetLeft()))
 				elem.setInitPos(head.shoot.GetLeft());
 			head = head.mother;
