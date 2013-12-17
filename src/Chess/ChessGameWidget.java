@@ -10,15 +10,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
-
 import main.Main;
 import main.Pair;
 
