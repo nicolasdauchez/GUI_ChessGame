@@ -12,19 +12,49 @@ import java.util.Map;
 import main.Pair;
 /**
  * @author Lumy-
- *
+ * Rules execute Move
+ *  or {@link Rules.Castling} Function tools
+ *  or {@link Rules.CheckKing} Function tools
  */
 public class Rules {
+	/**
+	 * Permit to Set OptionalRules
+	 * {@link #enPassant}
+	 * {@link #Castling}
+	 * {@link #Promotion}
+	 * @author Lumy-
+	 */
 	public static class OptionalRules {
-		static boolean enPassant = true; // http://en.wikipedia.org/wiki/En_passant
-		static boolean Castling = true; // http://en.wikipedia.org/wiki/Castling
-		static boolean Promotion = true; // http://en.wikipedia.org/wiki/Promotion_(chess)
+		/**
+		 * @see <a href="http://en.wikipedia.org/wiki/En_passant">En_passant</a>
+		 */
+		static boolean enPassant = true;
+		/**
+		 * @see <a href="http://en.wikipedia.org/wiki/Castling">Castling</a>
+		 */
+		static boolean Castling = true;
+		/**
+		 * @see <a href="http://en.wikipedia.org/wiki/Promotion_(chess)">Promotion</a>
+		 */
+		static boolean Promotion = true;
+		/**
+		 * Setter {@link #EnPassant}
+		 * @param e
+		 */
 		public static void setEnPassant(boolean e) {
 			enPassant = e;
 		}
+		/**
+		 * Setter {@link #Castling}
+		 * @param e
+		 */
 		public static void setCastling(boolean e) {
 			Castling = e;
 		}
+		/**
+		 * Setter {@link #Promotion}
+		 * @param e
+		 */
 		public static void setPromotion(boolean e) {
 			Promotion = e;
 		}
