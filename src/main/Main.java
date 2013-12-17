@@ -79,13 +79,16 @@ public class Main extends JFrame implements ActionListener {
 		// menu
 		menu = new JMenuBar();
 		item = new JMenu("File");
-		importe = new JMenuItem("Import");
-		exporte = new JMenuItem("Export");
+		importe = new JMenuItem("Import...");
+		exporte = new JMenuItem("Export...");
+		exit = new JMenuItem("Exit");
 		item.add(importe);
 		item.add(exporte);
+		item.add(exit);
 		menu.add(item);
 		importe.addActionListener(this);
 		exporte.addActionListener(this);
+		exit.addActionListener(this);
 		
 //		//Create a file chooser
 //		final JFileChooser fc = new JFileChooser();
@@ -278,11 +281,22 @@ public class Main extends JFrame implements ActionListener {
 			}
 		}
 		else if (objClicked == this.exporte) {
-			int returnVal = fc.showOpenDialog(this);
+			int returnVal = fc.showSaveDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 	            File file = fc.getSelectedFile();
 				this.widget.exportGame(file.getAbsolutePath());
 			}
+		}
+		else if (objClicked == this.exit) {
+			int result = JOptionPane.showConfirmDialog(this, "Do you want to save your game?", "Quit", JOptionPane.YES_NO_OPTION);
+			if (result == 0) {
+				int returnVal = fc.showSaveDialog(this);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+		            File file = fc.getSelectedFile();
+					this.widget.exportGame(file.getAbsolutePath());
+				}
+			}
+			System.exit(0);
 		}
 	}
 	
@@ -323,14 +337,14 @@ public class Main extends JFrame implements ActionListener {
 		    
 		    if (ret != null) {
 		    	int index = ret.charAt(0) - '0';
-		    	canGoForward = this.widget.goForward(index);
+		    	this.widget.goForward(index);
 		    }
 		}
 		else {
-			canGoForward = this.widget.goForward();
+			this.widget.goForward();
 		}
 			
-		if (!canGoForward)
+		if (!this.widget.canGoForward())
 			this.enableForwardButton(false);
 	}
 
@@ -369,6 +383,7 @@ public class Main extends JFrame implements ActionListener {
 	JFileChooser fc;
 	JMenuItem importe;
 	JMenuItem exporte;
+	JMenuItem exit;
 	JMenuBar menu;
 	JMenu item;
 	
