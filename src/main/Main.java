@@ -22,6 +22,7 @@ import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -33,7 +34,13 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -64,6 +71,11 @@ public class Main extends JFrame implements ActionListener {
 		setTitle("Our ChessGame");
 		// set the default close operation
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e) {}
 		
 		//Create a file chooser
 		fc = new JFileChooser();
@@ -118,6 +130,17 @@ public class Main extends JFrame implements ActionListener {
 		optionPromotion.addActionListener(this);
 		optionEnPassant.addActionListener(this);
 		menu.add(optionsMenu);
+		optionsMenu.addSeparator();
+		ButtonGroup lookGroup = new ButtonGroup();
+		optionRadioNativeLook = new JRadioButtonMenuItem("Set Native Look");
+		optionRadioSystemLook = new JRadioButtonMenuItem("Set System Look");
+		optionRadioSystemLook.setSelected(true);
+		lookGroup.add(optionRadioNativeLook);
+		lookGroup.add(optionRadioSystemLook);
+		optionsMenu.add(optionRadioNativeLook);
+		optionsMenu.add(optionRadioSystemLook);
+		optionRadioNativeLook.addActionListener(this);
+		optionRadioSystemLook.addActionListener(this);
 		
 //		//Create a file chooser
 //		final JFileChooser fc = new JFileChooser();
@@ -325,6 +348,22 @@ public class Main extends JFrame implements ActionListener {
 		else if (objClicked == this.optionEnPassant) {
 				Rules.OptionalRules.setEnPassant(optionEnPassant.isSelected());
 		}
+		else if (objClicked == this.optionRadioNativeLook) {
+			try {
+				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+				 SwingUtilities.updateComponentTreeUI(mainPanel);
+				 fc.updateUI();
+			}
+			catch (Exception e) {}	
+		}
+		else if (objClicked == this.optionRadioSystemLook) {
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				 SwingUtilities.updateComponentTreeUI(mainPanel);
+				 fc.updateUI();
+			}
+			catch (Exception e) {}				
+		}
 	}
 	
 	private void askSaveBeforeQuit() {
@@ -353,8 +392,6 @@ public class Main extends JFrame implements ActionListener {
 	}
 
 	private void handleGoForward() {
-		boolean canGoForward = false;
-
 		if (this.widget.hasManyForward()) {
 			Collection<Pair<Position, Position>> branches = this.widget.getBranches();
 //			int branchesNb = this.widget.getBranchesNb();
@@ -374,8 +411,6 @@ public class Main extends JFrame implements ActionListener {
 		      null,
 		      possibilitiesStr,
 		      possibilitiesStr[0]);
-//		      branches,
-//		      branches[0]);
 		    
 		    if (ret != null) {
 		    	int index = ret.charAt(0) - '0';
@@ -432,6 +467,8 @@ public class Main extends JFrame implements ActionListener {
 	JCheckBoxMenuItem optionCastling;
 	JCheckBoxMenuItem optionPromotion;
 	JCheckBoxMenuItem optionEnPassant;
+	JRadioButtonMenuItem optionRadioNativeLook;
+	JRadioButtonMenuItem optionRadioSystemLook;
 }
 
 
