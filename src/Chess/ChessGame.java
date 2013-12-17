@@ -136,7 +136,7 @@ public class ChessGame implements IChessGame {
 		t.SetPosition(r.GetRight());
 		log.addString((r.GetLeft().column == 'c' ? "O-O-O" : "O-O"));
 		NextTurn(eGameState.NEXT);
-	}
+		log.print();}
 
 	private Pair<eMoveState, eGameState> Check_King_Way(Position firstClick, Position secondClick)
 	{
@@ -167,7 +167,8 @@ public class ChessGame implements IChessGame {
 		r1 = Rules.DoMovePawns(elem.get(elem.indexOf(firstClick)), secondClick, elem);
 		if (r1.GetRight() != eGameState.SAME)
 		{
-			log.add(firstClick, secondClick, (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null));
+			if (r1.GetLeft() != eMoveState.CASTLING)
+				log.add(firstClick, secondClick, (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null));
 			NextTurn(r1.GetRight());
 		}
 		if ((State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W) && // one player in check
@@ -185,6 +186,7 @@ public class ChessGame implements IChessGame {
 			}
 
 		}
+		log.print();
 		return r1;
 	}
 
@@ -198,21 +200,21 @@ public class ChessGame implements IChessGame {
 	}
 	@Override
 	public boolean GoBackward() {
-		if (!log.GoBackward(elem))
+		if (!log.GoBackward(elem, (Turn == eColor.Black ? eColor.White : eColor.Black)))
 			return false;
 		PrevTurn();
 		return true;
 	}
 	@Override
 	public boolean goForward(int index) {
-		if (!log.goForward(elem, index))
+		if (!log.goForward(elem, index, (Turn)))
 			return false;
 		PrevTurn();
 		return true;
 	}
 	@Override
 	public boolean goForward() {
-		if (!log.goForward(elem))
+		if (!log.goForward(elem, (Turn )))
 			return false;
 		PrevTurn();
 		return true;

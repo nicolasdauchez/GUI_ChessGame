@@ -32,7 +32,17 @@ public class Log {
 			public int 							index;
 			public ePawns						eaten;
 
-
+			public void print() {
+				String s;
+				if (mother == null)
+					s = "RootTree:";
+				else{
+					s = "Mother [" + mother + "];";
+					s += (shoot != null ? " Pair[" + shoot.GetLeft() +" -> "+shoot.GetRight()+"] ":"");
+					s+=" Index" + index + (StringAction != null ? " " + StringAction :  "");
+				}
+				System.out.println(s);
+			}
 			public Elem(Elem m) {
 				this(m, null, null);
 			}
@@ -86,8 +96,25 @@ public class Log {
 		 * @param p
 		 */
 		public void addCurrentHead(Pair<Position, Position> p, ePawns e) {
+			if (null != alreadyExist(p))
+				{
+					head = alreadyExist(p);
+					return ;
+				}
 			head.index += 1;
 			head.elems.add(new Elem(head, p, e));
+		}
+		private Elem alreadyExist(Pair<Position, Position> p) {
+			for (Elem e : head.elems)
+				if (e.shoot != null && e.shoot.equals(p))
+					return e;
+			return null;
+		}
+		private Elem alreadyExist(String string) {
+			for (Elem e : head.elems)
+				if (e.StringAction.equals(string))
+					return e;
+			return null;
 		}
 		/**
 		 * Add +1 at Head index and add String represent Castling (O-O || O-O-O)
@@ -104,6 +131,10 @@ public class Log {
 		 * @param p
 		 */
 		public void addString(String string, Pair<Position, Position> p) {
+			if (null != alreadyExist(string)) {
+				head = alreadyExist(string);
+				return;
+			}
 			head.index += 1;
 			head.elems.add(new Elem(head, p, string, null));
 			goForwardElem();
@@ -121,16 +152,29 @@ public class Log {
 		 * @return
 		 */
 		public boolean goForwardElem(int i) {
-			if (i >= 0 && i <= head.index)
+			if (i >= 0 && i <= head.elems.size())
 			{
+				head.index = i;
 				head = head.elems.get(i);
 				return true;
 			}
 			return false;
 		}
-		public boolean goBackward(BoardGame elem) {
+		public boolean goBackward(BoardGame elem, eColor e) {
 			if (head.mother == null)
 				return false;
+			if (head.StringAction != null) {
+				//Action
+				if (t.head.StringAction.equals("O-O") || t.head.StringAction.equals("O-O-O")) {
+					elem.UndoCastling(t.head.StringAction, e);
+					head = head.mother;
+					return true;
+				}
+				else { // Promotion
+					elem.UndoPromotion(t.head.shoot.GetRight());
+				}
+			}
+			elem.get(elem.indexOf(head.shoot.GetRight())).SetPosition(head.shoot.GetLeft());
 			if (head.eaten != null) {
 				Position n = new Position(head.shoot.GetRight());
 				if (elem.indexOf(elem.GetEaten(), n) == -1) {
@@ -140,15 +184,8 @@ public class Log {
 				}
 				elem.undoRemove(head.eaten, n);
 			}
-			if (head.StringAction != null) {
-				//Action
-				if (t.head.StringAction.equals("O-O") || t.head.StringAction.equals("O-O-O"))
-					elem.UndoCastling(t.head.StringAction);
-				else { // Promotion
-					elem.UndoPromotion(t.head.shoot.GetRight());
-				}
-			}
-			elem.get(elem.indexOf(head.shoot.GetRight())).SetPosition(head.shoot.GetLeft());
+			if (!isMouvement(head.shoot.GetLeft()))
+				elem.setInitPos(head.shoot.GetLeft());
 			head = head.mother;
 			return true;
 		}
@@ -162,6 +199,33 @@ public class Log {
 				return ret;
 			}
 			return null;
+		}
+		private void _print(Elem e) {
+			e.print();
+			if (e.elems.size() > 0) {
+				System.out.println("Node:" + e.elems.size());
+				for (Elem t : e.elems) {
+					System.out.println("\t---------Node");
+					print(t);
+				}
+			}
+			else
+				System.out.println("EndRoot");
+			return ;
+		}
+		public void print(Elem e) {
+			_print(e);
+		}
+		public boolean isMouvement(Position p) {
+			Elem i = (head.mother == null ? head : head.mother);
+			while (i.mother != null)
+			{
+				
+				if (i.shoot != null && i.shoot.GetLeft().equals(p))
+					return true;
+				i = i.mother;
+			}
+			return false;
 		}
 	}
 	
@@ -183,8 +247,8 @@ public class Log {
 		t.WhiteName = nW;
 	}
 
-	public boolean GoBackward(BoardGame elem) {
-		return t.goBackward(elem);
+	public boolean GoBackward(BoardGame elem, eColor turn) {
+		return t.goBackward(elem, turn);
 	}
 
 	public boolean canGoBackward() {
@@ -193,29 +257,25 @@ public class Log {
 	public boolean canGoForward() {
 		return t.head.index != -1;
 	}
-	public boolean goForward(BoardGame elem, int index){
+	public boolean goForward(BoardGame elem, int index, eColor e){
 		if (!t.goForwardElem(index))
 			return false;
 		if (t.head.StringAction == null) {
-			System.out.println("No Action");
 			Pair<Position, Position> p = t.getCurrentShoot();
 			if (t.head.eaten != null && elem.indexOf(p.GetRight()) == -1) {
-				Position t = new Position(p.GetRight());
-				t.row += 1;
-				if (elem.indexOf(t) == -1 ||
-					elem.get(elem.indexOf(t)).GetClass() != ePawns.PAWN)
-					t.row -= 2;
-				elem.remove(elem.get(elem.indexOf(t)));
+				Position tmppos = new Position(p.GetRight());
+				tmppos.row += 1;
+				if (elem.indexOf(tmppos) == -1 ||
+					elem.get(elem.indexOf(tmppos)).GetClass() != ePawns.PAWN)
+					tmppos.row -= 2;
+				elem.remove(elem.get(elem.indexOf(tmppos))); // enPassant Eat/Rule
 			}	
 			elem.RedoMove(p);
 		}
 		else // action
 		{
-			System.out.println(t.head.StringAction);
-			System.out.println("Action");
-
 			if (t.head.StringAction.equals("O-O") || t.head.StringAction.equals("O-O-O"))
-				elem.RedoCastling(t.head.StringAction);
+				elem.RedoCastling(t.head.StringAction, e);
 			else { // Promotion
 				elem.RedoPromotion(t.head.shoot.GetLeft(), t.head.StringAction);
 				elem.RedoMove(t.head.shoot);
@@ -223,8 +283,8 @@ public class Log {
 		}
 		return true;
 	}
-	public boolean goForward(BoardGame elem){
-		return goForward(elem, t.head.index);
+	public boolean goForward(BoardGame elem, eColor e){
+		return goForward(elem, t.head.index, e);
 	}
 	public Collection<Pair<Position, Position>>	getForward() {
 		return t.getAllForwardShoot();	
@@ -242,7 +302,6 @@ public class Log {
 		t.addString(string);
 	}
 	public void LogPromotion(ePawns c) {
-		t.head.shoot.GetRight().print();
 		t.head.StringAction = "" + c;
 	}
 	public Pair<Position, Position>	getCurrentShoot() {
@@ -296,5 +355,9 @@ public class Log {
 	    first = (Log.Tree.Elem)xstream.fromXML(sb.toString());
 		t.head = first;
 		return true;
+	}
+	public void print() {
+		t.head.print();
+		t.print(first);
 	}
 }

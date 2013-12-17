@@ -426,8 +426,6 @@ public class BoardGame {
 			p.row = 1;
 		p.column = 'a';
 		ePawns e[] = { ePawns.ROOK, ePawns.KNIGHT, ePawns.BISHOP, ePawns.QUEEN, ePawns.KING, ePawns.BISHOP, ePawns.KNIGHT, ePawns.ROOK };
-		//if (c == eColor.White)
-		//	ArrayUtils.reverse(e);
 		for (int i = 0; i < e.length; i++) {
 			add(c, new Position(p), e[i]);
 			p.column += 1;
@@ -504,13 +502,50 @@ public class BoardGame {
 		return null;
 	}
 
-	public void RedoCastling(String stringAction) {
-		
+	public void RedoCastling(String stringAction, eColor e) {
+		int row = (e == eColor.Black ? 8 : 1);
+		Position pK = new Position('e', row);
+		Position pT = null;
+		Position nK = null;
+		Position nT = null;
+		if (stringAction.equals("O-O")) {
+			pT = new Position('h', row);
+			nK = new Position('g', row);
+			nT = new Position('f', row);
+		}
+		else {
+			nK = new Position('c', row);
+			nT = new Position('d', row);
+			pT = new Position('a', row);
+		}
+		if (indexOf(pK) == -1 || indexOf(pT) == -1)
+			return;
+		get(indexOf(pK)).SetPosition(nK);
+		get(indexOf(pT)).SetPosition(nT);
 	}
 
-	public void UndoCastling(String stringAction) {
-		// TODO Auto-generated method stub
-		
+	public void UndoCastling(String stringAction, eColor e) {
+		int row = (e == eColor.Black ? 8 : 1);
+		Position pK = null;
+		Position pT = null;
+		Position nK = new Position('e', row);
+		Position nT = null;
+		if (stringAction.equals("O-O")) {
+			nT = new Position('h', row);
+			pK = new Position('g', row);
+			pT = new Position('f', row);
+		}
+		else {
+			pK = new Position('c', row);
+			pT = new Position('d', row);
+			nT = new Position('a', row);
+		}
+		if (indexOf(pK) == -1 || indexOf(pT) == -1)
+			return;
+		get(indexOf(pK)).SetPosition(nK);
+		get(indexOf(pT)).SetPosition(nT);
+		setInitPos(nK);
+		setInitPos(nT);
 	}
 	public void RedoPromotion(Position p, String stringAction) {
 		ePawns e = ePawns.PAWN;
@@ -534,6 +569,11 @@ public class BoardGame {
 
 	public void UndoPromotion(Position p) {
 		get(indexOf(p)).Promotion(ePawns.PAWN);
+	}
+
+	public void setInitPos(Position p) {
+		if (contains(p))
+			get(indexOf(p)).reset();
 	}
 }	
 
