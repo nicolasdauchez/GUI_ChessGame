@@ -731,35 +731,8 @@ public class Rules {
 			return false;
 		return true;
 	}
-/*
-	static private class CheckMate {
-		public static boolean isCheckMate(List<Pawn> tmp, BoardGame elem, eColor e) {
-			/*
-			 * Check is extremely simple actually. If any piece can currently move to the king's position, 
-			 * then the king is in check. Since you already have to implement the ability to allow players 
-			 * to move any given piece to any square (that their piece can move to), deciding if 
-			 * those pieces can be moved to the king's square should be trivial.
-			 * For checkmate, it is a little harder, but first decide whether the king can move his 
-			 * piece to a square that puts him out of check (by temporarily 'pretending' the king is at a
-			 *  different square, and seeing if he is in check still, and doing that for every square
-			 *   around him). If he can't, it still might not be checkmate. So now you have to see if 
-			 *   there is any piece that can either be moved to a square that blocks the 'check' or that
-			 *    can take the piece that is causing the checkmate.
-			 *
-			return false;
-		}
-		public static eColor isCheckMate(List<Pawn> tmp, BoardGame elem) {
-			eColor e = CheckKing.isCheckKing(tmp, elem);
-			if (e == eColor.Black)
-				isCheckMate(tmp, elem, eColor.Black);
-			else if (e == eColor.White)
-				isCheckMate(tmp, elem, eColor.White);
-			return eColor.None;
-		}
-	}
-*/
 	/**
-	 * Class To Look IF a BoardGame is CheckKing;
+	 * Class To Look if a BoardGame is CheckKing;
 	 * @author Lumy-
 	 *
 	 */
@@ -992,7 +965,6 @@ public class Rules {
 				ret.addAll(r);
 			return ret;
 		}
-		
 		/**
 		 * List Position of All Enemy That Defeat King e
 		 * @param tmp
@@ -1004,9 +976,22 @@ public class Rules {
 				Position k = elem.getPawnsBoardPosition(e, ePawns.KING, tmp);
 				return isCheckKing(tmp, elem, k, e);
 		}
+		/**
+		 * Return True if the King e is in Check
+		 * @param tmp
+		 * @param elem
+		 * @param e
+		 * @return
+		 */
 		public static boolean isCheckKing(Collection<Pawn> tmp, BoardGame elem, eColor e) {
 			return AllCheckKing(tmp,  elem, e).size() != 0;
 		}
+		/**
+		 * Return the {@link eColor} player or None if no Check
+		 * @param tmp
+		 * @param elem
+		 * @return
+		 */
 		public static eColor isCheckKing(Collection<Pawn> tmp, BoardGame elem) {
 			if (isCheckKing(tmp, elem, eColor.White))
 				return eColor.White;
