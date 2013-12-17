@@ -31,6 +31,14 @@ public class ChessGame implements IChessGame {
 	public eColor GetTurn() {
 		return Turn;
 	}
+    /**
+	 * {@link Pair}<{@link String} White, {@link String} Black>
+	 * @return
+	 */
+	@Override
+	public Pair<String, String>	GetPlayersName() {
+		return log.GetPlayersName();
+	}
 	private void PrevTurn(eGameState e) {
 		Turn = (Turn == eColor.Black) ? eColor.White : eColor.Black;
 		SetState(e);

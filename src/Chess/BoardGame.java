@@ -125,17 +125,6 @@ public class BoardGame {
 		get(indexOf(p.GetLeft())).SetPosition(p.GetRight());
 	}
 
- 	public void print() {
- 		print(elem);
- 	}
-	public void print(List<Pawn> el) {
-		int i = 0;
-		for (Pawn p : el) {
-			System.out.print(i+": ");
-			p.print();
-			i++;
-		}
-	}
 	/**
 	 *
 	 * return eColor.None if no Pawn on the current Case in l
