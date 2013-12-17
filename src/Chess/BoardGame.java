@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.lang.model.element.ElementKind;
+
 import main.Pair;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -110,7 +112,7 @@ public class BoardGame {
 		Eaten.add(elem.remove(indexOf(eaten)));
 		EatenTurn = true;
 	}
-	public void undoRemove(ePawns e, Position p) {
+	public void undoRemove(ePawns e, Position p, eColor c) {
 		if (contains(Eaten, p)) {
 			elem.add(Eaten.remove(indexOf(Eaten, p, c)));
 		}

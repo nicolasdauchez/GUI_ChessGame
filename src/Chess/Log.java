@@ -183,7 +183,7 @@ public class Log {
 					if (elem.indexOf(elem.GetEaten(), n) == -1)
 						n.row -= 2;
 				}
-				elem.undoRemove(head.eaten, n);
+				elem.undoRemove(head.eaten, n, (e == eColor.Black ? eColor.White : eColor.Black));
 			}
 			if (!isMouvement(head.shoot.GetLeft()))
 				elem.setInitPos(head.shoot.GetLeft());
