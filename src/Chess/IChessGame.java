@@ -19,7 +19,7 @@ public interface IChessGame {
 	 */
 	public int 											getSizeCurrentElem();
 	public Collection<Pair<Position, Position>>			getForward();
-	public boolean 										GoBackward();
+	public boolean 										goBackward();
 	public boolean 										goForward(int index);
 	public boolean 										goForward();
 	public boolean 										canGoBackward();
