@@ -63,12 +63,20 @@ public class BoardGame {
 	 * @return
 	 */
 	public int indexOf(Collection<Pawn> p, Position s) {
-		int c = 0;
+		return indexOf(p, s, null);
+	}
+	public int indexOf(Collection<Pawn> p, Position s, eColor c) {
+		int i = 0;
 		for (Pawn e : p)
 		{
 			if (e.equals(s))
-				return c;
-			c++;
+			{
+				if (c != null && e.GetColor() == c)
+					return i;
+				else if (c == null)
+					return i;
+			}
+			i++;
 		}
 		return -1;
 	}
@@ -104,7 +112,7 @@ public class BoardGame {
 	}
 	public void undoRemove(ePawns e, Position p) {
 		if (contains(Eaten, p)) {
-			elem.add(Eaten.remove(indexOf(Eaten, p)));
+			elem.add(Eaten.remove(indexOf(Eaten, p, c)));
 		}
 	}
 	public void RedoMove(Pair<Position, Position> p) {
