@@ -118,9 +118,10 @@ public class ChessGame implements IChessGame {
 		return false;
 	}
 	public void		DoPromotion(Position p, ePawns c) {
+		if (!Rules.OptionalRules.Promotion)
+		return ;
 		elem.Promotion(p, c);
 		log.LogPromotion(c);
-		return ;
 	}
 	/**
 	 * Assuming that This function it's called after get the CASTLING state that has already check if you've the right
@@ -128,6 +129,8 @@ public class ChessGame implements IChessGame {
 	 * @param secondClick
 	 */
 	public void DoCastling(Position click1, Position click2) {
+		if (!Rules.OptionalRules.Castling)
+		return;
 		Position kp = elem.getKingPosition(elem.get(elem.indexOf(click1)).GetColor());
 		Pair<Position, Position> r = Rules.Castling.getPositionKing(kp, (kp.equals(click2) ? click1 : click2));
 		Pawn k = elem.get(elem.indexOf(kp));
@@ -200,7 +203,7 @@ public class ChessGame implements IChessGame {
 	}
 	@Override
 	public boolean goBackward() {
-		if (!log.GoBackward(elem, (Turn == eColor.Black ? eColor.White : eColor.Black)))
+		if (!log.goBackward(elem, (Turn == eColor.Black ? eColor.White : eColor.Black)))
 			return false;
 		PrevTurn(log.GetCurrentState());
 		return true;

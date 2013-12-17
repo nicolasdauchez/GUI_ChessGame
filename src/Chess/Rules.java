@@ -15,7 +15,7 @@ import main.Pair;
  *
  */
 public class Rules {
-	static class OptionalRules {
+	public static class OptionalRules {
 		static boolean enPassant = true; // http://en.wikipedia.org/wiki/En_passant
 		static boolean Castling = true; // http://en.wikipedia.org/wiki/Castling
 		static boolean Promotion = true; // http://en.wikipedia.org/wiki/Promotion_(chess)

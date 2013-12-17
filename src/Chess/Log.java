@@ -223,7 +223,7 @@ public class Log {
 		t.WhiteName = nW;
 	}
 
-	public boolean GoBackward(BoardGame elem, eColor turn) {
+	public boolean goBackward(BoardGame elem, eColor turn) {
 		return t.goBackward(elem, turn);
 	}
 
@@ -265,6 +265,12 @@ public class Log {
 	public Collection<Pair<Position, Position>>	getForward() {
 		return t.getAllForwardShoot();	
 	}
+	/**
+	 * return the Size of Node.
+	 * 0 mean you didn't played in this node
+	 * other mean you have some played in this node.
+	 * @return
+	 */
 	public int getSizeCurrentElem() {
 		return t.getSizeElems();
 	}
