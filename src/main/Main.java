@@ -13,6 +13,8 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,6 +69,15 @@ public class Main extends JFrame implements ActionListener {
 		fc = new JFileChooser();
 		
 		initPanels();
+		
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				askSaveBeforeQuit();
+				super.windowClosing(e);
+			}
+		});
+
 	}
 
 	// program entry point
@@ -299,21 +310,10 @@ public class Main extends JFrame implements ActionListener {
 			}
 		}
 		else if (objClicked == this.exporte) {
-			int returnVal = fc.showSaveDialog(this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-	            File file = fc.getSelectedFile();
-				this.widget.exportGame(file.getAbsolutePath());
-			}
+			handleExport();
 		}
 		else if (objClicked == this.exit) {
-			int result = JOptionPane.showConfirmDialog(this, "Do you want to save your game?", "Quit", JOptionPane.YES_NO_OPTION);
-			if (result == 0) {
-				int returnVal = fc.showSaveDialog(this);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-		            File file = fc.getSelectedFile();
-					this.widget.exportGame(file.getAbsolutePath());
-				}
-			}
+			askSaveBeforeQuit();
 			System.exit(0);
 		}
 		else if (objClicked == this.optionCastling) {
@@ -327,6 +327,21 @@ public class Main extends JFrame implements ActionListener {
 		}
 	}
 	
+	private void askSaveBeforeQuit() {
+		int result = JOptionPane.showConfirmDialog(this, "Do you want to save your game?", "Quit", JOptionPane.YES_NO_OPTION);
+		if (result == 0) {
+			handleExport();
+		}
+	}
+
+	private void handleExport() {
+		int returnVal = fc.showSaveDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+			this.widget.exportGame(file.getAbsolutePath());
+		}
+	}
+
 	private void handleGoBack() {
 		boolean canGoBack = this.widget.goBack();
 		if (!canGoBack)
