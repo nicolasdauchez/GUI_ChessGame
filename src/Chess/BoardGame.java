@@ -146,28 +146,43 @@ public class BoardGame {
 	public boolean contains(Position e) {
 		return contains(elem, e);
 	}
-	
+	/**
+	 * add {@link Pawn} to Alive List {@link #elem}
+	 * @param pion
+	 */
 	public void add(Pawn pion) {
 		elem.add(pion);
 	}
+	/**
+	 * Remove a {@link Pawn} from {@link #elem} and set Eaten Turn to True
+	 * @param eaten
+	 */
 	public void remove(Pawn eaten) {
 		Eaten.add(elem.remove(indexOf(eaten)));
 		EatenTurn = true;
 	}
+	/**
+	 * Undo a Remove
+	 * @param e
+	 * @param p
+	 * @param c
+	 */
 	public void undoRemove(ePawns e, Position p, eColor c) {
 		if (contains(Eaten, p)) {
 			elem.add(Eaten.remove(indexOf(Eaten, p, c)));
 		}
 	}
+	/**
+	 * Redo a Move
+	 * @param p
+	 */
 	public void RedoMove(Pair<Position, Position> p) {
 		if (indexOf(p.GetRight()) != -1)
 			remove(get(indexOf(p.GetRight())));
 		get(indexOf(p.GetLeft())).SetPosition(p.GetRight());
 	}
-
 	/**
-	 *
-	 * return eColor.None if no Pawn on the current Case in l
+	 * return {@link eColor#None} if no Pawn on the current Case in l
 	 * @param l
 	 * @param p
 	 * @return
@@ -180,7 +195,7 @@ public class BoardGame {
 		return eColor.None;
 	}
 	/**
-	 * return eColor.None if no Pawn on the current Case.
+	 * return {@link eColor#None} if no Pawn on the current Case.
 	 * @param p
 	 * @return
 	 */
@@ -188,8 +203,8 @@ public class BoardGame {
 		return getObstacleCase(elem, p);
 	}
 	/**
-	 * return eColor.None if Nothing is find on the way Row in l.
-	 * Don't Check the Last Case Neither the First (always True position First Pawn
+	 * return {@link eColor#None} if Nothing is find on the way Row in l.
+	 * Don't Check the Last Case Neither the First (always True position First Pawn)
 	 * @param l
 	 * @param p
 	 * @param range
@@ -199,8 +214,7 @@ public class BoardGame {
 		Position t = new Position();
 		t.SetPosition(p.GetPosition());
 		t.row += (t.row < range.row ? 1 : - 1);
-		while (t.row != range.row)
-		{
+		while (t.row != range.row) {
 			if (eColor.None != getObstacleCase(l, t))
 				return getObstacleCase(l, t);
 			t.row += (t.row < range.row ? 1 : - 1);
@@ -229,8 +243,7 @@ public class BoardGame {
 		Position t = new Position();
 		t.SetPosition(p.GetPosition());
 		t.column += (t.column < max.column ? 1 : -1);
-		while (t.column != max.column)
-		{
+		while (t.column != max.column) {
 			if (eColor.None != getObstacleCase(l, t))
 				return getObstacleCase(l, t);
 			t.column += (t.column < max.column ? 1 : -1);
@@ -261,12 +274,10 @@ public class BoardGame {
 			return getObstacleColumnRange(l, p, newPos);
 		else if (oldp.sameColumn(newPos))
 			return getObstacleRowRange(l, p, newPos);
-		else if (oldp.DiagonalMove(newPos)) {
+		else if (oldp.DiagonalMove(newPos))
 			return getObstacleRangeDiagonal(l, p, newPos);
-		}
 		return eColor.None;
 	}
-
 	/**
 	 * Check if it's Range Row,Column,Diagonal
 	 * and call the good method
@@ -327,14 +338,20 @@ public class BoardGame {
 		Position t = new Position();
 		t.SetPosition(p.GetPosition());
 		t.row += (t.row < range.row ? 1 : - 1);
-		while (t.row != range.row)
-		{
+		while (t.row != range.row) {
 			if (eColor.None != getObstacleCase(l, t))
 				return get(l, indexOf(l, t)).GetPosition();
 			t.row += (t.row < range.row ? 1 : - 1);
 		}
 		return null;
 	}
+	/**
+	 * Return null if Nothing find on the Wat Diagonal
+	 * @param l
+	 * @param p
+	 * @param newPos
+	 * @return
+	 */
 	private Position getPositionFirstObstacleRangeDiagonal(Collection<Pawn> l, Pawn p, Position newPos) {
 		Position	tmp = new Position();
 		tmp.SetPosition(p.GetPosition());
@@ -349,6 +366,13 @@ public class BoardGame {
 		}
 		return null;
 	}
+	/**
+	 * return eColor of the First Obstacle
+	 * @param l
+	 * @param p
+	 * @param newPos
+	 * @return
+	 */
 	private eColor getObstacleRangeDiagonal(Collection<Pawn> l, Pawn p, Position newPos) {
 		Position	tmp = new Position();
 		tmp.SetPosition(p.GetPosition());
@@ -372,7 +396,6 @@ public class BoardGame {
 	public eColor getObstacleRangeDiagonal(Pawn p, Position newPos) {
 		return getObstacleRangeDiagonal(elem, p, newPos);
 	}
-
 	/**
 	 * return True if isOutside of the Game
 	 * @param p
@@ -383,7 +406,6 @@ public class BoardGame {
 			return true;
 		return false;
 	}
-
 	/**
 	 * return a new copy of a List<Pawn> with new position set
 	 * @param p
@@ -393,7 +415,6 @@ public class BoardGame {
 	public List<Pawn> getNewCopie(Pawn p, Position newPos) {
 		return getNewCopie(elem, p, newPos);
 	}
-	
 	/**
 	 * return a new copy of a List<Pawn> with new position set for List tmp
 	 * @param tmp
@@ -409,25 +430,50 @@ public class BoardGame {
 		ret.get(indexOf(ret, p.GetPosition())).SetPosition(newPos);
 		return ret;
 	}
-
-	public Position getPawnsBoardPosition(eColor e, ePawns c, Collection<Pawn> l)
-	{
+	/**
+	 * return the first position of c and e in l
+	 * @param e
+	 * @param c
+	 * @param l
+	 * @return
+	 */
+	public Position getPawnsBoardPosition(eColor e, ePawns c, Collection<Pawn> l) {
 		for (Pawn p : l)
     		if (p.GetClass() == c && p.GetColor() == e)
 				return p.GetPosition();
 		return null;
 	}
-	private Position getPawnsPosition(eColor e, ePawns c)
-	{
+	/**
+	 * {@link #getPawnsBoardPosition(eColor, ePawns, Collection)}
+	 * @param e
+	 * @param c
+	 * @return
+	 */
+	private Position getPawnsPosition(eColor e, ePawns c) {
 		return getPawnsBoardPosition(e, c, elem);
 	}
+	/**
+	 * Return The Position of The King e
+	 * @param e
+	 * @return
+	 */
 	public Position getKingPosition(eColor e) {
 		return getPawnsPosition(e, ePawns.KING);
 	}
-
+	/**
+	 * Return all Elem of one Color e
+	 * @param e
+	 * @return
+	 */
 	public List<Pawn> getAllColor(eColor e) {
 		return getAllColor(elem, e);
 	}
+	/**
+	 * Return all Pawn of one Color e in Collection tmp
+	 * @param tmp
+	 * @param e
+	 * @return
+	 */
 	public List<Pawn> getAllColor(Collection<Pawn> tmp, eColor e) {
 		List<Pawn> ret = new ArrayList<Pawn>();
 	    for(Pawn item: tmp)
@@ -435,21 +481,33 @@ public class BoardGame {
 	    		ret.add(item.clone());
 		return ret;
 	}
-
+	/**
+	 * New Game Reset All.
+	 */
 	public void newGame() {
 		elem.clear();
 		Eaten.clear();
 		EatenTurn = false;
-		addLinePion(eColor.Black);
-		addLinePion(eColor.White);
+		addLinePawn(eColor.Black);
+		addLinePawn(eColor.White);
 		addHeadLine(eColor.Black);
 		addHeadLine(eColor.White);
 	
 	}
+	/**
+	 * Create a Pawn in Elem
+	 * @param c
+	 * @param p
+	 * @param t
+	 */
 	private void add(eColor c, Position p, ePawns t) {
 			elem.add(new Pawn(c, p, t));
 	}
-	private void addLinePion(eColor c) {
+	/**
+	 * Add Pawn {@link ePawns#PAWN} Line for color C.
+	 * @param c
+	 */
+	private void addLinePawn(eColor c) {
 		Position p = new Position();
 		p.row = 7;
 		if (c == eColor.White)
@@ -460,6 +518,10 @@ public class BoardGame {
 			p.column += 1;
 		}
 	}
+	/**
+	 * Add the head lne for the Color c
+	 * @param c
+	 */
 	private void addHeadLine(eColor c) {
 		Position p = new Position();
 		p.row = 8;
@@ -472,10 +534,19 @@ public class BoardGame {
 			p.column += 1;
 		}
 	}
+	/**
+	 * {@link Rules.CheckKing#AllCheckKing(Collection, BoardGame, eColor)}
+	 * @param e
+	 * @return
+	 */
 	public List<Position> AllCheckKing(eColor e) {
 		return Rules.CheckKing.AllCheckKing(elem,  this, e);
 	}
-
+	/**
+	 * Add to r Possible Move to Protect King e
+	 * @param e
+	 * @param r
+	 */
 	private void getListPositionPossibleProtectKing(eColor e, List<Pair<Position, Position>> r) {
 		for (Pawn p : elem) {
 			if (p.GetClass() != ePawns.KING && p.GetColor() == e)
@@ -483,15 +554,19 @@ public class BoardGame {
 				List<Pair<Position, Position>> cp = Rules.MapFunctor.GetPossibleMoveProtect(p, this);
 				for (Pair<Position, Position> way : cp)
 				{
-					List<Pawn> tmp = this.getNewCopie(p, way.GetRight()); //add Position To Eat if Help
+					List<Pawn> tmp = this.getNewCopie(p, way.GetRight());
 					if (!Rules.CheckKing.isCheckKing(tmp,  this , e))
 						r.add(way); // Add if Move can Protect.
-				} //add Position Obstacle if Help
+				} 
 			}
 		}
 	}
+	/**
+	 * add to r Possible Move King e
+	 * @param e
+	 * @param r
+	 */
 	private void getListPositionPossibleMoveKing(eColor e, List<Pair<Position, Position>> r) {
-		//Position k = getKingPosition(e);
 		@SuppressWarnings("serial")
 		List<Pair<Integer, Integer>> allPos = new ArrayList<Pair<Integer, Integer>>() {{
 			add(new Pair<Integer, Integer>(0,1));
@@ -516,6 +591,11 @@ public class BoardGame {
 			}
 		}
 	}
+	/**
+	 * {@link #getListPositionPossibleProtectKing(eColor, List)} and {@link #getListPositionPossibleMoveKing(eColor, List)}
+	 * @param e
+	 * @return
+	 */
 	public List<Pair<Position, Position>> getListPositionPossibleProtectKing(eColor e) {
 		List<Pair<Position, Position>> ret = new ArrayList<Pair<Position, Position>>();
 		getListPositionPossibleMoveKing(e, ret);
