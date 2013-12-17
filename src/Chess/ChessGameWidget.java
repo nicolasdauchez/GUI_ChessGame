@@ -352,7 +352,9 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		}
 		return this.game.canGoForward();
 	}
-
+	public boolean canGoForward() {
+		return this.game.canGoForward();
+	}
 
 	public boolean hasManyForward() {
 		if (this.game.getForward() != null)
@@ -393,7 +395,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	public int getBranchesNb() {
 		return this.game.getForward().size();
 	}
-		
+
 	
 	
 	
