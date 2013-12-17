@@ -261,14 +261,22 @@ public class Rules {
 		  }
 		}
 		/**
-		 * Execute the move for a normal Pawn Class.
-		 * Check if the Pion Go in the good direction
-		 * Then if the Pion try to Eat, is he trying to eat in diagonal
-		 * and if not Check if the new Position is in the same column
+		 * Execute the move for {@link ePawns#PAWN}.
+		 * Check if the {@link Pawn} go in the good direction
+		 * Then if the {@link Pawn} try to Eat, is he trying to eat in diagonal
+		 * and if not Check if the new {@link Position} is in the same column
 		 * @author Lumy-
 		 *
 		 */
 		static private class DoMovePawn extends Functor {
+			/**
+			 * Private Function to Check if is trying to do {@link Rules.OptionalRules#enPassant} and if he can
+			 * @param tmp
+			 * @param p
+			 * @param newPos
+			 * @param elem
+			 * @return
+			 */
 			private boolean isMakeEnPassant(Collection<Pawn> tmp, Pawn p, Position newPos, BoardGame elem) {
 				if (!Rules.OptionalRules.enPassant)
 					return false;
@@ -278,6 +286,12 @@ public class Rules {
 						return true;
 				return false;
 			}
+			/**
+			 * Private exec_enPassant
+			 * @param p
+			 * @param newPos
+			 * @param elem
+			 */
 			private void exec_enPassant(Pawn p, Position newPos, BoardGame elem) {
 				if (!Rules.OptionalRules.enPassant)
 					return ;
@@ -286,7 +300,9 @@ public class Rules {
 				return ;
 				
 			}
-
+			/**
+			 * Override to Take care of {@link Rules.OptionalRules#enPassant} Rules
+			 */
 			@Override
 			public  void execute(Pawn p, Position newPos, BoardGame elem) {
 				if (isMakeEnPassant(elem.getElem(), p, newPos, elem))
@@ -296,7 +312,9 @@ public class Rules {
 				else
 					MapFunctor.DoEatPawn(p, elem.get(elem.indexOf(newPos)), elem);
 			}
-	
+			/**
+			 * return {@link eMoveState}.
+			 */
 			@Override
 			public eMoveState CanMove(Collection<Pawn> tmp, Pawn p, Position newPos, BoardGame elem) {
 				if (elem.getObstacleCase(tmp, newPos) == p.GetColor())
@@ -319,6 +337,7 @@ public class Rules {
 							return eMoveState.SUCCESS;
 				return eMoveState.FAIL_UNAUTHORIZED;
 			}
+			@Override
 			public List<Position> GetListPosition(final Pawn p, BoardGame elem) {
 				@SuppressWarnings("serial")
 				List<Position> ret = new ArrayList<Position>() {{
