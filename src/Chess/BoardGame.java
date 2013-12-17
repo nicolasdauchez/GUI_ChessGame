@@ -602,7 +602,12 @@ public class BoardGame {
 		getListPositionPossibleProtectKing(e, ret);
 		return ret;
 	}
-
+	/**
+	 * Do A {@link Rules.OptionalRules#Promotion}
+	 * Get The Pawn and set The New {@link ePawns}
+	 * @param pos
+	 * @param c
+	 */
 	public void Promotion(Position pos, ePawns c) {
 		Pawn pawn = get(indexOf(pos));
 		pawn.Promotion(c);
