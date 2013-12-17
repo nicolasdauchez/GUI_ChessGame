@@ -691,7 +691,6 @@ public class Rules {
 			if (postmp.column != k.column)
 				postmp.column += (postmp.column < k.column ? +1 : -1);
 		}
-
 		/**
 		 * Return all Position for Pawn that are inside BoardGame.
 		 * And return True a CanMoveHere and [Next || check*_EnemyColor] at ShouldMove
