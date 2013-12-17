@@ -543,7 +543,6 @@ public class Rules {
 					return eMoveState.SUCCESS;
 				return eMoveState.FAIL_UNAUTHORIZED;
 			}
-
 			@Override
 			public List<Position> GetListPosition(Pawn p, BoardGame elem) {			
 				@SuppressWarnings("serial")
@@ -568,7 +567,6 @@ public class Rules {
 				}
 				return ret;
 			}
-
 		}
 		/**
 		 * Execute move for a Queen Pawn Class.
@@ -585,36 +583,31 @@ public class Rules {
 					return eMoveState.FAIL_UNAUTHORIZED; // Obstacle or no True Diagonal
 				return eMoveState.SUCCESS;
 			}
-
 			@Override
 			public List<Position> GetListPosition(final Pawn p, BoardGame elem) {
 				@SuppressWarnings("serial")
 				List<Position> ret = new ArrayList<Position>() {{
 					Position tmp = new Position();
 					tmp.SetPosition(p.GetPosition());
-					while (tmp.row < 8 && tmp.column < 'h')
-					{
+					while (tmp.row < 8 && tmp.column < 'h')	{
 						tmp.column += 1;
 						tmp.row += 1; // did because don't want original pos and don't want add more line
 						add(new Position(tmp));
 					}
 					tmp.SetPosition(p.GetPosition());
-					while (tmp.row < 8 && tmp.column > 'a')
-					{
+					while (tmp.row < 8 && tmp.column > 'a') {
 						tmp.column -= 1;
 						tmp.row += 1;
 						add(new Position(tmp));
 					}
 					tmp.SetPosition(p.GetPosition());
-					while (tmp.row > 1 && tmp.column > 'a')
-					{
+					while (tmp.row > 1 && tmp.column > 'a')	{
 						tmp.column -= 1;
 						tmp.row -= 1;
 						add(new Position(tmp));
 					}
 					tmp.SetPosition(p.GetPosition());
-					while (tmp.row > 1 && tmp.column < 'h')
-					{
+					while (tmp.row > 1 && tmp.column < 'h')	{
 						tmp.column += 1;
 						tmp.row -= 1;
 						add(new Position(tmp));
@@ -622,32 +615,28 @@ public class Rules {
 					tmp = new Position();
 					tmp.SetPosition(p.GetPosition());
 					tmp.row = 1;
-					while (tmp.row < p.GetPosition().row)
-					{
+					while (tmp.row < p.GetPosition().row) {
 						Position t = new Position(tmp);
 						add(t);	
 						tmp.row += 1;
 					}
 					tmp.SetPosition(p.GetPosition());
 					tmp.row = 8;
-					while (tmp.row > p.GetPosition().row)
-					{
+					while (tmp.row > p.GetPosition().row) {
 						Position t = new Position(tmp);
 						add(t);	
 						tmp.row -= 1;
 					}
 					tmp.SetPosition(p.GetPosition());
 					tmp.column = 'a';
-					while (tmp.column < p.GetPosition().column)
-					{
+					while (tmp.column < p.GetPosition().column) {
 						Position t = new Position(tmp);
 						add(t);	
 						tmp.column -= 1;
 					}
 					tmp.SetPosition(p.GetPosition());
 					tmp.column = 'h';
-					while (tmp.column > p.GetPosition().column)
-					{
+					while (tmp.column > p.GetPosition().column) {
 						Position t = new Position(tmp);
 						add(t);	
 						tmp.column += 1;
@@ -655,7 +644,6 @@ public class Rules {
 				}};
 				return ret;
 			}
-
 		}
 		static final public Map<ePawns, Functor> MapFunction = createMap();
 		static public Map<ePawns, Functor> createMap() {
@@ -668,14 +656,17 @@ public class Rules {
 	        aMap.put(ePawns.QUEEN, new DoMoveQueen());
 	 	    return aMap;
 	    }
-		
-
+		/**
+		 * Return the Authorized Move to save Your {@link ePawns#KING} !
+		 * @param p
+		 * @param elem
+		 * @return
+		 */
 		static public List<Pair<Position, Position>> GetPossibleMoveProtect(Pawn p, BoardGame elem) {
 			List<Pair<Position, Position>> ret = new ArrayList<Pair<Position, Position>>();
 			Position k = elem.getKingPosition(p.GetColor());
 			List<Position> a = elem.AllCheckKing(p.GetColor());
-			for (Position pos : a) // Represent All Position With Enemy That Can Eat King in k
-			{
+			for (Position pos : a) { // Represent All Position With Enemy That Can Eat King in k
 				Position postmp = new Position();
 				postmp.SetPosition(pos);
 					while (!postmp.equals(k)) { // Check All Position Beetween k and pos
@@ -689,8 +680,11 @@ public class Rules {
 			}
 			return ret;
 		}
-
-
+		/**
+		 * Private function. make posttmp close k
+		 * @param postmp
+		 * @param k
+		 */
 		private static void MovePosTmp(Position postmp, Position k) {
 			if (postmp.row != k.row)
 				postmp.row += (postmp.row < k.row ? +1 : -1);
