@@ -10,12 +10,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
+
 import main.Main;
 import main.Pair;
 
@@ -40,6 +43,8 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	// message written at the bottom of the board,
 	// indicating game state
 	String message;
+	Map<eGameState, String> messagesGame;
+	Map<eMoveState, String> messagesMove;
 	// container reference
 	Main main;
 	
@@ -55,11 +60,33 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		loadPieces();
 		// reference to the Main class
 		this.main = _main;
-		
+		//
+		initMessages();
 		// update game board
 		repaint();
 		// adds mouse listener
 		addMouseListener(this);
+	}
+
+	private void initMessages() {
+		messagesGame = new HashMap<eGameState, String>();
+		messagesGame.put(eGameState.CHECK_KING_B, "Black King is in CHECK!");		
+		messagesGame.put(eGameState.CHECK_KING_W, "White King is in CHECK!");
+		messagesGame.put(eGameState.CHECK_MATE_B, "Black King is in CHECK MATE! Game over.");
+		messagesGame.put(eGameState.CHECK_MATE_W, "White King is in CHECK MATE! Game over.");
+		messagesGame.put(eGameState.DRAW , "Stalemate! Game over.");
+		messagesGame.put(eGameState.NEXT, "");
+		messagesGame.put(eGameState.SAME, "");
+		
+		messagesMove = new HashMap<eMoveState, String>();
+		messagesMove.put(eMoveState.FAIL_CHECK, "You can't move your piece here: your king would be/stay in check.");
+		messagesMove.put(eMoveState.FAIL_PAWNS_BACKWARD, "You can't move your piece here: unauthorized move.");
+		messagesMove.put(eMoveState.FAIL_PAWNS_EAT_FORWARD, "Pawns can't go or eat backward.");
+		messagesMove.put(eMoveState.FAIL_UNAUTHORIZED, "Pawns can't eat forward.");
+		messagesMove.put(eMoveState.CASTLING, "");
+		messagesMove.put(eMoveState.FAIL_CLASS_UNKNOWN, "");
+		messagesMove.put(eMoveState.SUCCESS, "");
+		messagesMove.put(eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED, "");
 	}
 
 	private void loadPieces() {
@@ -160,69 +187,19 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		if (moveState == eMoveState.SUCCESS) {
 			//reinitialize click positions
 			this.posFirstClick = null;
-
-			switch (gameState) {
-				case CHECK_KING_B: {
-					message = "Black King is in CHECK!";
-					break;
-				}
-				case CHECK_KING_W: {
-					message = "White King is in CHECK!";
-					break;
-				}
-				case CHECK_MATE_B: {
-					message = "Black King is in CHECK MATE! Game over.";
-					break;
-				}
-				case CHECK_MATE_W: {
-					message = "White King is in CHECK MATE! Game over.";
-					break;
-				}
-				case DRAW: {
-					System.out.println("STALEMEAMTEMTEAT");
-					message = "Stalemate! Game over.";
-					break;
-				}
-				default: 
-					break;
-			}
-			
+			// update game status message
+			message = messagesGame.get(gameState);
 			// check if a pawn managed to get a Promotion
 			handlePromotion();
-			
 			// enable history's go back back button
 			this.main.enableBackwardButton(true);
-			
 		}
 		else {
-			switch (moveState) {
-				case FAIL_SAME_COLOR_CASE_OCCUPIED: {
-					this.posFirstClick = this.posSecondClick;
-					break;
-				}
-				case FAIL_CHECK: {
-					message = "You can't move your piece here: your king would be/stay in check.";
-					break;
-				}
-				case FAIL_UNAUTHORIZED: {
-					message = "You can't move your piece here: unauthorized move.";
-					break;
-				}
-				case FAIL_PAWNS_BACKWARD: {
-					message = "Pawns can't go or eat backward.";
-					break;
-				}
-				case FAIL_PAWNS_EAT_FORWARD: {
-					message = "Pawns can't eat forward.";
-					break;
-				}
-				case CASTLING: {
-					handleCastling();
-					break;
-				}
-			default:
-				break;
-			}
+			if (moveState == eMoveState.FAIL_SAME_COLOR_CASE_OCCUPIED)
+				this.posFirstClick = this.posSecondClick;
+			else if (moveState == eMoveState.CASTLING)
+				handleCastling();
+			message = messagesMove.get(moveState);
 		}
 	}
 
@@ -386,6 +363,22 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	
 	public void importGame(String path) {
 		this.game.Import(path);
+		repaint();
+		this.main.updateEatenPieces(eColor.Black, this.game.getBoardGame().GetEaten());
+		this.main.updateEatenPieces(eColor.White, this.game.getBoardGame().GetEaten());
+		this.main.changePlayerTurn(this.game.GetTurn());
+		this.main.enableBackwardButton(this.game.canGoBackward());
+		this.main.enableForwardButton(this.game.canGoForward());
+		String msg = new String("");
+		if (this.game.isCheckKing() == eColor.Black)
+			message = messagesGame.get(eGameState.CHECK_KING_B);
+		else if (this.game.isCheckKing() == eColor.White)
+			message = messagesGame.get(eGameState.CHECK_KING_W);
+		else if (this.game.isCheckMat() == eColor.Black)
+			message = messagesGame.get(eGameState.CHECK_MATE_B);
+		else if (this.game.isCheckMat() == eColor.White)
+			message = messagesGame.get(eGameState.CHECK_MATE_W);
+		this.main.changeStatutMsg(message);
 	}
 
 	public void exportGame(String path) {
