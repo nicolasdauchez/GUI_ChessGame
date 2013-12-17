@@ -31,6 +31,7 @@ public class Log {
 			public Pair<Position, Position>		shoot;
 			public int 							index;
 			public ePawns						eaten;
+			public eGameState					eState;
 
 			public void print() {
 				String s;
@@ -43,13 +44,14 @@ public class Log {
 				}
 				System.out.println(s);
 			}
-			public Elem(Elem m) {
-				this(m, null, null);
+			public Elem(Elem m, eGameState stte) {
+				this(m, stte, null, null);
 			}
-			public Elem(Elem m, Pair<Position, Position> p, ePawns e) {
-				this(m, p, null, e);
+			public Elem(Elem m, eGameState stte, Pair<Position, Position> p, ePawns e) {
+				this(m, stte, p, null, e);
 			}
-			public Elem(Elem m, Pair<Position, Position> p, String f, ePawns e) {
+			public Elem(Elem m, eGameState stte, Pair<Position, Position> p, String f, ePawns e) {
+				eState = stte;
 				mother = m;
 				elems = new ArrayList<Elem>();
 				shoot = p;
@@ -66,7 +68,7 @@ public class Log {
 
 		public Tree() {
 			xstream = new XStream();
-			head = new Elem(null);
+			head = new Elem(null, eGameState.NEXT);
 			Result = "*";
 		}
 		/**
@@ -87,22 +89,22 @@ public class Log {
 		 * Addthe Pair p and move on this Elem.
 		 * @param p
 		 */
-		public void addMoveHead(Pair<Position, Position> p, ePawns e) {
-			addCurrentHead(p, e);
+		public void addMoveHead(Pair<Position, Position> p, eGameState c, ePawns e) {
+			addCurrentHead(p, c, e);
 			goForwardElem();
 		}
 		/**
 		 * add +1 at head index and add p in head.elems
 		 * @param p
 		 */
-		public void addCurrentHead(Pair<Position, Position> p, ePawns e) {
+		public void addCurrentHead(Pair<Position, Position> p, eGameState c, ePawns e) {
 			if (null != alreadyExist(p))
 				{
 					head = alreadyExist(p);
 					return ;
 				}
 			head.index += 1;
-			head.elems.add(new Elem(head, p, e));
+			head.elems.add(new Elem(head, c, p, e));
 		}
 		private Elem alreadyExist(Pair<Position, Position> p) {
 			for (Elem e : head.elems)
@@ -121,8 +123,8 @@ public class Log {
 		 * Promotion use Position
 		 * @param string
 		 */
-		public void addString(String string) {
-			addString(string, null);
+		public void addString(String string, eGameState c) {
+			addString(string, null, c);
 		}
 		/**
 		 * Add +1 at Head index and add String represent Castling (O-O || O-O-O) OR Promotion
@@ -130,13 +132,13 @@ public class Log {
 		 * @param string
 		 * @param p
 		 */
-		public void addString(String string, Pair<Position, Position> p) {
+		public void addString(String string, Pair<Position, Position> p, eGameState c) {
 			if (null != alreadyExist(string)) {
 				head = alreadyExist(string);
 				return;
 			}
 			head.index += 1;
-			head.elems.add(new Elem(head, p, string, null));
+			head.elems.add(new Elem(head, c, p, string, null));
 			goForwardElem();
 		}
 		/**
@@ -183,7 +185,7 @@ public class Log {
 					if (elem.indexOf(elem.GetEaten(), n) == -1)
 						n.row -= 2;
 				}
-				elem.undoRemove(head.eaten, n);
+				elem.undoRemove(head.eaten, n, (e == eColor.Black ? eColor.White : eColor.Black));
 			}
 			if (!isMouvement(head.shoot.GetLeft()))
 				elem.setInitPos(head.shoot.GetLeft());
@@ -293,14 +295,14 @@ public class Log {
 	public int getSizeCurrentElem() {
 		return t.getSizeElems();
 	}
-	public void add(Position p, Position newp, ePawns e) {
-		t.addMoveHead(new Pair<Position,Position>(new Position(p), new Position(newp)), e);
+	public void add(Position p, Position newp, ePawns e, eGameState c) {
+		t.addMoveHead(new Pair<Position,Position>(new Position(p), new Position(newp)), c, e);
 	}
-	public void addString(String string, Pair<Position, Position> p) {
-		t.addString(string, p);
+	public void addString(String string, Pair<Position, Position> p, eGameState c) {
+		t.addString(string, p, c);
 	}
-	public void addString(String string) {
-		t.addString(string);
+	public void addString(String string, eGameState c) {
+		t.addString(string, c);
 	}
 	public void LogPromotion(ePawns c) {
 		t.head.StringAction = "" + c;
@@ -310,6 +312,7 @@ public class Log {
 	}
 	public void addResult(String res) {
 		t.Result = res;
+		t.head.eState = (res.equals("0-1") ? eGameState.CHECK_MATE_B : (res.equals("1-0") ? eGameState.CHECK_MATE_W : eGameState.DRAW));
 	}
 	private boolean Write(String xml, String name) {
 		if (name == null)
@@ -356,6 +359,9 @@ public class Log {
 	    first = (Log.Tree.Elem)xstream.fromXML(sb.toString());
 		t.head = first;
 		return true;
+	}
+	public eGameState GetCurrentState() {
+		return t.head.eState;
 	}
 	public void print() {
 		t.head.print();

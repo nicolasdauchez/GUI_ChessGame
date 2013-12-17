@@ -31,9 +31,9 @@ public class ChessGame implements IChessGame {
 	public eColor GetTurn() {
 		return Turn;
 	}
-	private void PrevTurn() {
+	private void PrevTurn(eGameState e) {
 		Turn = (Turn == eColor.Black) ? eColor.White : eColor.Black;
-		
+		SetState(e);
 	}
 	private void EndGame() {
 		String res = "*";
@@ -134,7 +134,7 @@ public class ChessGame implements IChessGame {
 		Pawn t = elem.get(elem.indexOf(kp.equals(click1) ? click2 : click1));
 		k.SetPosition(r.GetLeft());
 		t.SetPosition(r.GetRight());
-		log.addString((r.GetLeft().column == 'c' ? "O-O-O" : "O-O"));
+		log.addString((r.GetLeft().column == 'c' ? "O-O-O" : "O-O"), eGameState.NEXT);
 		NextTurn(eGameState.NEXT);
 		log.print();}
 
@@ -149,7 +149,7 @@ public class ChessGame implements IChessGame {
 		r2 = Rules.DoMovePawns(r, elem.get(elem.indexOf(firstClick)), secondClick, elem);
 		if (r2.GetRight() != eGameState.SAME)
 		{
-			log.add(new Position(firstClick), new Position(secondClick), (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null));
+			log.add(new Position(firstClick), new Position(secondClick), (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null), State);
 			NextTurn(r2.GetRight());
 		}
 		return r2;
@@ -168,7 +168,7 @@ public class ChessGame implements IChessGame {
 		if (r1.GetRight() != eGameState.SAME)
 		{
 			if (r1.GetLeft() != eMoveState.CASTLING)
-				log.add(new Position(firstClick), new Position(secondClick), (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null));
+				log.add(new Position(firstClick), new Position(secondClick), (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null), State);
 			NextTurn(r1.GetRight());
 		}
 		if ((State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W) && // one player in check
@@ -202,21 +202,21 @@ public class ChessGame implements IChessGame {
 	public boolean GoBackward() {
 		if (!log.GoBackward(elem, (Turn == eColor.Black ? eColor.White : eColor.Black)))
 			return false;
-		PrevTurn();
+		PrevTurn(log.GetCurrentState());
 		return true;
 	}
 	@Override
 	public boolean goForward(int index) {
 		if (!log.goForward(elem, index, (Turn)))
 			return false;
-		PrevTurn();
+		NextTurn(log.GetCurrentState());
 		return true;
 	}
 	@Override
 	public boolean goForward() {
 		if (!log.goForward(elem, (Turn )))
 			return false;
-		PrevTurn();
+		NextTurn(log.GetCurrentState());
 		return true;
 	}
 	@Override

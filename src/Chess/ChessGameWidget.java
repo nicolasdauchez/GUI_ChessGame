@@ -160,7 +160,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 						eColor currentPlayer = this.game.GetTurn();
 					
 						// check move validity
-						Pair<eMoveState, eGameState> moveAccepted = this.game.catchEvent(posFirstClick, posSecondClick);
+						Pair<eMoveState, eGameState> moveAccepted = this.game.catchEvent(new Position(posFirstClick), new Position(posSecondClick));
 	
 						System.out.println("eMoveState: " + moveAccepted.GetLeft() + " eGameState:" + moveAccepted.GetRight() + " TurnPlayer: " + game.GetTurn());
 						

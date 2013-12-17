@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.lang.model.element.ElementKind;
+
 import main.Pair;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -63,12 +65,20 @@ public class BoardGame {
 	 * @return
 	 */
 	public int indexOf(Collection<Pawn> p, Position s) {
-		int c = 0;
+		return indexOf(p, s, null);
+	}
+	public int indexOf(Collection<Pawn> p, Position s, eColor c) {
+		int i = 0;
 		for (Pawn e : p)
 		{
 			if (e.equals(s))
-				return c;
-			c++;
+			{
+				if (c != null && e.GetColor() == c)
+					return i;
+				else if (c == null)
+					return i;
+			}
+			i++;
 		}
 		return -1;
 	}
@@ -102,9 +112,9 @@ public class BoardGame {
 		Eaten.add(elem.remove(indexOf(eaten)));
 		EatenTurn = true;
 	}
-	public void undoRemove(ePawns e, Position p) {
+	public void undoRemove(ePawns e, Position p, eColor c) {
 		if (contains(Eaten, p)) {
-			elem.add(Eaten.remove(indexOf(Eaten, p)));
+			elem.add(Eaten.remove(indexOf(Eaten, p, c)));
 		}
 	}
 	public void RedoMove(Pair<Position, Position> p) {
