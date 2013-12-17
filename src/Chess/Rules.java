@@ -1000,7 +1000,13 @@ public class Rules {
 			return eColor.None;
 		}
 	}
-	
+	/**
+	 * return True if a Draw occur in tmp
+	 * @param tmp
+	 * @param c
+	 * @param elem
+	 * @return
+	 */
 	public static boolean isDraw(Collection<Pawn> tmp, eColor c, BoardGame elem) {	
 			if (ImpossibilityCheckMate(tmp, elem))
 				return true;// == eColor.Black ? eColor.White : eColor.Black)
@@ -1008,32 +1014,28 @@ public class Rules {
 				return true;
 			return false;
 		}
-	private static boolean Stalemate(Collection<Pawn> tmp, eColor e, BoardGame elem) {
-			List<Pawn> allColor = elem.getAllColor(tmp, e);
-			for (Pawn pawn : allColor) {
-				if (Rules.MapFunctor.isPossibleMove(tmp, pawn, elem))
-					return false;
-			}
-			return true;
-		}
-
 	/**
-	 * check if All Move for the Pawn P Create CheckKing For P.GetCOlor()
-	 * @param tmp 
-	 * @param pawn
-	 * @param allPos
+	 * Check if tmp is in @see <a href="http://en.wikipedia.org/wiki/Stalemate">StaleMate</a>  
+	 * @param tmp
+	 * @param e
 	 * @param elem
 	 * @return
 	 */
-	/*private static boolean isAllMoveCreateCheckKing(List<Pawn> tmp, Pawn pawn, List<Position> allPos, BoardGame elem) {
-		for (Position p : allPos)
-		{
-			List<Pawn> n = elem.getNewCopie(tmp, pawn, p);
-			if (! Rules.CheckKing.isCheckKing(n, elem, pawn.GetColor()) )
+	private static boolean Stalemate(Collection<Pawn> tmp, eColor e, BoardGame elem) {
+		List<Pawn> allColor = elem.getAllColor(tmp, e);
+		for (Pawn pawn : allColor) {
+			if (Rules.MapFunctor.isPossibleMove(tmp, pawn, elem))
 				return false;
 		}
 		return true;
-	}*/
+	}
+	/**
+	 * Return true if not enough {@link Pawn} for a team.
+	 * @see <a href="http://en.wikipedia.org/wiki/Rules_of_chess#Draws">Draw</a>
+	 * @param tmp
+	 * @param elem
+	 * @return
+	 */
 	private static boolean ImpossibilityCheckMate(Collection<Pawn> tmp, BoardGame elem) {
 		if (tmp.size() <= 4) {
 			
@@ -1055,7 +1057,6 @@ public class Rules {
 			}
 		return false;
 	}
-
 	/**
 	 * Make The move for one Pawn (whatever is the ePawns)
 	 * begin by lookin for the key[ePawns] in Rules.MapFunctor.MapFunction
@@ -1140,9 +1141,16 @@ public class Rules {
 		    		return true;
 		    	else
 		    		return false;
-	return false;
+		return false;
 	}
+	/**
+	 * Return False if all Rules for Promotion are not there.
+	 * @param pawn
+	 * @return
+	 */
 	public static boolean isPromotion(Pawn pawn) {
+		if (!Rules.OptionalRules.Promotion)
+			return false;
 		int row = 1;
 		if (pawn.GetColor() != eColor.Black)
 			row = 8;
