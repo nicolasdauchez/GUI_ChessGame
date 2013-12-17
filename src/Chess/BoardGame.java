@@ -426,11 +426,8 @@ public class BoardGame {
 			p.row = 1;
 		p.column = 'a';
 		ePawns e[] = { ePawns.ROOK, ePawns.KNIGHT, ePawns.BISHOP, ePawns.QUEEN, ePawns.KING, ePawns.BISHOP, ePawns.KNIGHT, ePawns.ROOK };
-		//if (c == eColor.White)
-		//	ArrayUtils.reverse(e);
 		for (int i = 0; i < e.length; i++) {
-			if (i == 0 || i == 3 || i == 4  || i == 7)
-				add(c, new Position(p), e[i]);
+			add(c, new Position(p), e[i]);
 			p.column += 1;
 		}
 	}
