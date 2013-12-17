@@ -17,10 +17,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -34,9 +36,11 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+
 import Chess.ChessGameWidget;
 import Chess.Pawn;
 import Chess.Position;
+import Chess.Rules;
 import Chess.eColor;
 import Chess.ePawns;
 /**
@@ -78,17 +82,31 @@ public class Main extends JFrame implements ActionListener {
 
 		// menu
 		menu = new JMenuBar();
-		item = new JMenu("File");
+		fileMenu = new JMenu("File");
 		importe = new JMenuItem("Import...");
 		exporte = new JMenuItem("Export...");
 		exit = new JMenuItem("Exit");
-		item.add(importe);
-		item.add(exporte);
-		item.add(exit);
-		menu.add(item);
+		fileMenu.add(importe);
+		fileMenu.add(exporte);
+		fileMenu.add(exit);
+		menu.add(fileMenu);
 		importe.addActionListener(this);
 		exporte.addActionListener(this);
 		exit.addActionListener(this);
+		optionsMenu = new JMenu("Options");
+		optionCastling = new JCheckBoxMenuItem("Castling");
+		optionPromotion = new JCheckBoxMenuItem("Promotion");
+		optionEnPassant = new JCheckBoxMenuItem("En passant");
+		optionCastling.setSelected(true);
+		optionPromotion.setSelected(true);
+		optionEnPassant.setSelected(true);
+		optionsMenu.add(optionCastling);
+		optionsMenu.add(optionPromotion);
+		optionsMenu.add(optionEnPassant);
+		optionCastling.addActionListener(this);
+		optionPromotion.addActionListener(this);
+		optionEnPassant.addActionListener(this);
+		menu.add(optionsMenu);
 		
 //		//Create a file chooser
 //		final JFileChooser fc = new JFileChooser();
@@ -298,6 +316,15 @@ public class Main extends JFrame implements ActionListener {
 			}
 			System.exit(0);
 		}
+		else if (objClicked == this.optionCastling) {
+			Rules.OptionalRules.setCastling(optionCastling.isSelected());
+		}
+		else if (objClicked == this.optionPromotion) {
+			Rules.OptionalRules.setPromotion(optionPromotion.isSelected());
+		}
+		else if (objClicked == this.optionEnPassant) {
+				Rules.OptionalRules.setEnPassant(optionEnPassant.isSelected());
+		}
 	}
 	
 	private void handleGoBack() {
@@ -385,9 +412,11 @@ public class Main extends JFrame implements ActionListener {
 	JMenuItem exporte;
 	JMenuItem exit;
 	JMenuBar menu;
-	JMenu item;
-	
-
+	JMenu fileMenu;
+	JMenu optionsMenu;
+	JCheckBoxMenuItem optionCastling;
+	JCheckBoxMenuItem optionPromotion;
+	JCheckBoxMenuItem optionEnPassant;
 }
 
 

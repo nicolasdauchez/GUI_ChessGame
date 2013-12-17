@@ -80,9 +80,9 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		
 		messagesMove = new HashMap<eMoveState, String>();
 		messagesMove.put(eMoveState.FAIL_CHECK, "You can't move your piece here: your king would be/stay in check.");
-		messagesMove.put(eMoveState.FAIL_PAWNS_BACKWARD, "You can't move your piece here: unauthorized move.");
+		messagesMove.put(eMoveState.FAIL_PAWNS_BACKWARD, "Pawns can't eat forward.");
 		messagesMove.put(eMoveState.FAIL_PAWNS_EAT_FORWARD, "Pawns can't go or eat backward.");
-		messagesMove.put(eMoveState.FAIL_UNAUTHORIZED, "Pawns can't eat forward.");
+		messagesMove.put(eMoveState.FAIL_UNAUTHORIZED, "You can't move your piece here: unauthorized move.");
 		messagesMove.put(eMoveState.CASTLING, "");
 		messagesMove.put(eMoveState.FAIL_CLASS_UNKNOWN, "");
 		messagesMove.put(eMoveState.SUCCESS, "");
@@ -190,7 +190,8 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 			// update game status message
 			message = messagesGame.get(gameState);
 			// check if a pawn managed to get a Promotion
-			handlePromotion();
+			if (Rules.OptionalRules.Promotion)
+				handlePromotion();
 			// enable history's go back back button
 			this.main.enableBackwardButton(true);
 		}

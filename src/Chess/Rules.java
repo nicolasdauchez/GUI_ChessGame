@@ -15,17 +15,17 @@ import main.Pair;
  *
  */
 public class Rules {
-	static class OptionalRules {
+	static public class OptionalRules {
 		static boolean enPassant = true; // http://en.wikipedia.org/wiki/En_passant
 		static boolean Castling = true; // http://en.wikipedia.org/wiki/Castling
 		static boolean Promotion = true; // http://en.wikipedia.org/wiki/Promotion_(chess)
-		public void setEnPassant(boolean e) {
+		public static void setEnPassant(boolean e) {
 			enPassant = e;
 		}
-		public void setCastling(boolean e) {
+		public static void setCastling(boolean e) {
 			Castling = e;
 		}
-		public void setPromotion(boolean e) {
+		public static void setPromotion(boolean e) {
 			Promotion = e;
 		}
 	}
