@@ -24,29 +24,77 @@ import com.thoughtworks.xstream.XStream;
  */
 public class Log {
 	private class Tree {
+		/**
+		 * is an Elem of the {@link Log.Tree}
+		 * Only Simple Structur.
+		 * @author Lumy-
+		 *
+		 */
 		private class Elem {
-			private Elem						mother; //Backward
-			public ArrayList<Elem>				elems; // Heads
+			/**
+			 * Represent The Tail of the {@link Log.Tree}
+			 */
+			public ArrayList<Elem>				elems;
+			/**
+			 * Use for Specific Action. Castling - Promotion
+			 */
 			public String						StringAction;
+			/**
+			 * Represent The Played of the Node {@link Log.Tree.Elem} 
+			 */
 			public Pair<Position, Position>		shoot;
+			/**
+			 * index is used in intern or in export.
+			 * Represent the move that is did in the Node {@link Log.Tree.Elem}
+			 * if -1 that mean no Played is made. (One End of {@link Log.Tree})
+			 */
 			public int 							index;
+			/**
+			 * is different from null if the Played make a Eat pieces
+			 */
 			public ePawns						eaten;
+			/**
+			 * Store the current {@link eGameState}. in the Current Played.
+			 */
 			public eGameState					eState;
-
-			public Elem(Elem m, eGameState stte) {
-				this(m, stte, null, null);
+			/**
+			 * Private: Represent the Mother. the head. the begining;
+			 */
+			private Elem						mother;
+			/**
+			 * Default Constructor. Call for normal Move
+			 * @param mother
+			 * @param state
+			 */
+			public Elem(Elem mother, eGameState state) {
+				this(mother, state, null, null);
 			}
-			public Elem(Elem m, eGameState stte, Pair<Position, Position> p, ePawns e) {
-				this(m, stte, p, null, e);
+			/**
+			 * Constructor Call For Move with Eat
+			 * @param mother
+			 * @param state
+			 * @param played
+			 * @param eatn
+			 */
+			public Elem(Elem mother, eGameState state, Pair<Position, Position> played, ePawns eatn) {
+				this(mother, state, played, null, eatn);
 			}
-			public Elem(Elem m, eGameState stte, Pair<Position, Position> p, String f, ePawns e) {
-				eState = stte;
-				mother = m;
+			/**
+			 * Constructor Call For Special Move eatn or eatn
+			 * @param mom
+			 * @param state
+			 * @param played
+			 * @param action
+			 * @param eatn
+			 */
+			public Elem(Elem mom, eGameState state, Pair<Position, Position> played, String action, ePawns eatn) {
+				eState = state;
+				mother = mom;
 				elems = new ArrayList<Elem>();
-				shoot = p;
+				shoot = played;
 				index = -1;
-				StringAction = f;
-				eaten = e;
+				StringAction = action;
+				eaten = eatn;
 			}
 		}
 
