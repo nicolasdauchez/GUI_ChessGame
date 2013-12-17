@@ -5,41 +5,78 @@ package Chess;
 
 /**
  * @author Lumy-
- *
+ * Represent a Position in the Chess Game
+ * By {@value #column} and {@value #row}
  */
 public class Position {
+	/**
+	 * Row: Int. from 1 to 8
+	 */
 	public int 		row;
+	/**
+	 * column: char. from 'a'-'h'
+	 */
 	public char  column;
-	public void print() {
-		System.out.print(this);
-	}
+	/**
+	 * Default Constructor.
+	 * euuuuh Deprecated.
+	 */
 	public Position()
 	{
 		row = 0;
 		column = '\0';
 	}
+	/**
+	 * Constructor
+	 * Should use
+	 * @param c
+	 * @param i
+	 */
 	public Position(char c, int i)
 	{
 		this(i,c);
 	}
+	/**
+	 * Constructor
+	 * Should use
+	 * @param i
+	 * @param c
+	 */
 	public Position(int i, char c)
 	{
 		row = i;
 		column = c;
 	}
+	/**
+	 * Constructor by Copy
+	 * @param p
+	 */
 	public Position(Position p)
 	{
 		row = p.row;
 		column = p.column;
 	}
+	/**
+	 * {@link #row} = p.{@link #row}
+	 * {@link #column} = p.{@link #column}
+	 * @param p
+	 */
 	public void SetPosition(Position p) {
 		row = p.row;
 		column = p.column;
 	}
+	/**
+	 * toString Function
+	 */
 	@Override
 	public String toString() {
 		return "R,C[" + row+ "," +column+"]";
 	}
+	/**
+	 * Compare 
+	 * {@link #row} = o.{@link #row}
+	 * {@link #column} = o.{@link #column}
+	 */
 	@Override
 	public boolean equals(Object o)
 	{
@@ -75,14 +112,30 @@ public class Position {
 			return false;
 		return true;
 	}
+	/**
+	 * return the Difference of Row beetwen this and p.
+	 * @param p
+	 * @return
+	 */
 	public int diffRow(Position p) {
 		int res = p.row - row;
 		return (res < 0 ? res * -1 : res);
 	}
+	/**
+	 * return the Difference of Row beetwen this and p.
+	 * @param p
+	 * @return
+	 */
 	public int diffColumn(Position p) {
 		int res = Character.toLowerCase(p.column) - Character.toLowerCase(column);
 		return (res < 0 ? res * -1 : res);
 	}
+	/**
+	 * Check for {@link #diffRow(Position)} or {@link #diffColumn(Position)}
+	 * else do checkDiagonal
+	 * @param p
+	 * @return
+	 */
 	public int diffMultiple(Position p) {
 		if (p.row != row && p.column == column)
 			return diffRow(p);
