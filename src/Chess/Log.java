@@ -174,6 +174,7 @@ public class Log {
 					elem.UndoPromotion(t.head.shoot.GetRight());
 				}
 			}
+			head.shoot.GetRight().print();head.shoot.GetLeft().print();System.out.println("");
 			elem.get(elem.indexOf(head.shoot.GetRight())).SetPosition(head.shoot.GetLeft());
 			if (head.eaten != null) {
 				Position n = new Position(head.shoot.GetRight());

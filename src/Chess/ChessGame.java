@@ -149,7 +149,7 @@ public class ChessGame implements IChessGame {
 		r2 = Rules.DoMovePawns(r, elem.get(elem.indexOf(firstClick)), secondClick, elem);
 		if (r2.GetRight() != eGameState.SAME)
 		{
-			log.add(firstClick, secondClick, (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null));
+			log.add(new Position(firstClick), new Position(secondClick), (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null));
 			NextTurn(r2.GetRight());
 		}
 		return r2;
@@ -168,7 +168,7 @@ public class ChessGame implements IChessGame {
 		if (r1.GetRight() != eGameState.SAME)
 		{
 			if (r1.GetLeft() != eMoveState.CASTLING)
-				log.add(firstClick, secondClick, (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null));
+				log.add(new Position(firstClick), new Position(secondClick), (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null));
 			NextTurn(r1.GetRight());
 		}
 		if ((State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W) && // one player in check
