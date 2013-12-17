@@ -136,7 +136,7 @@ public class ChessGame implements IChessGame {
 		t.SetPosition(r.GetRight());
 		log.addString((r.GetLeft().column == 'c' ? "O-O-O" : "O-O"), eGameState.NEXT);
 		NextTurn(eGameState.NEXT);
-		log.print();}
+	}
 
 	private Pair<eMoveState, eGameState> Check_King_Way(Position firstClick, Position secondClick)
 	{
@@ -144,6 +144,7 @@ public class ChessGame implements IChessGame {
 		List<Pair<Position, Position>> r;
 		r = elem.getListPositionPossibleProtectKing((State == eGameState.CHECK_KING_B ? eColor.Black : eColor.White));
 		if (r.size() == 0) {
+			EndGame();
 			return new Pair<eMoveState, eGameState>(eMoveState.SUCCESS, (eGameState.CHECK_KING_W == State ? eGameState.CHECK_MATE_W : eGameState.CHECK_MATE_B));
 		}
 		r2 = Rules.DoMovePawns(r, elem.get(elem.indexOf(firstClick)), secondClick, elem);
@@ -186,7 +187,6 @@ public class ChessGame implements IChessGame {
 			}
 
 		}
-		log.print();
 		return r1;
 	}
 
@@ -214,7 +214,7 @@ public class ChessGame implements IChessGame {
 	}
 	@Override
 	public boolean goForward() {
-		if (!log.goForward(elem, (Turn )))
+		if (!log.goForward(elem, (Turn)))
 			return false;
 		NextTurn(log.GetCurrentState());
 		return true;
@@ -231,10 +231,14 @@ public class ChessGame implements IChessGame {
 	}
 	@Override
 	public boolean Import(String path) {
-		return log.Import(path);
+		boolean r = log.Import(path);
+		if (r)
+			while (false != goForward());
+		return r;
 	}
 	@Override
 	public boolean Export(String path) {
+		while (false != GoBackward());
 		return log.Export(path);
 	}
 }

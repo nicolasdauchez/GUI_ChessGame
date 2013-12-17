@@ -25,14 +25,6 @@ import com.thoughtworks.xstream.XStream;
 public class Log {
 	private class Tree {
 		private class Elem {
-			private Elem						mother; //Backward
-			public ArrayList<Elem>				elems; // Heads
-			public String						StringAction;
-			public Pair<Position, Position>		shoot;
-			public int 							index;
-			public ePawns						eaten;
-			public eGameState					eState;
-
 			public void print() {
 				String s;
 				if (mother == null)
@@ -44,6 +36,14 @@ public class Log {
 				}
 				System.out.println(s);
 			}
+			private Elem						mother; //Backward
+			public ArrayList<Elem>				elems; // Heads
+			public String						StringAction;
+			public Pair<Position, Position>		shoot;
+			public int 							index;
+			public ePawns						eaten;
+			public eGameState					eState;
+
 			public Elem(Elem m, eGameState stte) {
 				this(m, stte, null, null);
 			}
@@ -66,6 +66,23 @@ public class Log {
 		public String BlackName;
 		public String Result;
 
+		 private void _print(Elem e) {
+			 e.print();
+			 if (e.elems.size() > 0) {
+				 System.out.println("Node:" + e.elems.size());
+				 for (Elem t : e.elems) {
+					 System.out.println("\t---------Node");
+					 print(t);
+				 }
+			 }
+			 else
+				 System.out.println("EndRoot");
+			 return ;
+		 }
+		 public void print(Elem e) {
+			 _print(e);
+		 }
+			 
 		public Tree() {
 			xstream = new XStream();
 			head = new Elem(null, eGameState.NEXT);
@@ -176,7 +193,6 @@ public class Log {
 					elem.UndoPromotion(t.head.shoot.GetRight());
 				}
 			}
-			head.shoot.GetRight().print();head.shoot.GetLeft().print();System.out.println("");
 			elem.get(elem.indexOf(head.shoot.GetRight())).SetPosition(head.shoot.GetLeft());
 			if (head.eaten != null) {
 				Position n = new Position(head.shoot.GetRight());
@@ -203,22 +219,6 @@ public class Log {
 			}
 			return null;
 		}
-		private void _print(Elem e) {
-			e.print();
-			if (e.elems.size() > 0) {
-				System.out.println("Node:" + e.elems.size());
-				for (Elem t : e.elems) {
-					System.out.println("\t---------Node");
-					print(t);
-				}
-			}
-			else
-				System.out.println("EndRoot");
-			return ;
-		}
-		public void print(Elem e) {
-			_print(e);
-		}
 		public boolean isMouvement(Position p) {
 			Elem i = (head.mother == null ? head : head.mother);
 			while (i.mother != null)
@@ -230,6 +230,10 @@ public class Log {
 			}
 			return false;
 		}
+		public String toXml() {
+            XStream xstream = new XStream();
+            return xstream.toXML(this);
+        }
 	}
 	
 	private Tree		t;
@@ -341,7 +345,7 @@ public class Log {
 			nW = t.WhiteName;
 		if (nB == null)
 			nB = t.BlackName;
-		String xml = xstream.toXML(t.head);
+		String xml = t.toXml();
 		return Write(xml, path);
 	}
 
@@ -356,15 +360,12 @@ public class Log {
 	    StringBuilder sb = new StringBuilder();
 	    for (String s : slist)
 	    	sb.append(s);
-	    first = (Log.Tree.Elem)xstream.fromXML(sb.toString());
-		t.head = first;
+	    t = (Log.Tree)xstream.fromXML(sb.toString());
+		t.print(t.head);
+	    //first = t.head;
 		return true;
 	}
 	public eGameState GetCurrentState() {
 		return t.head.eState;
-	}
-	public void print() {
-		t.head.print();
-		t.print(first);
 	}
 }
