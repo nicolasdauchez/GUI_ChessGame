@@ -8,6 +8,7 @@ import java.util.Collection;
 import main.Pair;
 
 /**
+ * Interface for easy use/read of {@link ChessGame}
  * @author Lumy-
  *
  */
@@ -42,6 +43,4 @@ public interface IChessGame {
 	public boolean 										isPromotion(Position pos);
 	public void											DoPromotion(Position p, ePawns c);
 	public void 										DoCastling(Position click1, Position click2);
-	
-
 }
