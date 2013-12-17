@@ -193,10 +193,10 @@ public class Log {
 		}
 		public boolean isMouvement(Position p) {
 			Elem i = (head.mother == null ? head : head.mother);
+			p.print();
 			while (i.mother != null)
 			{
-				
-				if (i.shoot != null && i.shoot.GetLeft().equals(p))
+				if (i.shoot != null && i.shoot.GetRight().equals(p))
 					return true;
 				i = i.mother;
 			}

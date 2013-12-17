@@ -63,6 +63,12 @@ public class BoardGame {
 	public int indexOf(Collection<Pawn> p, Position s) {
 		return indexOf(p, s, null);
 	}
+	/**
+	 * @param p
+	 * @param s
+	 * @param c
+	 * @return
+	 */
 	public int indexOf(Collection<Pawn> p, Position s, eColor c) {
 		int i = 0;
 		for (Pawn e : p)
