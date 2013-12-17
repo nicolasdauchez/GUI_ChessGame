@@ -8,7 +8,7 @@ package Chess;
  * {@link #SAME} reprensent Invalid Move, Same Player to Play
  * {@link #NEXT} is simple move without specifique State.
  * {@link #CHECK_MATE_B} or _W is for a Mate State. EndGame.
- * {@link #CHECK_KING_B} or _W is for a Check State. Save your KING !
+ * {@link #CHECK_KING_B} or _W is for a Check State. Save your {@link ePawns#KING} !
  * @author Lumy-
  */
 public enum eGameState {
