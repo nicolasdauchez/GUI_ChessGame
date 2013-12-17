@@ -613,21 +613,36 @@ public class BoardGame {
 		pawn.Promotion(c);
 		return ;
 	}
-
+	/**
+	 * Call each {@link Pawn#NextTurn()}
+	 * then set EatenTurn to False (end of the turn...)
+	 */
 	public void NextTurn() {
 		for (Pawn p : elem)
 			p.NextTurn();// implemented for enPassant Rule
 		EatenTurn = false;
 	}
+	/**
+	 * return {@link #EatenTurn}
+	 * @return
+	 */
 	public boolean isEatThing() {
 		return EatenTurn;
 	}
+	/**
+	 * return null if nothing had been Eaten
+	 * @return
+	 */
 	public Pawn getLastEatThing() {
 		if (Eaten.size() != 0)
 			return Eaten.get(Eaten.size() - 1);
 		return null;
 	}
-
+	/**
+	 * Redo The Castling do by e
+	 * @param stringAction
+	 * @param e
+	 */
 	public void RedoCastling(String stringAction, eColor e) {
 		int row = (e == eColor.Black ? 8 : 1);
 		Position pK = new Position('e', row);
@@ -649,7 +664,11 @@ public class BoardGame {
 		get(indexOf(pK)).SetPosition(nK);
 		get(indexOf(pT)).SetPosition(nT);
 	}
-
+	/**
+	 * Undo the Castling do by Color e
+	 * @param stringAction
+	 * @param e
+	 */
 	public void UndoCastling(String stringAction, eColor e) {
 		int row = (e == eColor.Black ? 8 : 1);
 		Position pK = null;
@@ -673,6 +692,11 @@ public class BoardGame {
 		setInitPos(nK);
 		setInitPos(nT);
 	}
+	/**
+	 * Redo Promotion at p
+	 * @param p
+	 * @param stringAction
+	 */
 	public void RedoPromotion(Position p, String stringAction) {
 		ePawns e = ePawns.PAWN;
 		System.out.println(stringAction);
@@ -692,11 +716,17 @@ public class BoardGame {
 		}
 		get(indexOf(p)).Promotion(e);
 	}
-
+	/**
+	 * Undo Promotion at P (unpromoted)
+	 * @param p
+	 */
 	public void UndoPromotion(Position p) {
 		get(indexOf(p)).Promotion(ePawns.PAWN);
 	}
-
+	/**
+	 * Reset Pawn at p
+	 * @param p
+	 */
 	public void setInitPos(Position p) {
 		if (contains(p))
 			get(indexOf(p)).reset();
