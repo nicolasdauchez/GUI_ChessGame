@@ -25,17 +25,6 @@ import com.thoughtworks.xstream.XStream;
 public class Log {
 	private class Tree {
 		private class Elem {
-			public void print() {
-				String s;
-				if (mother == null)
-					s = "RootTree:";
-				else{
-					s = "Mother [" + mother + "];";
-					s += (shoot != null ? " Pair[" + shoot.GetLeft() +" -> "+shoot.GetRight()+"] ":"");
-					s+=" Index" + index + (StringAction != null ? " " + StringAction :  "");
-				}
-				System.out.println(s);
-			}
 			private Elem						mother; //Backward
 			public ArrayList<Elem>				elems; // Heads
 			public String						StringAction;
@@ -64,25 +53,7 @@ public class Log {
 		private Elem head;
 		public String WhiteName;
 		public String BlackName;
-		public String Result;
-
-		 private void _print(Elem e) {
-			 e.print();
-			 if (e.elems.size() > 0) {
-				 System.out.println("Node:" + e.elems.size());
-				 for (Elem t : e.elems) {
-					 System.out.println("\t---------Node");
-					 print(t);
-				 }
-			 }
-			 else
-				 System.out.println("EndRoot");
-			 return ;
-		 }
-		 public void print(Elem e) {
-			 _print(e);
-		 }
-			 
+		private String Result;
 		public Tree() {
 			xstream = new XStream();
 			head = new Elem(null, eGameState.NEXT);
@@ -237,19 +208,16 @@ public class Log {
 	}
 	
 	private Tree		t;
-	private Chess.Log.Tree.Elem		first;
 	private XStream xstream;
 	
 	public Log(String nB, String nW) {
 		t = new Tree();
-		first = t.head;
 		t.BlackName = nB;
 		t.WhiteName = nW;
 	}
-	
+
 	public void newGame(String nW, String nB) {
 		t = new Tree();
-		first = t.head;
 		t.BlackName = nB;
 		t.WhiteName = nW;
 	}
@@ -315,8 +283,11 @@ public class Log {
 		return t.getCurrentShoot();
 	}
 	public void addResult(String res) {
-		t.Result = res;
-		t.head.eState = (res.equals("0-1") ? eGameState.CHECK_MATE_B : (res.equals("1-0") ? eGameState.CHECK_MATE_W : eGameState.DRAW));
+		if (t.Result.equals("*"))
+		{
+			t.Result = res;
+			t.head.eState = (res.equals("0-1") ? eGameState.CHECK_MATE_B : (res.equals("1-0") ? eGameState.CHECK_MATE_W : eGameState.DRAW));
+		}
 	}
 	private boolean Write(String xml, String name) {
 		if (name == null)
@@ -361,8 +332,7 @@ public class Log {
 	    for (String s : slist)
 	    	sb.append(s);
 	    t = (Log.Tree)xstream.fromXML(sb.toString());
-		t.print(t.head);
-	    //first = t.head;
+		//first = t.head;
 		return true;
 	}
 	public eGameState GetCurrentState() {

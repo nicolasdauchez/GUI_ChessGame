@@ -199,7 +199,7 @@ public class ChessGame implements IChessGame {
 		return log.getForward();
 	}
 	@Override
-	public boolean GoBackward() {
+	public boolean goBackward() {
 		if (!log.GoBackward(elem, (Turn == eColor.Black ? eColor.White : eColor.Black)))
 			return false;
 		PrevTurn(log.GetCurrentState());
@@ -232,13 +232,14 @@ public class ChessGame implements IChessGame {
 	@Override
 	public boolean Import(String path) {
 		boolean r = log.Import(path);
-		if (r)
-			while (false != goForward());
+		if (r) while (false != goForward());
 		return r;
 	}
 	@Override
 	public boolean Export(String path) {
-		while (false != GoBackward());
-		return log.Export(path);
+		while (false != goBackward());
+		boolean r = log.Export(path);
+		while (false != goForward());
+		return r;
 	}
 }

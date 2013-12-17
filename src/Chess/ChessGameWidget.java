@@ -341,7 +341,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	public boolean goBack() {
 		int eatenPiecesNb = this.game.getBoardGame().GetEaten().size();
 		eColor currentPlayer = this.game.GetTurn();
-		if (this.game.GoBackward()) {
+		if (this.game.goBackward()) {
 			repaint();
 			this.main.enableForwardButton(true);
 			// updates eaten pieces panel if necessary
