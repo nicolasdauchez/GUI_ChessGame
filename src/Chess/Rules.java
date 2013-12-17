@@ -59,11 +59,10 @@ public class Rules {
 			Promotion = e;
 		}
 	}
-	
 	/**
-	 * Castling Rules
+	 * Castling Rules {@value Rules.OptionalRules#Castling}
+	 * Check if you can Castling. Doesn't do it. {@link ChessGame#DoCastling(Position, Position)} to see the movement
 	 * @author Lumy-
-	 *
 	 */
 	static class Castling {
 		/**
@@ -92,38 +91,48 @@ public class Rules {
 			Position i = new Position(k.GetPosition());
 			Position tmp = new Position(k.GetPosition());
 			Collection<Pawn> t = null;
-			
-			while (tmp.diffColumn(endp) != 0)
-			{
+			while (tmp.diffColumn(endp) != 0) {
 				i.column += (tmp.column < endp.column ? 1 : -1);
 				t = elem.getNewCopie((t == null ? z : t), elem.get((t == null ? z : t), elem.indexOf((t == null ? z : t), tmp)), i);
-					if (Rules.CheckKing.isCheckKing(t, elem, k.GetColor()))
+				if (Rules.CheckKing.isCheckKing(t, elem, k.GetColor()))
 					return false;
 				tmp.column += (tmp.column < endp.column ? 1 : -1);
 			}
 			return true;
 		}		
-
-		
+		/**
+		 * Private Function call {@link #isCastling(Collection, Pawn, Position, BoardGame)} if true
+		 * return p2.isStartPosition() && p1.isStartPosition();
+		 * @param tmp
+		 * @param p2
+		 * @param p1
+		 * @param elem
+		 * @return
+		 */
 		static private boolean _canCastling(Collection<Pawn> tmp, Pawn p2, Pawn p1, BoardGame elem) {
 			if (isCastling(tmp, p2, p1.GetPosition(), elem)) // Type and Color
-				if (p2.isStartPosition() && p1.isStartPosition()) // Start Position
-					return true;
+				return p2.isStartPosition() && p1.isStartPosition(); // Start Position
 			return false;
 		}
+		/**
+		 * return True if the Player is Actually Castling (Position, Type, Initial Pos)
+		 * @param tmp
+		 * @param p
+		 * @param newPos
+		 * @param elem
+		 * @return
+		 */
 		static public boolean isCastling(Collection<Pawn> tmp, Pawn p, Position newPos, BoardGame elem) {
 			if (Rules.OptionalRules.Castling == true)
 				if (elem.contains(tmp, newPos)) {
 					Pawn p2 = elem.get(tmp, elem.indexOf(tmp, newPos));
-					if (p2.GetColor() == p.GetColor() && ((p2.GetClass() == ePawns.KING && p.GetClass() == ePawns.ROOK) ||
-						(p.GetClass() == ePawns.KING && p2.GetClass() == ePawns.ROOK)))
-						return true;
+					return (p2.GetColor() == p.GetColor() && ((p2.GetClass() == ePawns.KING && p.GetClass() == ePawns.ROOK) ||
+						(p.GetClass() == ePawns.KING && p2.GetClass() == ePawns.ROOK))); // is King and Rook and Same Color
 			}
 			return false;
 		}
-		
 		/**
-		 * Return PAir, Left pos King, Right Pos Tower
+		 * Return {@link Pair}<{@link Position} King,{@link Position} Tower>
 		 * @param click1
 		 * @param click2
 		 * @return
@@ -133,7 +142,14 @@ public class Rules {
 			Position t = new Position(click1.row, click2.column < click1.column ? 'd' : 'f');
 			return new Pair<Position, Position>(k, t);
 		}
-
+		/**
+		 * return true if the Player can Castling (no Check on the way, no check a end Positon)
+		 * @param tmp
+		 * @param p2
+		 * @param p1
+		 * @param elem
+		 * @return
+		 */
 		public static boolean CanTheyCastling(Collection<Pawn> tmp, Pawn p2, Pawn p1, BoardGame elem) { // tmp is her the current BoardGame but don't care
 			if (!_canCastling(tmp, p2,p1,elem)) // Start Position and Good Pawns/Color
 				return false;
