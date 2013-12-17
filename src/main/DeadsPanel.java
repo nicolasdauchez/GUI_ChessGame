@@ -1,6 +1,5 @@
 package main;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -12,6 +11,11 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
 public class DeadsPanel extends JComponent {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public DeadsPanel() {
 		repaint();
