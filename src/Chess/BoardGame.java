@@ -11,31 +11,39 @@ import org.apache.commons.collections4.CollectionUtils;
 
 /**
  * @author Lumy-
- *
+ * BoardGame contains all {@link Pawn} alive and Dead.
  */
 public class BoardGame {
+	/**
+	 * {@link List}<{@link Pawn}> Alive
+	 */
 	private List<Pawn>	elem;
+	/**
+	 * {@link List}<{@link Pawn}> Dead
+	 */
 	private List<Pawn>	Eaten;
+	/**
+	 * Just use to Log Eate.
+	 */
 	private boolean			EatenTurn;
-
+	/**
+	 * Default Constructor
+	 */
 	public BoardGame()
 	{
 		EatenTurn = false;
 		elem = new ArrayList<Pawn>();
 		Eaten = new ArrayList<Pawn>();
 	}
-	
 	/**
 	 * Return a const Collection with all Pawn Dead.
 	 * @return
 	 */
-	public Collection<Pawn>	GetEaten()
-	{
+	public Collection<Pawn>	GetEaten() {
 		Collection<Pawn> constVector =
 				java.util.Collections.unmodifiableCollection(Eaten);
 		return constVector;
 	}
-
 	/**
 	 * Return A const Iterator To Travel.
 	 * @return
@@ -47,7 +55,7 @@ public class BoardGame {
 		return constVector;
 	}
 	/**
-	 * 
+	 * Elem Alive Size
 	 * @return
 	 */
 	public int size() {
@@ -64,6 +72,7 @@ public class BoardGame {
 		return indexOf(p, s, null);
 	}
 	/**
+	 * Index Of On a Collection with Color to be shure
 	 * @param p
 	 * @param s
 	 * @param c
@@ -71,10 +80,8 @@ public class BoardGame {
 	 */
 	public int indexOf(Collection<Pawn> p, Position s, eColor c) {
 		int i = 0;
-		for (Pawn e : p)
-		{
-			if (e.equals(s))
-			{
+		for (Pawn e : p) {
+			if (e.equals(s)) {
 				if (c != null && e.GetColor() == c)
 					return i;
 				else if (c == null)
@@ -84,19 +91,46 @@ public class BoardGame {
 		}
 		return -1;
 	}
+	/**
+	 * {@link #indexOf(Collection, Position)}
+	 * @param s
+	 * @return
+	 */
 	public int indexOf(Position s) {
 		return indexOf(elem, s);
 	}
+	/**
+	 * {@link #indexOf(Position)}
+	 * @param p
+	 * @return
+	 */
 	public int indexOf(Pawn p) {
 		return indexOf(p.GetPosition());
 	}
+	/**
+	 * return {@link Pawn} at index c int l
+	 * @param l
+	 * @param c
+	 * @return
+	 */
 	public Pawn get(Collection<Pawn> l, int c) {
 		Pawn ret = CollectionUtils.get(l, c);
 		return ret;
 	}
+	/**
+	 * {@link #get(Collection, int)}
+	 * @param c
+	 * @return
+	 */
 	public Pawn get(int c) {
 		return get(elem, c);
 	}
+	/**
+	 * Return tru if l Contain a {@link Pawn} with {@link Position} e
+	 * @param l
+	 * @param e
+	 * @return
+	 */
 	public boolean contains(Collection<Pawn> l, Position e) {
 		for (Pawn p : l)
 			if (p.equals(e))
@@ -104,9 +138,15 @@ public class BoardGame {
 		return false;
 	
 	}
+	/**
+	 * {@link #contains(Collection this.elem, Position)}
+	 * @param e
+	 * @return
+	 */
 	public boolean contains(Position e) {
 		return contains(elem, e);
 	}
+	
 	public void add(Pawn pion) {
 		elem.add(pion);
 	}
