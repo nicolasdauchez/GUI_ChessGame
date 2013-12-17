@@ -166,30 +166,75 @@ public class Rules {
 			return true;
 		}
 	}
-
-	static class MapFunctor
-	{
-		static private void DoEatPawn(Pawn p, Pawn eaten, BoardGame lp)
-		{
+	/**
+	 * Map Functor Contain A Dictionary {@link Rules.Functor}
+	 * And some useFull Function. Do the Usual moves.
+	 * @author Lumy-
+	 *
+	 */
+	static class MapFunctor {
+		/**
+		 * call {@link BoardGame#remove(Pawn)} and Set the New {@link Position} of {@link Pawn}p
+		 * @param p
+		 * @param eaten
+		 * @param lp
+		 */
+		static private void DoEatPawn(Pawn p, Pawn eaten, BoardGame lp) {
 			lp.remove(eaten);
 			p.SetPosition(eaten.GetPosition());
 		}
-		
 		/**
 		 * Use to Recreate Dictionary of key - PtrFunc
+		 * It's an base Abstract class. Each {@link ePawns} will have a specialisation.
 		 * @author Lumy-
 		 *
 		 */
 		static public abstract class Functor {
-			public eMoveState CanMove(Pawn p, Position newPos, BoardGame elem) {
+			/**
+			 * Default function call {@link #CanMove(Collection, Pawn, Position, BoardGame)} with the Collection {@link BoardGame#getElem()}
+			 * @param p
+			 * @param newPos
+			 * @param elem
+			 * @return
+			 */
+			public eMoveState 					CanMove(Pawn p, Position newPos, BoardGame elem) {
 				return CanMove(elem.getElem(), p, newPos, elem);
 			}
-			public abstract eMoveState CanMove(Collection<Pawn> tmp, Pawn p, Position newPos, BoardGame elem);
-			public abstract List<Position>	GetListPosition(Pawn p, BoardGame elem);
-			public eGameState ShouldMove(Pawn p, Position newPos, BoardGame elem) {				  
+			/**
+			 * Abstract Because each {@link ePawns} move by it's own
+			 * @param tmp
+			 * @param p
+			 * @param newPos
+			 * @param elem
+			 * @return
+			 */
+			public abstract eMoveState 			CanMove(Collection<Pawn> tmp, Pawn p, Position newPos, BoardGame elem);
+			/**
+			 * Return the list of Possible Position For Pawn. Abstract Cause Each {@link ePawns} move by is own
+			 * @param p
+			 * @param elem
+			 * @return
+			 */
+			public abstract List<Position>		GetListPosition(Pawn p, BoardGame elem);
+			/**
+			 * call {@link #ShouldMove(Collection, Pawn, Position, BoardGame)} with the Colleciton {@link BoardGame#getElem()}
+			 * @param p
+			 * @param newPos
+			 * @param elem
+			 * @return
+			 */
+			public eGameState 					ShouldMove(Pawn p, Position newPos, BoardGame elem) {				  
 				return ShouldMove(elem.getElem(), p, newPos, elem);
 			}
-			public eGameState ShouldMove(Collection<Pawn> l, Pawn p, Position newPos, BoardGame elem) {
+			/**
+			 * Not Abstract because they shouldn't move if they create an Check for their Team
+			 * @param l
+			 * @param p
+			 * @param newPos
+			 * @param elem
+			 * @return
+			 */
+			public eGameState 					ShouldMove(Collection<Pawn> l, Pawn p, Position newPos, BoardGame elem) {
 				List<Pawn> tmp = elem.getNewCopie(l, p, newPos);
 				eGameState ret = eGameState.NEXT;
 				if (Rules.isDraw(tmp, p.GetColor(), elem)) {
@@ -200,10 +245,14 @@ public class Rules {
 					return (eColor.Black == p.GetColor() ? eGameState.CHECK_KING_B : eGameState.CHECK_KING_W);
 				else if (Rules.CheckKing.isCheckKing(tmp, elem, p.GetEnemyColor()))
 					return (eColor.Black == p.GetEnemyColor() ? eGameState.CHECK_KING_B : eGameState.CHECK_KING_W);
-				/*else if ((n = Rules.CheckMate.isCheckMate(tmp, elem)) != eColor.None)
-					ret = (n == eColor.Black ? eGameState.CHECK_MATE_B : eGameState.CHECK_MATE_W);*/
 				return ret;
 			}
+			/**
+			 * Execute the Move
+			 * @param p
+			 * @param newPos
+			 * @param elem
+			 */
 			public  void execute(Pawn p, Position newPos, BoardGame elem) {
 				if (elem.getObstacleCase(newPos) == eColor.None)
 					p.SetPosition(newPos);
