@@ -337,17 +337,39 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	}
 
 	public boolean goBack() {
+		int eatenPiecesNb = this.game.getBoardGame().GetEaten().size();
+		eColor currentPlayer = this.game.GetTurn();
 		if (this.game.GoBackward()) {
 			repaint();
 			this.main.enableForwardButton(true);
+			// updates eaten pieces panel if necessary
+			if (this.game.getBoardGame().GetEaten().size() < eatenPiecesNb)
+				this.main.updateEatenPieces((currentPlayer == eColor.Black) ? (eColor.White) : (eColor.Black), this.game.getBoardGame().GetEaten());
 		}
 		return this.game.canGoBackward();
 	}
 
 	public boolean goForward() {
+		int eatenPiecesNb = this.game.getBoardGame().GetEaten().size();
+		eColor currentPlayer = this.game.GetTurn();
 		if (this.game.goForward()) {
 			repaint();
 			this.main.enableBackwardButton(true);
+			// updates eaten pieces panel if necessary
+			if (this.game.getBoardGame().GetEaten().size() > eatenPiecesNb)
+				this.main.updateEatenPieces((currentPlayer == eColor.Black) ? (eColor.White) : (eColor.Black), this.game.getBoardGame().GetEaten());
+		}
+		return this.game.canGoForward();
+	}
+	public boolean goForward(int index) {
+		int eatenPiecesNb = this.game.getBoardGame().GetEaten().size();
+		eColor currentPlayer = this.game.GetTurn();
+		if (this.game.goForward(index)) {
+			repaint();
+			this.main.enableBackwardButton(true);
+			// updates eaten pieces panel if necessary
+			if (this.game.getBoardGame().GetEaten().size() > eatenPiecesNb)
+				this.main.updateEatenPieces((currentPlayer == eColor.Black) ? (eColor.White) : (eColor.Black), this.game.getBoardGame().GetEaten());
 		}
 		return this.game.canGoForward();
 	}
@@ -368,10 +390,11 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		this.game.Export(path); 
 	}
 
-//	public Collection<Pair<Position, Position>> getBranches() {
-//		Collection<Pair<Position, Position>> branches = this.game.getForward();
-//		return branches;
-//	}
+	public Collection<Pair<Position, Position>> getBranches() {
+		Collection<Pair<Position, Position>> branches = this.game.getForward();
+		return branches;
+	}
+
 	public int getBranchesNb() {
 		return this.game.getForward().size();
 	}

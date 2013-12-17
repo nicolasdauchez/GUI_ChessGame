@@ -229,24 +229,24 @@ public class Main extends JFrame implements ActionListener {
 	}
 	
 	public void updateEatenPieces(eColor currentPlayerColor, Collection<Pawn> eatenPawns) {
-		if (eatenPawns.size() > 0) {
-			JPanel eatenPanel = (currentPlayerColor == eColor.Black) ? (blackEatenPanel) : (whiteEatenPanel);
-			Iterator<Pawn> it = eatenPawns.iterator();
-			eatenPanel.removeAll();
-			while (it.hasNext()) {
-				Pawn curEatenPawn = it.next();
-				eColor eatenColor = curEatenPawn.GetColor();
-				ePawns eatenClasse = curEatenPawn.GetClass();	
-				if (eatenColor != currentPlayerColor) {
-					
-					Image curEatenPawnImg = this.widget.getPieceImage(eatenColor, eatenClasse);
-					Image scaledImg = curEatenPawnImg.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
-					ImageIcon icon = new ImageIcon(scaledImg);
-					JLabel imgLbl = new JLabel(icon);
-					eatenPanel.add(imgLbl);
-				}
+		JPanel eatenPanel = (currentPlayerColor == eColor.Black) ? (blackEatenPanel) : (whiteEatenPanel);
+		Iterator<Pawn> it = eatenPawns.iterator();
+		eatenPanel.removeAll();
+		while (it.hasNext()) {
+			Pawn curEatenPawn = it.next();
+			eColor eatenColor = curEatenPawn.GetColor();
+			ePawns eatenClasse = curEatenPawn.GetClass();	
+			if (eatenColor != currentPlayerColor) {
+				
+				Image curEatenPawnImg = this.widget.getPieceImage(eatenColor, eatenClasse);
+				Image scaledImg = curEatenPawnImg.getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+				ImageIcon icon = new ImageIcon(scaledImg);
+				JLabel imgLbl = new JLabel(icon);
+				eatenPanel.add(imgLbl);
 			}
 		}
+		eatenPanel.revalidate();
+		eatenPanel.repaint();
 	}
 	
 	public boolean askCastling() {
@@ -307,22 +307,31 @@ public class Main extends JFrame implements ActionListener {
 		boolean canGoForward = false;
 
 		if (this.widget.hasManyForward()) {
-			int branchesNb = this.widget.getBranchesNb();
+			Collection<Pair<Position, Position>> branches = this.widget.getBranches();
+//			int branchesNb = this.widget.getBranchesNb();
 			ArrayList<String> possibilities = new ArrayList<String>();
 			
-			for (int i = 0; i < branchesNb; i++) {
-				possibilities.add("Branch #" + i);
+			int i = 0;
+			for (Pair<Position, Position> pair : branches) {
+				possibilities.add(i + ": " + pair.GetLeft().toString() + " -> " + pair.GetRight().toString());
+				++i;
 			}
 			String[] possibilitiesStr = possibilities.toArray(new String[possibilities.size()]);
 			
-		    JOptionPane.showInputDialog(this, 
+		    String ret = (String)JOptionPane.showInputDialog(this, 
 		      "Choose which game branch to play:",
 		      "History manager",
 		      JOptionPane.QUESTION_MESSAGE,
 		      null,
 		      possibilitiesStr,
 		      possibilitiesStr[0]);
+//		      branches,
+//		      branches[0]);
 		    
+		    if (ret != null) {
+		    	int index = ret.charAt(0) - '0';
+		    	canGoForward = this.widget.goForward(index);
+		    }
 		}
 		else {
 			canGoForward = this.widget.goForward();
