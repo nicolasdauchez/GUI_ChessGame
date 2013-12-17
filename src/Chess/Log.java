@@ -19,8 +19,9 @@ import java.util.List;
 import com.thoughtworks.xstream.XStream;
 /**
  * @author Lumy-
- * Log Import and Export with PGN Norme
- * Also log each Mouvement. You can move in the game (backmove foremove)
+ * Log {link {@link #Import(String)} and {@ling #Export(String)} with @see <a href="http://xstream.codehaus.org/">xStream</a>
+ * Also log each Mouvement. You can move in the game (backward, forward) and create a real Tree in real-Time.
+ * {@link Log.Tree}
  */
 public class Log {
 	/**
@@ -316,51 +317,86 @@ public class Log {
             return xstream.toXML(this);
         }
 	}
-	
+	/**
+	 * The Tree {@link Log.Tree}
+	 */
 	private Tree		t;
+	/**
+	 * XStream. for {@link #Import(String)} and {@link #Export(String)}
+	 */
 	private XStream xstream;
-	
+	/**
+	 * Default Constructor for Log
+	 * Create a Tree;
+	 * @param nB
+	 * @param nW
+	 */
 	public Log(String nB, String nW) {
 		xstream = new XStream();
 		t = new Tree();
 		t.BlackName = nB;
 		t.WhiteName = nW;
 	}
-
+	/**
+	 * Create a new Game. Create a new Tree and reset Player Name
+	 * @param nW
+	 * @param nB
+	 */
 	public void newGame(String nW, String nB) {
 		t = new Tree();
 		t.BlackName = nB;
 		t.WhiteName = nW;
 	}
-
+	/**
+	 * {@link Log.Tree#goBackward(BoardGame, eColor)}
+	 * @param elem
+	 * @param turn
+	 * @return
+	 */
 	public boolean goBackward(BoardGame elem, eColor turn) {
 		return t.goBackward(elem, turn);
 	}
-
+	/**
+	 * {@link Tree#head}{@link Tree.Elem#mother} != null
+	 * @return
+	 */
 	public boolean canGoBackward() {
 		return t.head.mother != null;
 	}
+	/**
+	 * {@link Tree#head}{@link Tree.Elem#index} != -1
+	 * when add something {@link Tree.Elem#index} is incremented.
+	 * @return
+	 */
 	public boolean canGoForward() {
 		return t.head.index != -1;
 	}
+	/**
+	 * {@link Log.Tree#goForwardElem(int)}
+	 * Then call {@link BoardGame#RedoCastling(String, eColor)} || {@link BoardGame#RedoPromotion(Position, String)}
+	 * and {@link BoardGame#RedoMove(Pair)}
+	 * @param elem
+	 * @param index
+	 * @param e
+	 * @return
+	 */
 	public boolean goForward(BoardGame elem, int index, eColor e){
 		if (!t.goForwardElem(index))
 			return false;
-		if (t.head.StringAction == null) {
+		if (t.head.StringAction == null) { // No Action
 			Pair<Position, Position> p = t.getCurrentShoot();
-			if (t.head.eaten != null && elem.indexOf(p.GetRight()) == -1) {
+			if (t.head.eaten != null && elem.indexOf(p.GetRight()) == -1) { // Eat Something on Forward but not presetn
 				Position tmppos = new Position(p.GetRight());
 				tmppos.row += 1;
-				if (elem.indexOf(tmppos) == -1 ||
-					elem.get(elem.indexOf(tmppos)).GetClass() != ePawns.PAWN)
+				if (elem.indexOf(tmppos) == -1 || // enPassant Rules
+					elem.get(elem.indexOf(tmppos)).GetClass() != ePawns.PAWN) 
 					tmppos.row -= 2;
 				elem.remove(elem.get(elem.indexOf(tmppos))); // enPassant Eat/Rule
 			}	
-			elem.RedoMove(p);
+			elem.RedoMove(p); //RedoMove
 		}
-		else // action
-		{
-			if (t.head.StringAction.equals("O-O") || t.head.StringAction.equals("O-O-O"))
+		else { // action
+			if (t.head.StringAction.equals("O-O") || t.head.StringAction.equals("O-O-O")) // RedoCastling
 				elem.RedoCastling(t.head.StringAction, e);
 			else { // Promotion
 				elem.RedoPromotion(t.head.shoot.GetLeft(), t.head.StringAction);
@@ -369,9 +405,19 @@ public class Log {
 		}
 		return true;
 	}
+	/**
+	 * {@link Log#goForward(BoardGame, int, eColor)
+	 * @param elem
+	 * @param e
+	 * @return
+	 */
 	public boolean goForward(BoardGame elem, eColor e){
 		return goForward(elem, t.head.index, e);
 	}
+	/**
+	 * {@link Log.Tree#getAllForwardShoot()}
+	 * @return
+	 */
 	public Collection<Pair<Position, Position>>	getForward() {
 		return t.getAllForwardShoot();	
 	}
@@ -384,75 +430,135 @@ public class Log {
 	public int getSizeCurrentElem() {
 		return t.getSizeElems();
 	}
+	/**
+	 * {@link Log.Tree#addMoveHead(Pair, eGameState, ePawns)}
+	 * @param p
+	 * @param newp
+	 * @param e
+	 * @param c
+	 */
 	public void add(Position p, Position newp, ePawns e, eGameState c) {
 		t.addMoveHead(new Pair<Position,Position>(new Position(p), new Position(newp)), c, e);
 	}
+	/**
+	 * {@link Log.Tree#addString(String, Pair, eGameState)}
+	 * @param string
+	 * @param p
+	 * @param c
+	 */
 	public void addString(String string, Pair<Position, Position> p, eGameState c) {
 		t.addString(string, p, c);
 	}
+	/**
+	 * {@link Log.Tree#addString(String, eGameState)}
+	 * @param string
+	 * @param c
+	 */
 	public void addString(String string, eGameState c) {
 		t.addString(string, c);
 	}
+	/**
+	 * Set on the Current {@link Log.Tree.Elem} an Action Promotion
+	 * @param c
+	 */
 	public void LogPromotion(ePawns c) {
 		t.head.StringAction = "" + c;
 	}
+	/**
+	 * {@link Log.Tree#getCurrentShoot()}
+	 * @return
+	 */
 	public Pair<Position, Position>	getCurrentShoot() {
 		return t.getCurrentShoot();
 	}
+	/**
+	 * Set the {@link Log.Tree#Result} if equals "*"
+	 * @param res
+	 */
 	public void addResult(String res) {
-		if (t.Result.equals("*"))
-		{
+		if (t.Result.equals("*")) {
 			t.Result = res;
-			t.head.eState = (res.equals("0-1") ? eGameState.CHECK_MATE_B : (res.equals("1-0") ? eGameState.CHECK_MATE_W : eGameState.DRAW));
+			t.head.eState = (res.equals("0-1") ? eGameState.CHECK_MATE_B : (res.equals("1-0") ? eGameState.CHECK_MATE_W : eGameState.DRAW)); // beautifull Double Ternaire !
 		}
 	}
+	/**
+	 * Private. Write the string xml in the file name
+	 * @param xml
+	 * @param name
+	 * @return
+	 */
 	private boolean Write(String xml, String name) {
 		if (name == null)
-			name = "TMPFILE";
-		File file = new File(name + ".xml");
+			name = ".score";
+		File file = new File(name);
 		try {
-		if (!file.exists()) {
+			if (!file.exists()) {
 				file.createNewFile();
 			}
-		FileWriter fw = new FileWriter(file.getAbsoluteFile());
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write(xml);
-		bw.close();
-		return true;
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(xml);
+			bw.close();
+			return true;
 		}
 		catch (IOException e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
+	/**
+	 * Call with default Value
+	 * @param path
+	 * @return
+	 */
 	public boolean Export(String path) {
 		return Export(path, null, null);
 	}
+	/**
+	 * Export in xml and write in the file path
+	 * @param path
+	 * @param nW
+	 * @param nB
+	 * @return
+	 */
 	public boolean Export(String path, String nW, String nB) {
-		if (nW == null)
-			nW = t.WhiteName;
-		if (nB == null)
-			nB = t.BlackName;
+		if (nW != null)
+			t.WhiteName = nW; // change name before export if wanted.
+		if (nB != null)
+			t.BlackName = nB; // change name before export if wanted
 		String xml = t.toXml();
 		return Write(xml, path);
 	}
-
+	/**
+	 * Import from xml. if Work, go directly at the end of the {@link Log.Tree}
+	 * @param p
+	 * @return
+	 */
 	public boolean Import(String p) {
 	    Path path = Paths.get(p);
 	    List<String> slist;
 		try {
 			slist = Files.readAllLines(path, StandardCharsets.UTF_8);
+		    StringBuilder sb = new StringBuilder();
+		    for (String s : slist) sb.append(s);
+		    t = (Log.Tree)xstream.fromXML(sb.toString());
+		    return true;
 		} catch (IOException e) {
 			return false;
 		}
-	    StringBuilder sb = new StringBuilder();
-	    for (String s : slist)
-	    	sb.append(s);
-	    t = (Log.Tree)xstream.fromXML(sb.toString());
-		//first = t.head;
-		return true;
 	}
+	/**
+	 * return the Current {@link Log.Tree.Elem#eState} for {@link Log.Tree#head}
+	 * @return
+	 */
 	public eGameState GetCurrentState() {
 		return t.head.eState;
+	}
+	/**
+	 * {@link Pair}<{@link String} White, {@link String} Black>
+	 * @return
+	 */
+	public Pair<String, String>	GetPlayersName() {
+		return new Pair<String, String>(t.WhiteName, t.BlackName);
 	}
 }
