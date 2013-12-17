@@ -252,6 +252,8 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		boolean castlingWanted = this.main.askCastling();
 		if (castlingWanted) {
 			this.game.DoCastling(this.posFirstClick, this.posSecondClick);
+			// enable history's go back back button
+			this.main.enableBackwardButton(true);
 			this.posFirstClick = null;
 		}
 		else {
