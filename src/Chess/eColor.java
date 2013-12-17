@@ -4,6 +4,9 @@
 package Chess;
 
 /**
+ * Enum For Color
+ * {@link #Black} 
+ * {@link #White}
  * @author Lumy-
  *
  */
