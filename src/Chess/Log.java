@@ -96,22 +96,25 @@ public class Log {
 		 * @param p
 		 */
 		public void addCurrentHead(Pair<Position, Position> p, ePawns e) {
-			if (alreadyExist(p))
-				return;
+			if (null != alreadyExist(p))
+				{
+					head = alreadyExist(p);
+					return ;
+				}
 			head.index += 1;
 			head.elems.add(new Elem(head, p, e));
 		}
-		private boolean alreadyExist(Pair<Position, Position> p) {
+		private Elem alreadyExist(Pair<Position, Position> p) {
 			for (Elem e : head.elems)
 				if (e.shoot != null && e.shoot.equals(p))
-					return true;
-			return false;
+					return e;
+			return null;
 		}
-		private boolean alreadyExist(String string) {
+		private Elem alreadyExist(String string) {
 			for (Elem e : head.elems)
 				if (e.StringAction.equals(string))
-					return true;
-			return false;
+					return e;
+			return null;
 		}
 		/**
 		 * Add +1 at Head index and add String represent Castling (O-O || O-O-O)
@@ -128,8 +131,10 @@ public class Log {
 		 * @param p
 		 */
 		public void addString(String string, Pair<Position, Position> p) {
-			if (alreadyExist(string))
+			if (null != alreadyExist(string)) {
+				head = alreadyExist(string);
 				return;
+			}
 			head.index += 1;
 			head.elems.add(new Elem(head, p, string, null));
 			goForwardElem();
@@ -353,6 +358,6 @@ public class Log {
 	}
 	public void print() {
 		t.head.print();
-//		t.print(first);
+		t.print(first);
 	}
 }
