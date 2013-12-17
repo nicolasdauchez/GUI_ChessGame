@@ -78,21 +78,22 @@ public class Log {
 		 * @param p
 		 */
 		public void addMoveHead(Pair<Position, Position> p, eGameState c, ePawns e) {
-			addCurrentHead(p, c, e);
-			goForwardElem();
+			if (addCurrentHead(p, c, e)) // if False No Need to Move
+				goForwardElem();
 		}
 		/**
 		 * add +1 at head index and add p in head.elems
 		 * @param p
 		 */
-		public void addCurrentHead(Pair<Position, Position> p, eGameState c, ePawns e) {
+		public boolean addCurrentHead(Pair<Position, Position> p, eGameState c, ePawns e) {
 			if (null != alreadyExist(p))
 				{
 					head = alreadyExist(p);
-					return ;
+					return false; //Already Move
 				}
 			head.index += 1;
 			head.elems.add(new Elem(head, c, p, e));
+			return true;
 		}
 		private Elem alreadyExist(Pair<Position, Position> p) {
 			for (Elem e : head.elems)
