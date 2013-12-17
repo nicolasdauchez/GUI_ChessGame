@@ -352,6 +352,7 @@ public class Log {
 		return true;
 	}
 	public void print() {
-		t.print(first);
+		t.head.print();
+//		t.print(first);
 	}
 }

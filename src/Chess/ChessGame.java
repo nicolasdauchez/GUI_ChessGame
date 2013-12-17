@@ -136,7 +136,7 @@ public class ChessGame implements IChessGame {
 		t.SetPosition(r.GetRight());
 		log.addString((r.GetLeft().column == 'c' ? "O-O-O" : "O-O"));
 		NextTurn(eGameState.NEXT);
-	}
+		log.print();}
 
 	private Pair<eMoveState, eGameState> Check_King_Way(Position firstClick, Position secondClick)
 	{
@@ -167,7 +167,8 @@ public class ChessGame implements IChessGame {
 		r1 = Rules.DoMovePawns(elem.get(elem.indexOf(firstClick)), secondClick, elem);
 		if (r1.GetRight() != eGameState.SAME)
 		{
-			log.add(firstClick, secondClick, (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null));
+			if (r1.GetLeft() != eMoveState.CASTLING)
+				log.add(firstClick, secondClick, (elem.isEatThing() ? elem.getLastEatThing().GetClass() : null));
 			NextTurn(r1.GetRight());
 		}
 		if ((State == eGameState.CHECK_KING_B || State == eGameState.CHECK_KING_W) && // one player in check

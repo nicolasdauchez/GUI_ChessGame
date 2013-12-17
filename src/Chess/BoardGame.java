@@ -429,7 +429,8 @@ public class BoardGame {
 		//if (c == eColor.White)
 		//	ArrayUtils.reverse(e);
 		for (int i = 0; i < e.length; i++) {
-			add(c, new Position(p), e[i]);
+			if (i == 0 || i == 3 || i == 4  || i == 7)
+				add(c, new Position(p), e[i]);
 			p.column += 1;
 		}
 	}
