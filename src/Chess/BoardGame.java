@@ -546,6 +546,8 @@ public class BoardGame {
 			return;
 		get(indexOf(pK)).SetPosition(nK);
 		get(indexOf(pT)).SetPosition(nT);
+		setInitPos(nK);
+		setInitPos(nT);
 	}
 	public void RedoPromotion(Position p, String stringAction) {
 		ePawns e = ePawns.PAWN;
@@ -569,6 +571,11 @@ public class BoardGame {
 
 	public void UndoPromotion(Position p) {
 		get(indexOf(p)).Promotion(ePawns.PAWN);
+	}
+
+	public void setInitPos(Position p) {
+		if (contains(p))
+			get(indexOf(p)).reset();
 	}
 }	
 

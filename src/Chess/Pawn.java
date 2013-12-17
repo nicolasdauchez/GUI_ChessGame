@@ -29,6 +29,7 @@ public class Pawn implements Cloneable  {
 		type = t;
 		enPassant = false;
 		initialePosition = true;
+		next = false;
 	}
 	public void print()
 	{
@@ -101,5 +102,10 @@ public class Pawn implements Cloneable  {
 			row = 8;
 		if (type == ePawns.PAWN || position.row == row)
 			type = c;		
+	}
+	public void reset() {
+		enPassant = false;
+		initialePosition = true;
+		next = false;
 	}
 }

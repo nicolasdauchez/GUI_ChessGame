@@ -185,6 +185,7 @@ public class ChessGame implements IChessGame {
 			}
 
 		}
+		log.print();
 		return r1;
 	}
 
