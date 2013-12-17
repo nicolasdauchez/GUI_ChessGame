@@ -245,6 +245,8 @@ public class Main extends JFrame implements ActionListener {
 				eatenPanel.add(imgLbl);
 			}
 		}
+		eatenPanel.revalidate();
+		eatenPanel.repaint();
 	}
 	
 	public boolean askCastling() {

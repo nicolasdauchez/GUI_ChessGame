@@ -344,7 +344,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 			this.main.enableForwardButton(true);
 			// updates eaten pieces panel if necessary
 			if (this.game.getBoardGame().GetEaten().size() < eatenPiecesNb)
-				this.main.updateEatenPieces(currentPlayer, this.game.getBoardGame().GetEaten());
+				this.main.updateEatenPieces((currentPlayer == eColor.Black) ? (eColor.White) : (eColor.Black), this.game.getBoardGame().GetEaten());
 		}
 		return this.game.canGoBackward();
 	}
@@ -357,7 +357,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 			this.main.enableBackwardButton(true);
 			// updates eaten pieces panel if necessary
 			if (this.game.getBoardGame().GetEaten().size() > eatenPiecesNb)
-				this.main.updateEatenPieces(currentPlayer, this.game.getBoardGame().GetEaten());
+				this.main.updateEatenPieces((currentPlayer == eColor.Black) ? (eColor.White) : (eColor.Black), this.game.getBoardGame().GetEaten());
 		}
 		return this.game.canGoForward();
 	}
@@ -369,7 +369,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 			this.main.enableBackwardButton(true);
 			// updates eaten pieces panel if necessary
 			if (this.game.getBoardGame().GetEaten().size() > eatenPiecesNb)
-				this.main.updateEatenPieces(currentPlayer, this.game.getBoardGame().GetEaten());
+				this.main.updateEatenPieces((currentPlayer == eColor.Black) ? (eColor.White) : (eColor.Black), this.game.getBoardGame().GetEaten());
 		}
 		return this.game.canGoForward();
 	}
