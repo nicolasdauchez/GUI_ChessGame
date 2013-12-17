@@ -58,6 +58,13 @@ public interface IChessGame {
 	 */
 	public boolean 										Import(String path);
 	/**
+	 * {@link Log#GetPlayersName()}
+	 * @return
+	 */
+	public Pair<String, String>							GetPlayersName();
+
+
+	/**
 	 * {@link Log#Export(String)}
 	 * @param path
 	 * @return
