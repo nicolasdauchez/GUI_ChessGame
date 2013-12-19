@@ -129,6 +129,9 @@ public class ChessGame implements IChessGame {
 	public boolean isDraw() {
 		return State == eGameState.DRAW;
 	}
+	private void NewGame(Pair<String, String> p) {
+		NewGame(p.GetLeft(), p.GetRight());
+	}
 	@Override
 	public void	NewGame(String nameWhite, String nameBlack) {
 		log.newGame(nameWhite, nameBlack);
@@ -270,6 +273,7 @@ public class ChessGame implements IChessGame {
 	@Override
 	public boolean Import(String path) {
 		boolean r = log.Import(path);
+		NewGame(log.GetPlayersName());
 		if (r) while (false != goForward());
 		return r;
 	}
