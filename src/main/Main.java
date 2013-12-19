@@ -494,6 +494,8 @@ public class Main extends JFrame implements ActionListener {
 			blackEatenPanel.removeAll();
 			blackEatenPanel.updateUI();
 			changeStatutMsg("");
+			this.goBackBtn.setEnabled(false);
+			this.goForwardBtn.setEnabled(false);
 		}
 	}
 
