@@ -226,9 +226,11 @@ public class ChessGameWidget extends JComponent implements MouseListener{
     					|| (color == eColor.White) && (pos.row == 8)) {
 	    				// user can make a promotion, so we ask him if he wants to do so
     					ePawns newClasse = this.main.askPromotion();
-    					if (newClasse != null)
+    					if (newClasse != null) {
     						// performs selected promotion
     						this.game.DoPromotion(pos, newClasse);
+    						checkGameStatus();
+    					}
 	    			}
   		    	}
 			}
@@ -251,6 +253,21 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 		// no castling required, only selected piece changes
 		else {
 			this.posFirstClick = this.posSecondClick;
+		}
+	}
+
+	private void checkGameStatus() {
+		eColor colorCheck = eColor.None;
+		if (this.game.isDraw()) {
+			this.main.changeStatutMsg(this.messagesGame.get(eGameState.DRAW));
+		}
+		else if ((colorCheck = this.game.isCheckKing()) != eColor.None) {
+			this.main.changeStatutMsg(this.messagesGame.get(
+					(colorCheck == eColor.Black) ? eGameState.CHECK_KING_B : (eGameState.CHECK_KING_W)));
+		}
+		else if ((colorCheck = this.game.isCheckMat()) != eColor.None) {
+			this.main.changeStatutMsg(this.messagesGame.get(
+					(colorCheck == eColor.Black) ? eGameState.CHECK_MATE_B : (eGameState.CHECK_MATE_W)));
 		}
 	}
 	/**
