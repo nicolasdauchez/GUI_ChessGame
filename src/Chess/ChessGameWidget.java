@@ -230,6 +230,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
     						// performs selected promotion
     						this.game.DoPromotion(pos, newClasse);
     						checkGameStatus();
+    						return;
     					}
 	    			}
   		    	}
@@ -259,15 +260,15 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 	private void checkGameStatus() {
 		eColor colorCheck = eColor.None;
 		if (this.game.isDraw()) {
-			this.main.changeStatutMsg(this.messagesGame.get(eGameState.DRAW));
+			this.message = this.messagesGame.get(eGameState.DRAW);
 		}
 		else if ((colorCheck = this.game.isCheckKing()) != eColor.None) {
-			this.main.changeStatutMsg(this.messagesGame.get(
-					(colorCheck == eColor.Black) ? eGameState.CHECK_KING_B : (eGameState.CHECK_KING_W)));
+			this.message = this.messagesGame.get(
+					(colorCheck == eColor.Black) ? eGameState.CHECK_KING_B : (eGameState.CHECK_KING_W));
 		}
 		else if ((colorCheck = this.game.isCheckMat()) != eColor.None) {
-			this.main.changeStatutMsg(this.messagesGame.get(
-					(colorCheck == eColor.Black) ? eGameState.CHECK_MATE_B : (eGameState.CHECK_MATE_W)));
+			this.message = this.messagesGame.get(
+					(colorCheck == eColor.Black) ? eGameState.CHECK_MATE_B : (eGameState.CHECK_MATE_W));
 		}
 	}
 	/**
