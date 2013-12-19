@@ -156,6 +156,29 @@ public class ChessGame implements IChessGame {
 		return ;
 		elem.Promotion(p, c);
 		log.LogPromotion(c);
+		UpdateCheck();
+	}
+	private void UpdateCheck() {
+		State=eGameState.NEXT;
+		if (Rules.isDraw(elem.getElem(), eColor.Black, elem) || Rules.isDraw(elem.getElem(), eColor.Black, elem)) {
+			State=eGameState.DRAW;
+			return ;
+		}
+		List<Position> size= null;
+		if ((size = Rules.CheckKing.AllCheckKing(elem.getElem(), elem, eColor.Black)).size() != 0)
+			State = eGameState.CHECK_KING_B;
+		if (size.size() > 1) {
+				State = eGameState.CHECK_MATE_B;
+				return ;
+		}
+		if ((size = Rules.CheckKing.AllCheckKing(elem.getElem(), elem, eColor.White)).size() != 0)
+			State = eGameState.CHECK_KING_W;
+		if (size.size() > 1){
+			State = eGameState.CHECK_MATE_W;
+			return ;
+		}
+		
+		
 	}
 	/**
 	 * Assuming that This function it's called after get the CASTLING state that has already check if you've the right
