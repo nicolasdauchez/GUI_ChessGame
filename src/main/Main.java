@@ -34,13 +34,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -52,18 +49,20 @@ import Chess.Position;
 import Chess.Rules;
 import Chess.eColor;
 import Chess.ePawns;
+
 /**
- * @author Lumy-
- *
+ * @author NaiKo
+ * Program entry point
+ * Handles general UI
  */
 public class Main extends JFrame implements ActionListener {
-
-
-
 	/**
-	 * 
+	 * Serial version
 	 */
 	private static final long serialVersionUID = 1L;
+	/**
+	 * Default Constructor
+	 */
 	public Main() {		
 		// set the window size
 		setSize(860,730);
@@ -71,17 +70,16 @@ public class Main extends JFrame implements ActionListener {
 		setTitle("Our ChessGame");
 		// set the default close operation
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
+		// change window look to OS style
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
 		catch (Exception e) {}
-		
-		//Create a file chooser
+		// Init file chooser
 		fc = new JFileChooser();
-		
+		// init all panels
 		initPanels();
-		
+		// handle window's close event
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -89,21 +87,37 @@ public class Main extends JFrame implements ActionListener {
 				super.windowClosing(e);
 			}
 		});
-
 	}
-
-	// program entry point
+	/**
+	 * Program entry point
+	 * @param args program arguments
+	 */
 	public static void main(String[] args) {
 		Main window = new Main();
 		window.setVisible(true);
 	}
-	
+	/**
+	 * Initialazes all panels
+	 */
 	private void initPanels() {
 		// main panel with BorderLayout
 		this.mainPanel = new JPanel();
 		this.mainPanel.setLayout(new BorderLayout());
-
 		// menu
+		createMenu();		
+		// creates ChessGame widget and add it to ContentPane
+		this.widget = new ChessGameWidget(this);
+		this.mainPanel.add(this.widget, BorderLayout.CENTER);
+		getContentPane().add(mainPanel);		
+		// init all subPanels
+		initRightPanel();
+		initLeftPanel();
+		initBottomPanel();		
+	}
+	/**
+	 * Initializes window's menu
+	 */
+	private void createMenu() {
 		menu = new JMenuBar();
 		fileMenu = new JMenu("File");
 		importe = new JMenuItem("Import...");
@@ -141,56 +155,32 @@ public class Main extends JFrame implements ActionListener {
 		optionsMenu.add(optionRadioSystemLook);
 		optionRadioNativeLook.addActionListener(this);
 		optionRadioSystemLook.addActionListener(this);
-		
-//		//Create a file chooser
-//		final JFileChooser fc = new JFileChooser();
-//		int returnVal = fc.showOpenDialog(aComponent);
-		
 		mainPanel.add(menu, BorderLayout.PAGE_START);
-		
-		// creates ChessGame widget and add it to ContentPane
-		this.widget = new ChessGameWidget(this);
 
-//		this.widget.setBorder(BorderFactory.createLineBorder(Color.green));
-		
-//		this.widget.setMaximumSize(new Dimension(640,640));
-//		this.widget.setMinimumSize(new Dimension(640,640));
-//		this.widget.setPreferredSize(new Dimension(640,640));
-		this.mainPanel.add(this.widget, BorderLayout.CENTER);
-		
-		initRightPanel();
-		initLeftPanel();
-		initBottomPanel();
-		
-		getContentPane().add(mainPanel);		
 	}
-
-	// Bottom panel with game status message
+	/**
+	 * Bottom panel with game status message
+	 */
 	private void initBottomPanel() {
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setLayout(new GridBagLayout());
 		Dimension bottomPanelDim = bottomPanel.getPreferredSize();
 		bottomPanelDim.height = 20;
 		bottomPanel.setPreferredSize(bottomPanelDim);
-//		bottomPanel.setBorder(BorderFactory.createLineBorder(Color.red));
 		this.mainPanel.add(bottomPanel, BorderLayout.PAGE_END);
 		this.gameStatusMsgLabel = new JLabel("", JLabel.CENTER);
 		gameStatusMsgLabel.setOpaque(true);
 		gameStatusMsgLabel.setForeground(Color.red);
-//		msgLabel.setMaximumSize(new Dimension(800, 20));
-//		msgLabel.setMinimumSize(new Dimension(800, 20));
-//		msgLabel.setPreferredSize(new Dimension(800, 20));
 		bottomPanel.add(gameStatusMsgLabel);
 		this.mainPanel.add(bottomPanel, BorderLayout.PAGE_END);
 	}
-
-	// left panel with game informations
+	/**
+	 * Left panel with game informations
+	 */
 	private void initLeftPanel() {
 		this.leftPanel = new JPanel();
-//		leftPanel.setLayout(new GridBagLayout());
 		leftPanel.setLayout(new BorderLayout());
 		leftPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-//		leftPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		this.mainPanel.add(leftPanel, BorderLayout.WEST);
 		
 		// "player turn" Panel
@@ -210,8 +200,9 @@ public class Main extends JFrame implements ActionListener {
 		this.resetBtn.addActionListener(this);
 		this.leftPanel.add(resetBtn, BorderLayout.PAGE_END);
 	}
-
-	// right panel with dead pieces & history buttons
+	/**
+	 * Right panel with dead pieces & history buttons
+	 */
 	private void initRightPanel() {
 		this.rightPanel = new JPanel();
 		BorderLayout rightPanelBL = new BorderLayout();
@@ -225,15 +216,13 @@ public class Main extends JFrame implements ActionListener {
 		this.whiteEatenPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		Border eatenBorder = new LineBorder(Color.black);
 		TitledBorder eatenBorder2 = BorderFactory.createTitledBorder(eatenBorder, "Eaten pieces");
-		this.whiteEatenPanel.setBorder(eatenBorder2);
-		
+		this.whiteEatenPanel.setBorder(eatenBorder2);		
 		this.blackEatenPanel = new JPanel();
 		this.blackEatenPanel.setPreferredSize(new Dimension(105,250));
 		this.blackEatenPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		Border eatenBorder3 = new LineBorder(Color.black);
 		TitledBorder eatenBorder4 = BorderFactory.createTitledBorder(eatenBorder3, "Eaten pieces");
 		this.blackEatenPanel.setBorder(eatenBorder4);
-		
 		this.rightPanel.add(whiteEatenPanel, BorderLayout.PAGE_END);
 		this.rightPanel.add(blackEatenPanel, BorderLayout.PAGE_START);
 		
@@ -243,20 +232,16 @@ public class Main extends JFrame implements ActionListener {
 		historyPanelDim.width = 105;
 		historyPanel.setPreferredSize(historyPanelDim);
 		historyPanel.setLayout(new GridBagLayout());
-
 		this.rightPanel.add(historyPanel, BorderLayout.CENTER);
 		Border historyBorder = new LineBorder(Color.orange);
 		TitledBorder historyBorder2 = BorderFactory.createTitledBorder(historyBorder, "History");
 		historyPanel.setBorder(historyBorder2);
-		
 		goBackBtn = new JButton("<<");
 		goBackBtn.setEnabled(false);
 		goBackBtn.addActionListener(this);
-		
 		goForwardBtn = new JButton(">>");
 		goForwardBtn.setEnabled(false);
 		goForwardBtn.addActionListener(this);
-		
 		GridBagConstraints c = new GridBagConstraints();		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -267,15 +252,25 @@ public class Main extends JFrame implements ActionListener {
 		c.insets = new Insets(3, 20, 0, 0);
 		historyPanel.add(goForwardBtn, c);
 	}
-
+	/**
+	 * Changes game statut message displayed in window
+	 * @param message Statut game message to display in window
+	 */
 	public void changeStatutMsg(String message) {
 		this.gameStatusMsgLabel.setText(message);
 	}
-
+	/**
+	 * Updates player turn label in window
+	 * @param color	Current player's color
+	 */
 	public void changePlayerTurn(eColor color) {
 		this.playerTurnLabel.setText((color == eColor.Black) ? ("BLACK") : ("WHITE"));
 	}
-	
+	/**
+	 * Updates player's dead pieces panel
+	 * @param currentPlayerColor	Current player's color
+	 * @param eatenPawns			List of player's dead pieces
+	 */
 	public void updateEatenPieces(eColor currentPlayerColor, Collection<Pawn> eatenPawns) {
 		JPanel eatenPanel = (currentPlayerColor == eColor.Black) ? (blackEatenPanel) : (whiteEatenPanel);
 		Iterator<Pawn> it = eatenPawns.iterator();
@@ -296,15 +291,23 @@ public class Main extends JFrame implements ActionListener {
 		eatenPanel.revalidate();
 		eatenPanel.repaint();
 	}
-	
+	/**
+	 * Asks user if a castling move is required
+	 * @return 
+	 */
 	public boolean askCastling() {
+		// open confirm dialog for castling
 		int result = JOptionPane.showConfirmDialog(this, "Do you want to perform a castling?", "Castling move detected", JOptionPane.YES_NO_OPTION);
 		return (result == 0);
 	}
-
+	/**
+	 * Asks user if promotion move is required
+	 * @return User's chosen piece for promotion
+	 */
 	public ePawns askPromotion() {
-
+		// Promotion's possible pieces
 		Object[] choices = {ePawns.QUEEN, ePawns.ROOK, ePawns.BISHOP, ePawns.KNIGHT};
+		// Open dialog asking user which piece to use for promotion move
 		ePawns selectedPiece = (ePawns)JOptionPane.showInputDialog(this, 
 						"Choose promotion piece for your promoted pawn:",
 						"Promotion detected!", 
@@ -313,18 +316,22 @@ public class Main extends JFrame implements ActionListener {
 						choices, choices[0]);
 		return selectedPiece;	
 	}
-
-	// events
-	@Override
+	/**
+	 * Handles user clicks
+	 * @Override
+	 */
 	public void actionPerformed(ActionEvent arg0) {
 		Object objClicked = arg0.getSource();
 		// reset button clicked
 		if (objClicked == this.resetBtn)
 			handleResetClicked();
+		// history's go back button clicked
 		else if (objClicked == this.goBackBtn)
 			handleGoBack();
+		// history's go forward button clicked
 		else if (objClicked == this.goForwardBtn)
-			handleGoForward();			
+			handleGoForward();
+		// import menu clicked
 		else if (objClicked == this.importe) {
 			int returnVal = fc.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -332,22 +339,28 @@ public class Main extends JFrame implements ActionListener {
 				this.widget.importGame(file.getAbsolutePath());
 			}
 		}
+		// export menu clicked
 		else if (objClicked == this.exporte) {
 			handleExport();
 		}
+		// exit menu clicked
 		else if (objClicked == this.exit) {
 			askSaveBeforeQuit();
 			System.exit(0);
 		}
+		// menu's castling option (un)checked
 		else if (objClicked == this.optionCastling) {
 			Rules.OptionalRules.setCastling(optionCastling.isSelected());
 		}
+		// menu's promotion option (un)checked
 		else if (objClicked == this.optionPromotion) {
 			Rules.OptionalRules.setPromotion(optionPromotion.isSelected());
 		}
+		// menu's en passant option (un)checked
 		else if (objClicked == this.optionEnPassant) {
 				Rules.OptionalRules.setEnPassant(optionEnPassant.isSelected());
 		}
+		// menu's native window look option chosen
 		else if (objClicked == this.optionRadioNativeLook) {
 			try {
 				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -356,6 +369,7 @@ public class Main extends JFrame implements ActionListener {
 			}
 			catch (Exception e) {}	
 		}
+		// menu's system window look option chosen
 		else if (objClicked == this.optionRadioSystemLook) {
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -365,45 +379,62 @@ public class Main extends JFrame implements ActionListener {
 			catch (Exception e) {}				
 		}
 	}
-	
+	/**
+	 *  Asks user to export game before quitting
+	 */
 	private void askSaveBeforeQuit() {
+		// opens dialog for asking is game importing is required
 		int result = JOptionPane.showConfirmDialog(this, "Do you want to save your game?", "Quit", JOptionPane.YES_NO_OPTION);
 		if (result == 0) {
+			// exports game
 			handleExport();
 		}
 	}
-
+	/**
+	 * Asks user in which file game will be exported
+	 */
 	private void handleExport() {
+		// open save dialog
 		int returnVal = fc.showSaveDialog(this);
+		// exports game
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
 			this.widget.exportGame(file.getAbsolutePath());
 		}
 	}
-
+	/**
+	 * Goes back in game's history
+	 */
 	private void handleGoBack() {
 		boolean canGoBack = this.widget.goBack();
 		if (!canGoBack)
+			// disable backward button
 			this.enableBackwardButton(false);
 	}
-
+	/**
+	 * Enables or disables back button
+	 * @param b
+	 */
 	public void enableBackwardButton(boolean b) {
 		this.goBackBtn.setEnabled(b);
 	}
-
+	/**
+	 * Goes forward in game's history
+	 */
 	private void handleGoForward() {
+		// when multiple forward is possible
 		if (this.widget.hasManyForward()) {
+			// get all forward possibilities
 			Collection<Pair<Position, Position>> branches = this.widget.getBranches();
-//			int branchesNb = this.widget.getBranchesNb();
+			// create usable array for JOptionPaneshowInputDialog()
 			ArrayList<String> possibilities = new ArrayList<String>();
-			
 			int i = 0;
 			for (Pair<Position, Position> pair : branches) {
 				possibilities.add(i + ": " + pair.GetLeft().toString() + " -> " + pair.GetRight().toString());
 				++i;
 			}
 			String[] possibilitiesStr = possibilities.toArray(new String[possibilities.size()]);
-			
+			// show dialog for choosing forward possibility
 		    String ret = (String)JOptionPane.showInputDialog(this, 
 		      "Choose which game branch to play:",
 		      "History manager",
@@ -411,28 +442,34 @@ public class Main extends JFrame implements ActionListener {
 		      null,
 		      possibilitiesStr,
 		      possibilitiesStr[0]);
-		    
+		    // user choose one possibility
 		    if (ret != null) {
 		    	int index = ret.charAt(0) - '0';
 		    	this.widget.goForward(index);
 		    }
 		}
+		// when only one forward is possible
 		else {
 			this.widget.goForward();
 		}
-			
+		// no more forward posible: disable forward button
 		if (!this.widget.canGoForward())
 			this.enableForwardButton(false);
 	}
-
+	/**
+	 * Enables or disables forward button
+	 * @param b
+	 */
 	public void enableForwardButton(boolean b) {
 		this.goForwardBtn.setEnabled(b);
 	}
-
+	/**
+	 * Resets game
+	 */
 	private void handleResetClicked() {
-		
+		// ask user for resetting game
 		int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to reset the game?", "Reset game", JOptionPane.YES_NO_OPTION);
-		
+		// reset all window components
 		if (result == 0) {
 			this.widget.resetGame();
 			whiteEatenPanel.removeAll();
@@ -443,31 +480,56 @@ public class Main extends JFrame implements ActionListener {
 		}
 	}
 
-
-	/** private fields **/
-	ChessGameWidget widget;	// where the game is being played
+	/** 
+	 * private fields
+	 */
+	// where the game is being played
+	ChessGameWidget widget;
+	// game status message
 	JLabel gameStatusMsgLabel;
+	// label "Player turn"
 	JLabel fixedPlayerTurnLabel;
+	// label for displaying which turn is it
 	JLabel playerTurnLabel;
+	// main panel
 	JPanel mainPanel;
+	// left panel with player turn and reset button
 	JPanel leftPanel;
+	// right panel with dead pieces and history buttons
 	JPanel rightPanel;
+	// white's dead pieces panel
 	JPanel whiteEatenPanel;
+	// black's dead pieces panel
 	JPanel blackEatenPanel;
+	// reset button
 	JButton resetBtn;
+	// go back button
 	JButton goBackBtn;
+	// go forward button
 	JButton goForwardBtn;
+	// file chooser (open and save)
 	JFileChooser fc;
-	JMenuItem importe;
-	JMenuItem exporte;
-	JMenuItem exit;
+	// menu bar
 	JMenuBar menu;
+	// file menu
 	JMenu fileMenu;
+	// file menu's import
+	JMenuItem importe;
+	// file menu's export
+	JMenuItem exporte;
+	// file menu's exit
+	JMenuItem exit;
+	// options menu
 	JMenu optionsMenu;
+	// options menu's castling checkbox
 	JCheckBoxMenuItem optionCastling;
+	// options menu's promotion checkbox
 	JCheckBoxMenuItem optionPromotion;
+	// options menu's en passant checkbox
 	JCheckBoxMenuItem optionEnPassant;
+	// options menu's native look radio button
 	JRadioButtonMenuItem optionRadioNativeLook;
+	// options menu's system look radio button
 	JRadioButtonMenuItem optionRadioSystemLook;
 }
 

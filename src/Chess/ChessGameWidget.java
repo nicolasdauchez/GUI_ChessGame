@@ -19,6 +19,10 @@ import javax.swing.JComponent;
 import main.Main;
 import main.Pair;
 
+/**
+ * @author NaiKo
+ * Handles chess board UI
+ */
 public class ChessGameWidget extends JComponent implements MouseListener{
 	/**
 	 * 
@@ -159,7 +163,7 @@ public class ChessGameWidget extends JComponent implements MouseListener{
 						// check move validity
 						Pair<eMoveState, eGameState> moveAccepted = this.game.catchEvent(new Position(posFirstClick), new Position(posSecondClick));
 	
-						System.out.println("eMoveState: " + moveAccepted.GetLeft() + " eGameState:" + moveAccepted.GetRight() + " TurnPlayer: " + game.GetTurn());
+//						System.out.println("eMoveState: " + moveAccepted.GetLeft() + " eGameState:" + moveAccepted.GetRight() + " TurnPlayer: " + game.GetTurn());
 						
 						// update game board (piece moving or text explaining why not)
 						handleMove(moveAccepted);
