@@ -7,6 +7,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
@@ -51,15 +52,17 @@ import Chess.eColor;
 import Chess.ePawns;
 
 /**
+ * Program entry point. 
+ * Handles general UI.
  * @author NaiKo
- * Program entry point
- * Handles general UI
  */
 public class Main extends JFrame implements ActionListener {
 	/**
-	 * Serial version
+	 * Class' serial version
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	// Constructor
 	/**
 	 * Default Constructor
 	 */
@@ -69,7 +72,7 @@ public class Main extends JFrame implements ActionListener {
 		// set the title of the window
 		setTitle("Our ChessGame");
 		// set the default close operation
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		// change window look to OS style
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -83,11 +86,14 @@ public class Main extends JFrame implements ActionListener {
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				askSaveBeforeQuit();
-				super.windowClosing(e);
+				// true if user still wants to quit game (having exported game or not), false if quit was cancelled
+				if (askSaveBeforeQuit())
+					System.exit(0);
 			}
 		});
 	}
+
+	// Program's main
 	/**
 	 * Program entry point
 	 * @param args program arguments
@@ -96,6 +102,8 @@ public class Main extends JFrame implements ActionListener {
 		Main window = new Main();
 		window.setVisible(true);
 	}
+
+	// Methods
 	/**
 	 * Initialazes all panels
 	 */
@@ -171,6 +179,7 @@ public class Main extends JFrame implements ActionListener {
 		this.gameStatusMsgLabel = new JLabel("", JLabel.CENTER);
 		gameStatusMsgLabel.setOpaque(true);
 		gameStatusMsgLabel.setForeground(Color.red);
+		gameStatusMsgLabel.setFont(new Font("Arial", Font.BOLD, 16));
 		bottomPanel.add(gameStatusMsgLabel);
 		this.mainPanel.add(bottomPanel, BorderLayout.PAGE_END);
 	}
@@ -345,8 +354,9 @@ public class Main extends JFrame implements ActionListener {
 		}
 		// exit menu clicked
 		else if (objClicked == this.exit) {
-			askSaveBeforeQuit();
-			System.exit(0);
+			// true if user still wants to quit game (having exported game or not), false if quit was cancelled
+			if (askSaveBeforeQuit())
+				System.exit(0);
 		}
 		// menu's castling option (un)checked
 		else if (objClicked == this.optionCastling) {
@@ -380,20 +390,24 @@ public class Main extends JFrame implements ActionListener {
 		}
 	}
 	/**
-	 *  Asks user to export game before quitting
+	 * Asks user to export game before quitting
+	 * @return 	True if user quits game, false if he cancels quitting
 	 */
-	private void askSaveBeforeQuit() {
+	private boolean askSaveBeforeQuit() {
 		// opens dialog for asking is game importing is required
-		int result = JOptionPane.showConfirmDialog(this, "Do you want to save your game?", "Quit", JOptionPane.YES_NO_OPTION);
+		int result = JOptionPane.showConfirmDialog(this, "Do you want to save your game?", "Quit", JOptionPane.YES_NO_CANCEL_OPTION);
+		if (result == 2)
+			return false;
 		if (result == 0) {
-			// exports game
-			handleExport();
+			// exports game, return false if nothing was selected
+			return handleExport();
 		}
+		return true;
 	}
 	/**
 	 * Asks user in which file game will be exported
 	 */
-	private void handleExport() {
+	private boolean handleExport() {
 		// open save dialog
 		int returnVal = fc.showSaveDialog(this);
 		// exports game
@@ -401,6 +415,9 @@ public class Main extends JFrame implements ActionListener {
             File file = fc.getSelectedFile();
 			this.widget.exportGame(file.getAbsolutePath());
 		}
+		else if (returnVal == JFileChooser.CANCEL_OPTION)
+			return false;
+		return true;
 	}
 	/**
 	 * Goes back in game's history
@@ -480,56 +497,102 @@ public class Main extends JFrame implements ActionListener {
 		}
 	}
 
-	/** 
-	 * private fields
+	// Private fields
+	/**
+	 *  Component where the game is being played
 	 */
-	// where the game is being played
 	ChessGameWidget widget;
-	// game status message
+	/**
+	 *  Game status message
+	 */
 	JLabel gameStatusMsgLabel;
-	// label "Player turn"
+	/**
+	 *  Label "Player turn"
+	 */
 	JLabel fixedPlayerTurnLabel;
-	// label for displaying which turn is it
+	/**
+	 *  Label for displaying which turn is it
+	 */
 	JLabel playerTurnLabel;
-	// main panel
+	/**
+	 *  Main panel
+	 */
 	JPanel mainPanel;
-	// left panel with player turn and reset button
+	/**
+	 *  Left panel with player turn and reset button
+	 */
 	JPanel leftPanel;
-	// right panel with dead pieces and history buttons
+	/**
+	 *  Right panel with dead pieces and history buttons
+	 */
 	JPanel rightPanel;
-	// white's dead pieces panel
+	/**
+	 *  White's dead pieces panel
+	 */
 	JPanel whiteEatenPanel;
-	// black's dead pieces panel
+	/**
+	 *  Black's dead pieces panel
+	 */
 	JPanel blackEatenPanel;
-	// reset button
+	/**
+	 *  Reset button
+	 */
 	JButton resetBtn;
-	// go back button
+	/**
+	 *  Go back button
+	 */
 	JButton goBackBtn;
-	// go forward button
+	/**
+	 *  Go forward button
+	 */
 	JButton goForwardBtn;
-	// file chooser (open and save)
+	/**
+	 *  File chooser (open and save)
+	 */
 	JFileChooser fc;
-	// menu bar
+	/**
+	 *  Menu bar
+	 */
 	JMenuBar menu;
-	// file menu
+	/**
+	 *  File menu
+	 */
 	JMenu fileMenu;
-	// file menu's import
+	/**
+	 *  File menu's import
+	 */
 	JMenuItem importe;
-	// file menu's export
+	/**
+	 *  File menu's export
+	 */
 	JMenuItem exporte;
-	// file menu's exit
+	/**
+	 *  File menu's exit
+	 */
 	JMenuItem exit;
-	// options menu
+	/**
+	 *  Options menu
+	 */
 	JMenu optionsMenu;
-	// options menu's castling checkbox
+	/**
+	 *  Options menu's castling checkbox
+	 */
 	JCheckBoxMenuItem optionCastling;
-	// options menu's promotion checkbox
+	/**
+	 *  Options menu's promotion checkbox
+	 */
 	JCheckBoxMenuItem optionPromotion;
-	// options menu's en passant checkbox
+	/**
+	 *  Options menu's en passant checkbox
+	 */
 	JCheckBoxMenuItem optionEnPassant;
-	// options menu's native look radio button
+	/**
+	 *  Options menu's native look radio button
+	 */
 	JRadioButtonMenuItem optionRadioNativeLook;
-	// options menu's system look radio button
+	/**
+	 *  Options menu's system look radio button
+	 */
 	JRadioButtonMenuItem optionRadioSystemLook;
 }
 
