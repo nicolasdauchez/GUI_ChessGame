@@ -179,7 +179,8 @@ public class BoardGame {
 	public void RedoMove(Pair<Position, Position> p) {
 		if (indexOf(p.GetRight()) != -1)
 			remove(get(indexOf(p.GetRight())));
-		get(indexOf(p.GetLeft())).SetPosition(p.GetRight());
+		if (indexOf(p.GetLeft()) != -1)
+			get(indexOf(p.GetLeft())).SetPosition(p.GetRight());
 	}
 	/**
 	 * return {@link eColor#None} if no Pawn on the current Case in l
